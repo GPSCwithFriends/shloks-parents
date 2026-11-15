@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.application'
+}
+
+def appUrl = project.findProperty('appUrl') ?: 'https://example.github.io/shloks-parents/'
+def vCode = (project.findProperty('versionCode') ?: '1') as Integer
+
+android {
+    namespace 'com.shloksparents.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.shloksparents.app'
+        minSdk 24
+        targetSdk 34
+        versionCode vCode
+        versionName "1.${vCode}"
+        buildConfigField 'String', 'APP_URL', "\"${appUrl}\""
+    }
+
+    // Same key on every build, so new versions install over the old one.
+    signingConfigs {
+        family {
+            storeFile file('shloks-parents.keystore')
+            storePassword 'shlokparents'
+            keyAlias 'shlok'
+            keyPassword 'shlokparents'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.family
+        }
+    }
+
+    buildFeatures { buildConfig true }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

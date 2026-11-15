@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shlok\'s Parents</string>
+    <string name="offline">ઇન્ટરનેટ નથી. જોડાણ પછી ફરી ખોલો.\nNo internet. Please reconnect and reopen.</string>
+</resources>

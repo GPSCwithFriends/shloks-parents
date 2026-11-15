@@ -1,0 +1,1252 @@
+<script>
+(function () {
+'use strict';
+
+// ------------------------------------------------------------------ text
+var I = {
+  gu: {
+    tabA: 'ડૉ. અર્પિતા', tabM: 'મેહુલ', tabO: 'આપણું', tabR: 'અહેવાલ',
+    arpita: 'ડૉ. અર્પિતા', mehul: 'મેહુલ', both: 'બંને',
+    dayOf: '{n}નો દિવસ', ours: 'આપણું કુટુંબ', report: 'અઠવાડિયાનો અહેવાલ', settings: 'સેટિંગ્સ',
+    loggedAs: '{n} તરીકે લૉગિન', logout: 'લૉગઆઉટ', loading: 'લોડ થાય છે…', saved: 'સચવાયું', error: 'ભૂલ: ',
+    readonly: 'તમે {n}નો દિવસ જોઈ રહ્યા છો. ફેરફાર ફક્ત {n} જ કરી શકે.',
+    plan: 'પરિવર્તન યોજના · સ્તર {l} / 7', doneOf: '{d} / {t} પૂર્ણ', next: 'હવે પછી:', goalReached: 'બધાં લક્ષ્ય પૂરાં થયાં. આ જ ક્રમ જાળવી રાખો.',
+    thisWeek: 'આ અઠવાડિયે: ', goal: 'લક્ષ્ય', oneThing: 'એક સમયે એક કાર્ય', holdHint: 'અથવા યાદીમાં કોઈ કાર્ય પર આંગળી થોડી વાર દબાવી રાખો',
+    tipDefault_arpita: 'આજે એક જ વાત: 21:30 પછી ફોન બેડરૂમની બહાર. બાકીનું આપોઆપ સરળ થશે.',
+    tipDefault_mehul: 'રાતનું દૂધ ઘટે તેમ ઊઠવાનો સમય આપોઆપ વહેલો થશે. ઊંઘ 7 કલાકથી ઓછી ન કરતા.',
+    tipYesterday: 'ગઈ રાતે તમે લખ્યું હતું: ', tipExp: 'આ અઠવાડિયાનો પ્રયોગ: ',
+    adTitle_arpita: 'આજનાં બધાં કામ પૂર્ણ!', adMeme_arpita: 'એન્થની બનું… મતલબ અબ ક્યા કરું?',
+    adS_arpita: ['પુસ્તકનાં 10 પાનાં વાંચો', '"વાત કરવી છે" યાદીમાંથી કોઈને ફોન કરો', 'કંઈ ન કરો, શાંતિથી આરામ કરો. આજે એ પણ કમાઈ લીધું છે.'],
+    adTitle_mehul: 'શાબાશ!', adMeme_mehul: 'આજનાં બધાં કામ પૂર્ણ.',
+    adS_mehul: ['આવતી કાલની Answer Writingનો પ્રશ્ન પસંદ કરી રાખો', 'ડૉ. અર્પિતા સાથે 15 મિનિટ વાત', 'વહેલા ઊંઘી જાઓ'],
+    mT: 'મારું Manifestation', mPh: 'મારે શું બનવું છે, શું મેળવવું છે… વર્તમાન કાળમાં લખો, જાણે થઈ ગયું હોય.', mAdd: 'ફોટો ઉમેરો', mChange: 'ફોટો બદલો', mRemove: 'ફોટો કાઢો', save: 'સાચવો',
+    k_r: 'દિનચર્યા', k_n: 'નવો ફેરફાર', k_w: 'પોતાની ઇચ્છા', k_s: 'અભ્યાસ', k_h: 'સ્વાસ્થ્ય',
+    tag_n: 'પરિવર્તન યોજનાનો ફેરફાર', tag_w: 'પોતાની ઇચ્છા', tag_s: 'અભ્યાસ', tag_h: 'સ્વાસ્થ્ય ટેવ',
+    done: 'થયું', notDone: 'ન થયું', change: 'બદલો', skipped: 'ન થયું', onTime: 'સમયસર', late: '+{m} મિ. મોડું', why: 'કેમ ન થયું? (એક ટૅપ)',
+    newReason: 'નવું કારણ લખો', add: 'ઉમેરો', qRun: 'કેટલું દોડ્યા?',
+    delAria: 'આ કાર્ય કાઢવાની વિનંતી', delInfo: 'કાયમ માટે કાઢવા બંનેની મંજૂરી જોઈએ. તમારો PIN લખો; પછી {n} પોતાના PIN થી મંજૂર કરશે.',
+    myPin: 'તમારો PIN', sendReq: 'વિનંતી મોકલો', cancel: 'રદ', delPending: 'કાઢવાની વિનંતી · {n}ની મંજૂરી બાકી', withdraw: 'વિનંતી પાછી ખેંચો',
+    ntT: '+ નવું કાર્ય ઉમેરો', ntName: 'કાર્યનું નામ', ntPh: 'જેમ કે: કાર ધોવી', ntDaily: 'દરરોજ પુનરાવર્તન કરવું', ntAdd: 'યાદીમાં ઉમેરો', time: 'સમય',
+    medT: 'આજની દવા', medNo: 'દવા લીધી? ટૅપ કરો', medYes: 'દવા લીધી ✓', medAt: 'સમય:',
+    wT: 'પાણી', wAsk: 'કેટલા ml પાણી પીધું?', wGoal: 'આ અઠવાડિયાનું લક્ષ્ય {g} ml · અંતિમ લક્ષ્ય 3500 ml',
+    fT: 'આજે શું જમ્યા?', f_b: 'નાસ્તો', f_l: 'બપોરનું જમવાનું', f_s: 'સાંજનો નાસ્તો', f_d: 'રાતનું જમવાનું', sabzi: 'શાક',
+    choose: '— પસંદ કરો —', addNewOpt: '+ નવું ઉમેરો', otherPh: 'નવું નામ લખો',
+    cT: 'ફોન પર વાત', cWho: 'કોની સાથે?', cNewOpt: '+ નવું નામ ઉમેરો', cTalked: 'વાત કરી', cWant: 'વાત કરવી છે', cWantList: 'વાત કરવી છે:', cMark: 'વાત કરી ✓',
+    nT: 'રાતની નોંધ: આજનો દિવસ કેવો રહ્યો?', nMood: 'આજે કેવું અનુભવ્યું? (એક કે વધુ)', nEnergy: 'શક્તિ / ઉત્સાહ', eLow: '1 = ખૂબ થાક', eHigh: '5 = ખૂબ તાજગી',
+    sT: 'આજના દિવસનું સ્વ-મૂલ્યાંકન', sAsk: 'કઈ બાબત તમે સુધારવા માંગો છો?', sNew: 'બીજી બાબત લખો', sTmrw: 'આવતી કાલે એક બાબત અલગ રીતે કરીશ:', sTmrwPh: 'જેમ કે: 21:30 પછી ફોન બહાર મૂકીશ',
+    nNote: 'એક વાક્ય (ઇચ્છા હોય તો)', nNotePh: 'આજે શું સારું થયું, કે શું ભારે લાગ્યું…', nSave: 'નોંધ સાચવો', nSaved: 'સચવાઈ · {t}',
+    runs: 'આ અઠવાડિયે દોડ: {n} વાર · {k} km',
+    fClose: 'બંધ કરો', fPrev: 'પાછલું', fNext: 'આગલું', fSwipe: '← ડાબે-જમણે ખસેડો: બીજાં કાર્ય →', actualAt: 'ખરેખર થયાનો સમય',
+    apT: 'તમારી મંજૂરી બાકી', apSub: 'કોઈ પણ કાર્ય કાયમ માટે કાઢવા બંનેની મંજૂરી અને પોતપોતાનો PIN જરૂરી છે.', apWants: 'કાઢવા માંગે છે:',
+    apOk: 'મંજૂર કરો', apNo: 'ના પાડો', apConfirm: 'PIN થી મંજૂર', recent: 'તાજેતરના નિર્ણયો', st_approved: 'મંજૂર · કાઢી નાખ્યું', st_declined: 'નકાર્યું', st_withdrawn: 'પાછું ખેંચ્યું',
+    tdT: 'સાથે કરવાનાં કામ', tdLeft: '{n} બાકી', tdNew: 'નવું કામ લખો…', tdWho: 'કોણ કરશે?', tdDue: 'ક્યાં સુધીમાં', tdAdd: '+ યાદીમાં ઉમેરો',
+    tdNote: 'નક્કી કરેલી તારીખની આગલી સાંજે ઈમેલથી યાદ અપાવાશે.', dueToday: 'આજે', dueTom: 'કાલે', overdue: 'મુદત વીતી', by: 'સુધીમાં', noDue: 'તારીખ નથી',
+    ksT: 'પાયાના 3 બદલાવ', ksSub: 'બાકીની આખી યોજના આ ત્રણ પર ટકેલી છે.', ks1: '1. ગઈ રાતે શ્લોક કેટલી વાર જાગ્યો?', ks2: '2. શ્લોક કેટલા વાગે ઊંઘ્યો?', ks2goal: 'લક્ષ્ય 20:30',
+    ks3: '3. ફોન બેડરૂમની બહાર', ksMine: 'મારો ફોન બહાર ✓', ksMineNo: 'મારો ફોન બહાર મૂક્યો?',
+    valT: 'શ્લોક · આ મહિનાનું મૂલ્ય', storyT: 'આજની વાર્તા', storyWho: 'કોણે કહી?', storyPh: 'વાર્તાનું નામ',
+    vT: 'રજામાં મુલાકાત', vWho: 'કોના ઘરે?', vWent: 'ગયા', vWant: 'જવું છે', vWantList: 'જવું છે:', vMark: 'ગયા ✓', vRecent: 'તાજેતરની મુલાકાતો',
+    repWeek: '{a} – {b}', repGen: 'અહેવાલ બનાવો', repRegen: 'ફરી બનાવો', repNone: 'હજુ આ અઠવાડિયાનો અહેવાલ બન્યો નથી. દર રવિવારે 20:00 વાગે આપોઆપ બનશે, અથવા હમણાં બનાવો.',
+    repOnTime: 'સમયસર', repDone: 'પૂર્ણ', repSched: 'કુલ', repReasons: 'શું અટકાવે છે?', repWater: 'પાણીનું લક્ષ્ય પૂરું: {n} દિવસ', repMed: 'દવા: {n} દિવસ',
+    repEnergy: 'સરેરાશ શક્તિ: {e} / 5', repTreats: 'ફરસાણ / મીઠાઈ / બહારનું: {n} વાર', repImprove: 'સુધારવાની બાબતો', repTasks: 'કાર્ય પ્રમાણે',
+    repCause: 'મૂળ કારણ', repExp: 'આવતા અઠવાડિયાના પ્રયોગ', accept: 'સ્વીકારો', accepted: 'સ્વીકાર્યો ✓', repLevel: 'પરિવર્તન યોજના: સ્તર {l} / 7',
+    lvAdvance: 'આગળ વધો', lvHold: 'એ જ રાખો', lvAdvised: 'સૂચન: આગળ વધો (ઊઠવું {n}/7 દિવસ સમયસર)', lvHoldAdv: 'સૂચન: એ જ સ્તરે રહો (ઊઠવું {n}/7 દિવસ સમયસર)',
+    wtUp: 'પાણી +250 ml', aiRules: 'નિયમ આધારિત અહેવાલ', aiGemini: 'Gemini AI અહેવાલ',
+    setPin: 'PIN બદલો', oldPin: 'હાલનો PIN', newPin: 'નવો PIN', newPin2: 'નવો PIN ફરી', gemKey: 'Gemini API key', gemKeySaved: 'Key સચવાયેલી છે ✓',
+    gemModel: 'Gemini મોડેલ', emails: 'યાદ અપાવવા માટે ઈમેલ (અલ્પવિરામથી)', valGu: 'મહિનાનું મૂલ્ય (ગુજરાતી)', valEn: 'મહિનાનું મૂલ્ય (English)', sheet: 'ડેટા શીટ ખોલો',
+    pinChanged: 'PIN બદલાયો', pinMismatch: 'બંને નવા PIN સરખા નથી',
+    setupT: 'એપને તમારા સર્વર સાથે જોડો', setupSub: 'Apps Script ની Web app URL (…/exec થી પૂરી થતી) અહીં પેસ્ટ કરો. આ એક જ વાર કરવાનું છે.', setupBtn: 'જોડો',
+    setupBad: 'આ Apps Script ની /exec લિંક નથી.', setupFail: 'સર્વર સાથે જોડાણ ન થયું. લિંક અને "Who has access: Anyone" તપાસો.', setupChange: 'સર્વર લિંક બદલો',
+    netErr: 'ઇન્ટરનેટ કે સર્વર સાથે જોડાણ ન થયું', badServer: 'સર્વરનો જવાબ સમજાયો નહીં',
+    who: 'કોણ લૉગિન કરે છે?', enterPin: 'તમારો 4 અંકનો PIN લખો', pickFirst: 'પહેલાં તમારું નામ પસંદ કરો', badPin: 'ખોટો PIN ({n} પ્રયત્ન બાકી)', locked: '5 મિનિટ માટે લૉક. પછી પ્રયત્ન કરો.',
+    welcome: 'સ્વાગત છે!', setNew: 'નવો 4 અંકનો PIN પસંદ કરો', confirmNew: 'નવો PIN ફરી લખો', loginNote: 'દરેકનો પોતાનો PIN · 5 ખોટા પ્રયત્ન = 5 મિનિટ લૉક', delDigit: 'છેલ્લો અંક કાઢો',
+    wd: ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'], wds: ['રવિ', 'સોમ', 'મંગળ', 'બુધ', 'ગુરુ', 'શુક્ર', 'શનિ'],
+    mo: ['જાન્યુઆરી', 'ફેબ્રુઆરી', 'માર્ચ', 'એપ્રિલ', 'મે', 'જૂન', 'જુલાઈ', 'ઑગસ્ટ', 'સપ્ટેમ્બર', 'ઑક્ટોબર', 'નવેમ્બર', 'ડિસેમ્બર'],
+    reasons_arpita: ['શ્લોક વહેલો જાગ્યો', 'મોડી ઊંઘ', 'થાક', 'શ્લોક રડતો/બીમાર', 'મહેમાન', 'બીજું કામ આવ્યું'],
+    reasons_mehul: ['મોડો ઊઠ્યો', 'રાત્રે શ્લોક જાગ્યો', 'ઓફિસ કામ', 'થાક', 'કુટુંબનું કામ', 'બીજું'],
+    moods: ['ખુશ', 'શાંત', 'સંતોષ', 'ઠીક', 'થાકેલું', 'ચિંતા', 'ચીડિયાપણું', 'ઉદાસ', 'એકલું'],
+    improve: ['સમયસર ઊંઘ', 'વહેલું ઊઠવું', 'ફોન ઓછો', 'પાણી વધુ', 'ખોરાક', 'કસરત', 'શ્લોક સાથે ધીરજ', 'સાથીને સમય', 'વાંચન', 'ગુસ્સો ઓછો'],
+    people: ['મિત્ર', 'ભાઈ / ભાભી', 'કાકા-કાકી', 'માસી / ફોઈ', 'સહેલી'],
+    homes: ['મિત્રના ઘરે', 'સગાંના ઘરે', 'મેહુલના ગામે'],
+    opt_b: ['ચા + ખાખરા', 'પૌંઆ', 'ઉપમા', 'થેપલાં', 'ઢોકળાં', 'ઈડલી / ઢોસા', 'ફળ + ડ્રાયફ્રૂટ્સ', 'દૂધ + ડ્રાયફ્રૂટ્સ', 'પરાઠા', 'ફરસાણ'],
+    opt_l: ['દાળ-શાક + પોતાની રોટલી', 'દાળ-ભાત-શાક-રોટલી', 'ખીચડી-કઢી', 'શાક-રોટલી', 'દાળ-ભાત', 'સલાડ સાથે થાળી', 'બહારનું જમવાનું'],
+    opt_s: ['ફળ', 'મખાના', 'શેકેલા ચણા', 'ડ્રાયફ્રૂટ્સ', 'છાશ', 'ચા + બિસ્કિટ', 'ફરસાણ', 'મીઠાઈ / આઇસક્રીમ', 'કંઈ નહીં'],
+    opt_d: ['શાક-રોટલી', 'ખીચડી-કઢી', 'દાળ-ભાત-શાક-રોટલી', 'ભાખરી-શાક', 'સૂપ + સલાડ', 'થેપલાં + દહીં', 'બહારનું જમવાનું', 'મીઠાઈ / આઇસક્રીમ'],
+    sabziList: ['ભીંડા', 'રીંગણ-બટાકા', 'બટાકા', 'કોબીજ', 'ફ્લાવર', 'દૂધી', 'તુરિયાં', 'ગવાર', 'ચોળી', 'વટાણા-બટાકા', 'સેવ-ટામેટાં', 'મેથી', 'પાલક', 'કારેલાં', 'પરવળ', 'ટીંડોરાં', 'મિક્સ વેજ', 'કઠોળ (મગ/ચણા)']
+  },
+  en: {
+    tabA: 'Dr. Arpita', tabM: 'Mehul', tabO: 'Ours', tabR: 'Report',
+    arpita: 'Dr. Arpita', mehul: 'Mehul', both: 'Both',
+    dayOf: "{n}'s day", ours: 'Our family', report: 'Weekly report', settings: 'Settings',
+    loggedAs: 'Logged in as {n}', logout: 'Log out', loading: 'Loading…', saved: 'Saved', error: 'Error: ',
+    readonly: "You are viewing {n}'s day. Only {n} can make changes.",
+    plan: 'Change plan · level {l} / 7', doneOf: '{d} / {t} done', next: 'Next:', goalReached: 'All goals reached. Keep this rhythm.',
+    thisWeek: 'This week: ', goal: 'goal', oneThing: 'One thing now', holdHint: 'or touch and hold any task in the list',
+    tipDefault_arpita: 'Just one thing today: phone outside the bedroom after 21:30. The rest gets easier.',
+    tipDefault_mehul: 'Your wake-up time will move earlier as night feeds reduce. Never go below 7 hours of sleep.',
+    tipYesterday: 'Last night you wrote: ', tipExp: "This week's experiment: ",
+    adTitle_arpita: 'Everything for today is done!', adMeme_arpita: 'Anthony banu… matlab ab kya karu?',
+    adS_arpita: ['Read 10 pages of your book', 'Call someone from your "want to call" list', 'Do nothing and rest. You have earned it today.'],
+    adTitle_mehul: 'Well done!', adMeme_mehul: 'Everything for today is done.',
+    adS_mehul: ["Pick tomorrow's answer-writing question", '15 minutes of talk with Dr. Arpita', 'Go to sleep early'],
+    mT: 'My manifestation', mPh: 'Who I am becoming, what I am receiving… write it in the present tense, as if it has happened.', mAdd: 'Add photo', mChange: 'Change photo', mRemove: 'Remove photo', save: 'Save',
+    k_r: 'Routine', k_n: 'New change', k_w: 'Own wish', k_s: 'Study', k_h: 'Health',
+    tag_n: 'Change-plan step', tag_w: 'Own wish', tag_s: 'Study', tag_h: 'Health habit',
+    done: 'Done', notDone: 'Not done', change: 'Change', skipped: 'Skipped', onTime: 'On time', late: '+{m} min late', why: 'Why not? (one tap)',
+    newReason: 'Type a new reason', add: 'Add', qRun: 'How far did you run?',
+    delAria: 'Request to remove this task', delInfo: 'Removing for good needs both of you. Enter your PIN; {n} then approves with their own PIN.',
+    myPin: 'Your PIN', sendReq: 'Send request', cancel: 'Cancel', delPending: 'Removal requested · waiting for {n}', withdraw: 'Withdraw request',
+    ntT: '+ Add a new task', ntName: 'Task name', ntPh: 'e.g. wash the car', ntDaily: 'Repeat every day', ntAdd: 'Add to list', time: 'Time',
+    medT: "Today's medicine", medNo: 'Taken medicine? Tap', medYes: 'Medicine taken ✓', medAt: 'Time:',
+    wT: 'Water', wAsk: 'How many ml of water?', wGoal: "This week's goal {g} ml · final goal 3500 ml",
+    fT: 'What did you eat today?', f_b: 'Breakfast', f_l: 'Lunch', f_s: 'Evening snack', f_d: 'Dinner', sabzi: 'Sabzi',
+    choose: '— Choose —', addNewOpt: '+ Add new', otherPh: 'Type new name',
+    cT: 'Phone calls', cWho: 'With whom?', cNewOpt: '+ Add new name', cTalked: 'Talked', cWant: 'Want to call', cWantList: 'Want to call:', cMark: 'Talked ✓',
+    nT: 'Night check-in: how was today?', nMood: 'How did you feel today? (one or more)', nEnergy: 'Energy', eLow: '1 = very tired', eHigh: '5 = very fresh',
+    sT: "Today's self-review", sAsk: 'What would you like to improve?', sNew: 'Type something else', sTmrw: 'Tomorrow I will do one thing differently:', sTmrwPh: 'e.g. put my phone outside after 21:30',
+    nNote: 'One line (optional)', nNotePh: 'What went well, or what felt heavy…', nSave: 'Save check-in', nSaved: 'Saved · {t}',
+    runs: 'Runs this week: {n} · {k} km',
+    fClose: 'Close', fPrev: 'Previous', fNext: 'Next', fSwipe: '← Swipe left / right for other tasks →', actualAt: 'Actual time done',
+    apT: 'Waiting for your approval', apSub: 'Removing any task for good needs both of you, each with your own PIN.', apWants: 'wants to remove:',
+    apOk: 'Approve', apNo: 'Decline', apConfirm: 'Approve with PIN', recent: 'Recent decisions', st_approved: 'Approved · removed', st_declined: 'Declined', st_withdrawn: 'Withdrawn',
+    tdT: 'Shared to-do', tdLeft: '{n} pending', tdNew: 'Write a new task…', tdWho: 'Who will do it?', tdDue: 'Due by', tdAdd: '+ Add to list',
+    tdNote: 'An email reminder goes out the evening before the due date.', dueToday: 'Today', dueTom: 'Tomorrow', overdue: 'Overdue', by: 'by', noDue: 'No date',
+    ksT: '3 foundation changes', ksSub: 'The whole plan rests on these three.', ks1: '1. How many times did Shlok wake last night?', ks2: '2. What time did Shlok fall asleep?', ks2goal: 'goal 20:30',
+    ks3: '3. Phones outside the bedroom', ksMine: 'My phone is outside ✓', ksMineNo: 'Put my phone outside?',
+    valT: "Shlok · this month's value", storyT: "Today's story", storyWho: 'Who told it?', storyPh: 'Story name',
+    vT: 'Holiday visits', vWho: 'Whose home?', vWent: 'Visited', vWant: 'Want to visit', vWantList: 'Want to visit:', vMark: 'Visited ✓', vRecent: 'Recent visits',
+    repWeek: '{a} – {b}', repGen: 'Create report', repRegen: 'Create again', repNone: 'No report for this week yet. It is created automatically every Sunday at 20:00, or create it now.',
+    repOnTime: 'On time', repDone: 'Done', repSched: 'Total', repReasons: 'What gets in the way?', repWater: 'Water goal met: {n} days', repMed: 'Medicine: {n} days',
+    repEnergy: 'Average energy: {e} / 5', repTreats: 'Farsan / sweets / outside food: {n} times', repImprove: 'Things to improve', repTasks: 'By task',
+    repCause: 'Root cause', repExp: "Next week's experiments", accept: 'Accept', accepted: 'Accepted ✓', repLevel: 'Change plan: level {l} / 7',
+    lvAdvance: 'Move ahead', lvHold: 'Keep', lvAdvised: 'Suggested: move ahead (woke on time {n}/7 days)', lvHoldAdv: 'Suggested: stay (woke on time {n}/7 days)',
+    wtUp: 'Water +250 ml', aiRules: 'Rule-based report', aiGemini: 'Gemini AI report',
+    setPin: 'Change PIN', oldPin: 'Current PIN', newPin: 'New PIN', newPin2: 'New PIN again', gemKey: 'Gemini API key', gemKeySaved: 'Key saved ✓',
+    gemModel: 'Gemini model', emails: 'Reminder emails (comma separated)', valGu: 'Value of the month (Gujarati)', valEn: 'Value of the month (English)', sheet: 'Open data sheet',
+    pinChanged: 'PIN changed', pinMismatch: 'The two new PINs do not match',
+    setupT: 'Connect the app to your server', setupSub: 'Paste the Apps Script Web app URL (ending in …/exec). You only do this once.', setupBtn: 'Connect',
+    setupBad: 'This is not an Apps Script /exec link.', setupFail: 'Could not connect. Check the link and that "Who has access" is Anyone.', setupChange: 'Change server link',
+    netErr: 'Could not reach the internet or the server', badServer: 'Could not understand the server reply',
+    who: 'Who is logging in?', enterPin: 'Enter your 4-digit PIN', pickFirst: 'Choose your name first', badPin: 'Wrong PIN ({n} tries left)', locked: 'Locked for 5 minutes. Try again later.',
+    welcome: 'Welcome!', setNew: 'Choose a new 4-digit PIN', confirmNew: 'Enter the new PIN again', loginNote: 'Your own PIN · 5 wrong tries = 5-minute lock', delDigit: 'Delete last digit',
+    wd: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], wds: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    mo: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    reasons_arpita: ['Shlok woke early', 'Slept late', 'Tired', 'Shlok crying/unwell', 'Guests', 'Other work came up'],
+    reasons_mehul: ['Woke late', 'Shlok woke at night', 'Office work', 'Tired', 'Family work', 'Other'],
+    moods: ['Happy', 'Calm', 'Content', 'Okay', 'Tired', 'Anxious', 'Irritable', 'Sad', 'Lonely'],
+    improve: ['Sleep on time', 'Wake early', 'Less phone', 'More water', 'Food', 'Exercise', 'Patience with Shlok', 'Time for partner', 'Reading', 'Less anger'],
+    people: ['Friend', 'Brother / bhabhi', 'Uncle-aunt', 'Masi / Foi', 'Close friend'],
+    homes: ["A friend's home", "Relatives' home", "Mehul's native village"],
+    opt_b: ['Tea + khakhra', 'Poha', 'Upma', 'Thepla', 'Dhokla', 'Idli / dosa', 'Fruit + dry fruits', 'Milk + dry fruits', 'Paratha', 'Farsan'],
+    opt_l: ['Dal-sabzi + own roti', 'Dal-rice-sabzi-roti', 'Khichdi-kadhi', 'Sabzi-roti', 'Dal-rice', 'Thali with salad', 'Outside food'],
+    opt_s: ['Fruit', 'Makhana', 'Roasted chana', 'Dry fruits', 'Buttermilk', 'Tea + biscuits', 'Farsan', 'Sweets / ice cream', 'Nothing'],
+    opt_d: ['Sabzi-roti', 'Khichdi-kadhi', 'Dal-rice-sabzi-roti', 'Bhakhri-sabzi', 'Soup + salad', 'Thepla + curd', 'Outside food', 'Sweets / ice cream'],
+    sabziList: ['Bhindi', 'Brinjal-potato', 'Potato', 'Cabbage', 'Cauliflower', 'Bottle gourd', 'Ridge gourd', 'Cluster beans', 'Chora beans', 'Peas-potato', 'Sev-tameta', 'Methi', 'Palak', 'Karela', 'Parwal', 'Tindora', 'Mixed veg', 'Pulses (moong/chana)']
+  }
+};
+var KC = { r: '#9AA3A7', n: '#6D28D9', w: '#B45309', s: '#1D4ED8', h: '#0F766E' };
+var UC = { arpita: '#9A3412', mehul: '#0F766E', both: '#6D28D9' };
+var TRASH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A9296" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+var GEAR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F2A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+
+// ------------------------------------------------------------------ state
+function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
+var S = {
+  token: ls('sp_token'), user: ls('sp_user'), lang: ls('sp_lang') || 'gu',
+  view: null, date: today(), days: {}, shared: null, reports: {}, settings: null, weekStart: null,
+  login: { user: '', pin: '', msg: '', step: 'pin', first: '', oldPin: '' },
+  ui: freshUi(), busy: {}
+};
+function freshUi() {
+  return { sheet: null, delAsk: null, pin: '', pinErr: '', newReason: '', focus: null,
+    nt: { time: '', name: '', kind: 'r', daily: true }, wInput: '', mealOther: {}, mealOtherText: {}, sabziOther: {}, sabziOtherText: {},
+    cSel: '', cNew: '', night: {}, man: {}, newImp: '',
+    todo: { text: '', who: 'both', due: '' }, tdAsk: null, tdPin: '', apStep: {}, apPin: '',
+    vSel: '', vNew: '', story: null, set: { oldPin: '', newPin: '', newPin2: '', key: '' } };
+}
+
+// ------------------------------------------------------------------ utils
+function t(k, o) {
+  var s = I[S.lang][k]; if (s === undefined) s = I.gu[k]; if (s === undefined) return k;
+  if (o && typeof s === 'string') Object.keys(o).forEach(function (x) { s = s.split('{' + x + '}').join(o[x]); });
+  return s;
+}
+function esc(s) { return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function pad(n) { return ('0' + n).slice(-2); }
+function today() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function nowHM() { var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function mins(s) { var p = String(s).split(':'); return (+p[0]) * 60 + (+p[1] || 0); }
+function dObj(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2], 12); }
+function addDays(s, n) { var d = dObj(s); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function weekStart(s) { var wd = dObj(s).getDay(); return addDays(s, -((wd + 6) % 7)); }
+function fmtDate(s) { var d = dObj(s); return t('wd')[d.getDay()] + ', ' + d.getDate() + ' ' + t('mo')[d.getMonth()]; }
+function shortDate(s) { var d = dObj(s); return d.getDate() + ' ' + t('mo')[d.getMonth()].slice(0, S.lang === 'en' ? 3 : 5); }
+function nameOf(u) { return t(u); }
+function other(u) { return u === 'arpita' ? 'mehul' : 'arpita'; }
+function toast(m) { var el = document.getElementById('toast'); el.textContent = m; el.className = 'show'; clearTimeout(toast._t); toast._t = setTimeout(function () { el.className = ''; }, 2600); }
+
+var GAS = !!(window.google && google.script && google.script.run);
+function apiUrl() { return ls('sp_api') || window.SP_API_DEFAULT || ''; }
+function transport(action, p, token) {
+  if (GAS) return new Promise(function (res, rej) {
+    google.script.run.withSuccessHandler(res).withFailureHandler(function (e) { rej(e instanceof Error ? e : new Error(String(e && e.message || e))); }).api(token, action, p);
+  });
+  return fetch(apiUrl(), { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ token: token, action: action, payload: p }) }).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status); return r.text();
+  });
+}
+function call(action, p) {
+  return transport(action, p || {}, S.token).then(function (s) {
+    var r; try { r = JSON.parse(s); } catch (e) { throw new Error(t('badServer')); }
+    if (r.ok) return r.data;
+    if (r.error === 'AUTH') { logoutLocal(); throw new Error('AUTH'); }
+    throw new Error(r.error);
+  }, function (e) { throw new Error(GAS ? String(e.message || e) : t('netErr')); });
+}
+function fail(e) {
+  if (!e || e.message === 'AUTH') return;
+  var m = String(e.message || e);
+  if (m.indexOf('BADPIN:') === 0) m = t('badPin', { n: m.split(':')[1] });
+  else if (m === 'LOCKED') m = t('locked');
+  toast(t('error') + m);
+}
+
+// ------------------------------------------------------------------ render core
+function render() {
+  var a = document.activeElement, id = a && a.id, sel = null;
+  try { sel = a && a.selectionStart; } catch (e) {}
+  var html;
+  if (!GAS && (!apiUrl() || S.setup)) html = viewSetup();
+  else if (!S.token) html = viewLogin();
+  else if (S.login.step === 'new' || S.login.step === 'confirm') html = viewLogin();
+  else html = header() + body();
+  document.getElementById('app').innerHTML = html + (S.token && S.ui.focus !== null && S.view === S.user ? viewFocus() : '');
+  document.documentElement.lang = S.lang;
+  if (id) { var el = document.getElementById(id); if (el) { el.focus(); try { if (sel !== null) el.setSelectionRange(sel, sel); } catch (e) {} } }
+}
+function body() {
+  if (S.view === 'ours') return viewOurs();
+  if (S.view === 'report') return viewReport();
+  if (S.view === 'fin') return viewFin();
+  if (S.view === 'settings') return viewSettings();
+  return viewDay(S.view);
+}
+function header() {
+  var tabs = [['arpita', 'tabA'], ['mehul', 'tabM'], ['ours', 'tabO'], ['fin', 'tabF'], ['report', 'tabR']].map(function (x) {
+    return '<button class="tab' + (S.view === x[0] ? ' on' : '') + '" data-a="go" data-v="' + x[0] + '">' + esc(t(x[1])) + '</button>';
+  }).join('');
+  var title = S.view === 'fin' ? t('fin') : S.view === 'ours' ? t('ours') : S.view === 'report' ? t('report') : S.view === 'settings' ? t('settings') : t('dayOf', { n: nameOf(S.view) });
+  var showDate = S.view !== 'report' && S.view !== 'settings' && S.view !== 'fin';
+  return '<div class="brand"><img src="' + window.LOGO + '" alt=""><div class="name">Shlok\'s Parents</div>' +
+    '<button class="iconbtn" data-a="go" data-v="settings" aria-label="' + esc(t('settings')) + '">' + GEAR + '</button>' +
+    '<div class="who"><span>' + esc(t('loggedAs', { n: nameOf(S.user) })) + '</span><button data-a="logout">' + esc(t('logout')) + '</button></div></div>' +
+    '<nav class="tabs">' + tabs + '</nav>' +
+    '<div class="subhead"><div>' + (showDate ? '<div class="datenav"><button data-a="day" data-d="-1" aria-label="-1">‹</button><span>' + esc(fmtDate(S.date)) + '</span>' +
+      (S.date < today() ? '<button data-a="day" data-d="1" aria-label="+1">›</button>' : '') + '</div>' : '') +
+    '<h1>' + esc(title) + '</h1></div>' + langToggle() + '</div>';
+}
+function langToggle() {
+  return '<div class="lang" role="group" aria-label="Language"><button class="' + (S.lang === 'gu' ? 'on' : '') + '" data-a="lang" data-l="gu">ગુજ</button>' +
+    '<button class="' + (S.lang === 'en' ? 'on' : '') + '" data-a="lang" data-l="en">EN</button></div>';
+}
+
+// ------------------------------------------------------------------ server setup (phone apps only)
+function viewSetup() {
+  return '<div class="login"><div style="display:flex;justify-content:flex-end">' + langToggle() + '</div>' +
+    '<div style="display:flex;flex-direction:column;align-items:center;gap:8px"><img class="logo" src="' + window.LOGO + '" alt="">' +
+    '<div style="font-family:Inter,sans-serif;font-size:22px;font-weight:700">Shlok\'s Parents</div></div>' +
+    '<div class="card"><h3>' + esc(t('setupT')) + '</h3><div class="small" style="line-height:1.6">' + esc(t('setupSub')) + '</div>' +
+    '<input id="apiUrl" placeholder="https://script.google.com/macros/s/…/exec" value="' + esc(S.setupUrl !== undefined ? S.setupUrl : apiUrl()) + '" data-in="apiUrl" autocomplete="off" autocapitalize="off">' +
+    (S.setupMsg ? '<div class="small" style="color:#BE123C">' + esc(S.setupMsg) + '</div>' : '') +
+    '<button class="btn teal wide" data-a="saveApi"' + (S.busy.api ? ' disabled' : '') + '>' + (S.busy.api ? '<span class="spin"></span> ' : '') + esc(t('setupBtn')) + '</button>' +
+    (apiUrl() ? '<button class="link" data-a="cancelSetup">' + esc(t('cancel')) + '</button>' : '') + '</div>' + credit() + '</div>';
+}
+
+// ------------------------------------------------------------------ login
+function viewLogin() {
+  var L = S.login, users = [['arpita', '#9A3412'], ['mehul', '#0F766E']];
+  var step = L.step;
+  var msg = L.msg || (step === 'new' ? t('setNew') : step === 'confirm' ? t('confirmNew') : (L.user ? t('enterPin') : ''));
+  var msgC = /✓|!$/.test(msg) && L.msgOk ? '#0F766E' : (L.msgBad ? '#BE123C' : '#5B6468');
+  var userBtns = step === 'pin' ? '<div class="grid2">' + users.map(function (u) {
+    var on = L.user === u[0];
+    return '<button class="userbtn" data-a="pickUser" data-u="' + u[0] + '" aria-pressed="' + on + '" style="' + (on ? 'background:' + u[1] + ';color:#fff;border-color:' + u[1] : '') + '"><i style="background:' + (on ? '#fff' : u[1]) + '"></i>' + esc(t(u[0])) + '</button>';
+  }).join('') + '</div>' : '<div style="text-align:center;font-weight:700">' + esc(t(L.user)) + '</div>';
+  var keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map(function (k) {
+    if (k === '') return '<span></span>';
+    return '<button data-a="key" data-k="' + k + '" aria-label="' + (k === 'del' ? esc(t('delDigit')) : k) + '"' + (k === 'del' ? ' style="background:transparent"' : '') + '>' + (k === 'del' ? '⌫' : k) + '</button>';
+  }).join('');
+  var dots = [0, 1, 2, 3].map(function (i) { return '<i class="' + (i < L.pin.length ? 'on' : '') + '"></i>'; }).join('');
+  return '<div class="login"><div style="display:flex;justify-content:flex-end">' + langToggle() + '</div>' +
+    '<div style="display:flex;flex-direction:column;align-items:center;gap:8px"><img class="logo" src="' + window.LOGO + '" alt="Shlok\'s Parents">' +
+    '<div style="font-family:Inter,sans-serif;font-size:22px;font-weight:700">Shlok\'s Parents</div>' +
+    '<div class="muted" style="font-size:14px">' + esc(step === 'pin' ? t('who') : '') + '</div></div>' + userBtns +
+    '<div style="text-align:center;font-size:14px;font-weight:600;min-height:20px;color:' + msgC + '">' + esc(msg) + '</div>' +
+    '<div class="dots" aria-label="PIN">' + dots + '</div><div class="keys">' + keys + '</div>' +
+    '<div class="muted" style="text-align:center">' + esc(t('loginNote')) + '</div>' +
+    (GAS ? '' : '<button class="link" style="align-self:center" data-a="openSetup">' + esc(t('setupChange')) + '</button>') + credit() + '</div>';
+}
+function credit() {
+  return '<div class="credit"><div style="font-family:Inter,sans-serif;font-size:11px;letter-spacing:.04em;color:#5B6468">Designed &amp; Developed by <b style="color:#1F2A2E">Shlok\'s Parents</b></div>' +
+    '<div class="row"><div class="stamp">APPROVED ✓</div><div style="font-family:\'Baloo 2\',Inter,sans-serif;font-size:14px">by <b>Shlok</b>, age 15 months</div></div>' +
+    '<div style="background:#FFF4EC;border-radius:16px;padding:6px 14px;display:flex;gap:6px;align-items:baseline">' +
+    '<span class="da" style="font-size:18px;color:#0F766E">da,</span><span class="da" style="font-size:20px;color:#9A3412;animation-delay:.15s">da,</span>' +
+    '<span class="da" style="font-size:22px;color:#0F766E;animation-delay:.3s">da,</span><span class="da" style="font-size:25px;color:#9A3412;animation-delay:.45s">da</span>' +
+    '<span class="da" style="font-size:25px;color:#B45309;animation-delay:.6s">!!</span></div>' +
+    '<div style="font-size:10px;color:#8A9296;font-style:italic">(official translation: "Papa, Mummy, ship it!")</div></div>';
+}
+function keyPress(k) {
+  var L = S.login;
+  if (L.step === 'pin' && !L.user) { L.msg = t('pickFirst'); L.msgBad = true; render(); return; }
+  if (k === 'del') { L.pin = L.pin.slice(0, -1); L.msg = ''; render(); return; }
+  if (L.pin.length >= 4 || L.wait) return;
+  L.pin += k; L.msg = ''; L.msgBad = false;
+  render();
+  if (L.pin.length < 4) return;
+  var pin = L.pin;
+  if (L.step === 'pin') {
+    L.wait = true;
+    call('login', { user: L.user, pin: pin }).then(function (r) {
+      L.wait = false;
+      S.token = r.token; S.user = r.user; ls('sp_token', r.token); ls('sp_user', r.user);
+      if (r.lang && !ls('sp_lang')) S.lang = r.lang;
+      if (r.mustChange) { L.step = 'new'; L.oldPin = pin; L.pin = ''; L.msg = ''; render(); return; }
+      L.pin = ''; startApp();
+    }).catch(function (e) {
+      L.wait = false; L.pin = '';
+      var m = String(e.message || e);
+      L.msg = m.indexOf('BADPIN:') === 0 ? t('badPin', { n: m.split(':')[1] }) : m === 'LOCKED' ? t('locked') : m;
+      L.msgBad = true; render();
+    });
+  } else if (L.step === 'new') {
+    L.first = pin; L.pin = ''; L.step = 'confirm'; render();
+  } else if (L.step === 'confirm') {
+    if (pin !== L.first) { L.pin = ''; L.step = 'new'; L.msg = t('pinMismatch'); L.msgBad = true; render(); return; }
+    L.wait = true;
+    call('changePin', { oldPin: L.oldPin, newPin: pin }).then(function () {
+      L.wait = false; L.step = 'pin'; L.pin = ''; L.oldPin = ''; L.first = ''; toast(t('pinChanged')); startApp();
+    }).catch(function (e) { L.wait = false; L.pin = ''; fail(e); render(); });
+  }
+}
+function logoutLocal() {
+  S.token = null; ls('sp_token', null);
+  S.login = { user: '', pin: '', msg: '', step: 'pin', first: '', oldPin: '' };
+  S.days = {}; S.shared = null; S.reports = {}; S.ui = freshUi();
+  render();
+}
+
+// ------------------------------------------------------------------ data loading
+function loadDay(owner, silent) {
+  if (!silent && !S.days[owner + S.date]) render();
+  var date = S.date;
+  return call('getDay', { owner: owner, date: date }).then(function (d) {
+    S.days[owner + date] = d;
+    if (!S.ui.night[owner + date]) S.ui.night[owner + date] = d.night ? JSON.parse(JSON.stringify(d.night)) : { moods: [], energy: 0, improve: [], tomorrow: '', note: '' };
+    if (S.ui.man[owner] === undefined) S.ui.man[owner] = d.manifest.text;
+    if (S.view === owner) render();
+  }).catch(fail);
+}
+function loadShared() { return call('getShared', { date: S.date }).then(function (d) { S.shared = d; if (S.view === 'ours') render(); }).catch(fail); }
+function loadReport() {
+  var ws = S.weekStart || weekStart(S.date); S.weekStart = ws;
+  return call('getReport', { weekStart: ws }).then(function (r) { S.reports[ws] = r; if (S.view === 'report') render(); }).catch(fail);
+}
+function loadView() {
+  if (S.view === 'ours') loadShared();
+  else if (S.view === 'report') loadReport();
+  else if (S.view === 'fin') loadFin();
+  else if (S.view === 'settings') call('getSettings').then(function (s) { S.settings = s; render(); }).catch(fail);
+  else loadDay(S.view);
+  render();
+}
+function startApp() { S.view = S.user; S.ui = freshUi(); loadView(); }
+function curDay() { return S.days[S.view + S.date]; }
+
+// ------------------------------------------------------------------ day view
+function viewDay(owner) {
+  var d = S.days[owner + S.date];
+  if (!d) return '<div class="loading">' + esc(t('loading')) + '</div>';
+  var ro = owner !== S.user, U = S.ui;
+  var tasks = d.tasks;
+  var nextIdx = -1; for (var i = 0; i < tasks.length; i++) if (tasks[i].s === 'todo') { nextIdx = i; break; }
+  var done = tasks.filter(function (x) { return x.s === 'done'; }).length;
+  var out = '<div class="wrap">';
+  if (ro) out += '<div class="readonly">' + esc(t('readonly', { n: nameOf(owner) })) + '</div>';
+  // plan card
+  var steps = ''; for (var s = 0; s <= d.maxLevel; s++) steps += '<div class="' + (s <= d.level ? 'on' : '') + '"></div>';
+  var changes = tasks.filter(function (x) { return x.k === 'n' && x.goal; }).map(function (x) { return lbl(x) + ' ' + x.t + ' (' + t('goal') + ' ' + x.goal + ')'; });
+  out += '<div class="plan"><div class="between"><div class="soft">' + esc(t('plan', { l: d.level + 1 })) + '</div><div class="soft" style="font-size:12px">' +
+    esc(t('doneOf', { d: done, t: tasks.length })) + '</div></div><div class="steps">' + steps + '</div>' +
+    '<div style="font-size:15px;font-weight:600;line-height:1.5">' + esc(changes.length ? t('thisWeek') + changes.slice(0, 3).join(' · ') : t('goalReached')) + '</div>';
+  if (nextIdx >= 0) {
+    out += '<div class="soft">' + esc(t('next')) + ' <b style="color:#fff">' + esc(tasks[nextIdx].t + ' · ' + lbl(tasks[nextIdx])) + '</b></div>';
+    if (!ro) out += '<button class="btn" style="background:#fff;color:#1F2A2E;align-self:flex-start;height:40px" data-a="focusOpen">' + esc(t('oneThing')) + '</button><div style="font-size:11px;color:#A9B4B8">' + esc(t('holdHint')) + '</div>';
+  } else if (tasks.length) {
+    out += '<div class="alldone"><div style="font-size:13px;font-weight:700">' + esc(t('adTitle_' + owner)) + '</div><div class="meme">' + esc(t('adMeme_' + owner)) + '</div>' +
+      t('adS_' + owner).map(function (x) { return '<div class="sug">' + esc(x) + '</div>'; }).join('') + '</div>';
+  }
+  out += '</div>';
+  // tip
+  var tip = d.experiments && d.experiments.length ? t('tipExp') + d.experiments.map(function (e) { return S.lang === 'en' ? e.text_en : e.text_gu; }).join(' · ')
+    : d.yesterdayTomorrow ? t('tipYesterday') + d.yesterdayTomorrow : t('tipDefault_' + owner);
+  out += '<div class="tip"><b>AI</b><div>' + esc(tip) + '</div></div>';
+  // manifestation
+  out += '<div class="card manifest"><label for="man-' + owner + '"><h3 style="color:#78350F">' + esc(t('mT')) + '</h3></label>' +
+    '<textarea id="man-' + owner + '" rows="3" data-in="man" placeholder="' + esc(t('mPh')) + '"' + (ro ? ' readonly' : '') + '>' + esc(U.man[owner] !== undefined ? U.man[owner] : d.manifest.text) + '</textarea>' +
+    (d.manifest.photo ? '<img src="' + d.manifest.photo + '" alt="">' : '') +
+    (ro ? '' : '<div class="row" style="flex-wrap:wrap"><button class="btn terra" data-a="manSave">' + esc(t('save')) + '</button>' +
+      '<label class="btn ghost" style="display:inline-flex;align-items:center;cursor:pointer" for="manPhoto">' + esc(d.manifest.photo ? t('mChange') : t('mAdd')) + '</label>' +
+      '<input id="manPhoto" type="file" accept="image/*" data-ch="manPhoto" style="position:absolute;width:1px;height:1px;opacity:0">' +
+      (d.manifest.photo ? '<button class="link" data-a="manRemove">' + esc(t('mRemove')) + '</button>' : '') + '</div>') + '</div>';
+  // legend
+  var kinds = owner === 'mehul' ? ['r', 'n', 's', 'h'] : ['r', 'n', 'w', 'h'];
+  out += '<div class="legend">' + kinds.map(function (k) { return '<span><i style="background:' + KC[k] + '"></i>' + esc(t('k_' + k)) + '</span>'; }).join('') + '</div>';
+  // tasks
+  out += '<div class="tasks">' + tasks.map(function (x, i) { return taskRow(x, i, i === nextIdx, ro, owner); }).join('') + '</div>';
+  if (!ro) out += addTaskCard(owner);
+  if (d.medFor) out += medCard(d, ro);
+  out += waterCard(d, ro) + mealsCard(d, ro) + callsCard(d, ro) + nightCard(d, owner, ro);
+  if (owner === 'mehul') out += '<div class="card"><div class="small">' + esc(t('runs', { n: d.runs.n, k: Math.round(d.runs.km * 10) / 10 })) + '</div></div>';
+  out += '</div>';
+  return out;
+}
+function lbl(x) { return S.lang === 'en' ? (x.en || x.gu) : (x.gu || x.en); }
+function reasonsFor(owner) {
+  var d = S.days[owner + S.date], extra = d && d.options.reasons || [];
+  return t('reasons_' + owner).concat(extra.filter(function (r) { return t('reasons_' + owner).indexOf(r) < 0; }));
+}
+function taskRow(x, i, isNext, ro, owner) {
+  var U = S.ui, late = x.s === 'done' && x.a && mins(x.a) - mins(x.t) > 10;
+  var tag = x.k !== 'r' ? '<div class="tag" style="color:' + KC[x.k] + '">' + esc(t('tag_' + x.k)) + '</div>' : '';
+  var h = '<div class="task" data-lp="' + i + '"><div class="tline"><div class="time"><div>' + esc(x.t) + '</div><div class="bar" style="background:' + KC[x.k] + '"></div></div><div class="body">' +
+    '<div class="label"><div style="color:' + (x.s === 'todo' ? '#1F2A2E' : '#5B6468') + '">' + esc(lbl(x)) + '</div>' +
+    (ro || x.del ? '' : '<button class="iconbtn" data-a="askDel" data-id="' + x.id + '" aria-label="' + esc(t('delAria')) + '">' + TRASH + '</button>') + '</div>' + tag;
+  if (U.delAsk === x.id) {
+    h += '<div class="delbox">' + esc(t('delInfo', { n: nameOf(other(owner)) })) + '<div class="row"><input id="pin-' + x.id + '" class="pin" type="password" inputmode="numeric" maxlength="4" data-in="pin" value="' + esc(U.pin) + '" placeholder="' + esc(t('myPin')) + '">' +
+      '<button class="btn terra" style="height:38px;font-size:12px" data-a="sendDel" data-id="' + x.id + '">' + esc(t('sendReq')) + '</button><button class="link" data-a="cancelDel">' + esc(t('cancel')) + '</button></div>' +
+      (U.pinErr ? '<div style="color:#BE123C">' + esc(U.pinErr) + '</div>' : '') + '</div>';
+  }
+  if (x.del) {
+    h += '<div class="pending"><span>' + esc(t('delPending', { n: nameOf(x.del.by === 'arpita' ? 'mehul' : 'arpita') })) + '</span>' +
+      (x.del.by === S.user ? '<button class="link" data-a="withdraw" data-id="' + x.del.id + '">' + esc(t('withdraw')) + '</button>' : '') + '</div>';
+  }
+  if (x.s === 'done') {
+    h += '<div class="row" style="flex-wrap:wrap"><input type="time" class="timechip" style="background:' + (late ? '#B45309' : '#0F766E') + '" aria-label="' + esc(t('actualAt')) + '" value="' + esc(x.a) + '" data-ch="actual" data-id="' + x.id + '"' + (ro ? ' disabled' : '') + '>' +
+      '<span class="small" style="font-weight:600;color:' + (late ? '#92400E' : '#0F766E') + '">' + esc(late ? t('late', { m: mins(x.a) - mins(x.t) }) : t('onTime')) + '</span>' +
+      (ro ? '' : '<button class="link" data-a="undo" data-id="' + x.id + '">' + esc(t('change')) + '</button>') + '</div>';
+    if (x.q) h += '<div class="row"><label class="small" for="q-' + x.id + '">' + esc(t('qRun')) + '</label><input id="q-' + x.id + '" type="number" inputmode="decimal" step="0.1" style="width:90px;padding:6px 8px" value="' + esc(x.qv) + '" data-ch="qty" data-id="' + x.id + '"' + (ro ? ' disabled' : '') + '><span class="small">km</span></div>';
+  } else if (x.s === 'skip') {
+    h += '<div class="row"><span class="skipchip">' + esc(t('skipped') + ' · ' + x.r) + '</span>' + (ro ? '' : '<button class="link" data-a="undo" data-id="' + x.id + '">' + esc(t('change')) + '</button>') + '</div>';
+  } else if (!ro && U.sheet !== x.id) {
+    h += '<div class="row"><button class="btn" style="height:40px;background:' + (isNext ? '#0F766E' : '#5B6468') + '" data-a="done" data-id="' + x.id + '">' + esc(t('done')) + '</button>' +
+      '<button class="btn ghost" style="height:40px" data-a="notDone" data-id="' + x.id + '">' + esc(t('notDone')) + '</button></div>';
+  }
+  if (!ro && U.sheet === x.id && x.s === 'todo') h += reasonSheet(x, owner, 'r');
+  return h + '</div></div></div>';
+}
+function reasonSheet(x, owner, idp) {
+  return '<div class="sheet"><div class="small" style="font-weight:600">' + esc(t('why')) + '</div><div class="chips">' +
+    reasonsFor(owner).map(function (r) { return '<button class="chip" data-a="reason" data-id="' + x.id + '" data-r="' + esc(r) + '">' + esc(r) + '</button>'; }).join('') + '</div>' +
+    '<div class="row"><input id="nr-' + idp + '-' + x.id + '" data-in="newReason" value="' + esc(S.ui.newReason) + '" placeholder="' + esc(t('newReason')) + '">' +
+    '<button class="btn" data-a="addReason" data-id="' + x.id + '">' + esc(t('add')) + '</button></div></div>';
+}
+function addTaskCard(owner) {
+  var nt = S.ui.nt, kinds = owner === 'mehul' ? ['r', 'h', 's'] : ['r', 'h', 'w'];
+  return '<div class="card"><h3>' + esc(t('ntT')) + '</h3><div class="row"><input id="ntTime" type="time" style="width:110px;flex-shrink:0" aria-label="' + esc(t('time')) + '" value="' + esc(nt.time) + '" data-ch="ntTime">' +
+    '<input id="ntName" data-in="ntName" aria-label="' + esc(t('ntName')) + '" placeholder="' + esc(t('ntPh')) + '" value="' + esc(nt.name) + '"></div>' +
+    '<div class="chips">' + kinds.map(function (k) {
+      var on = nt.kind === k; return '<button class="chip" style="border-color:' + KC[k] + ';' + (on ? 'background:' + KC[k] + ';color:#fff' : '') + '" data-a="ntKind" data-k="' + k + '" aria-pressed="' + on + '">' + esc(t('k_' + k)) + '</button>';
+    }).join('') + '</div>' +
+    '<label class="row small" style="font-size:13px"><input type="checkbox" style="width:20px;height:20px" data-ch="ntDaily"' + (nt.daily ? ' checked' : '') + '>' + esc(t('ntDaily')) + '</label>' +
+    '<button class="btn teal wide" data-a="ntAdd">' + esc(t('ntAdd')) + '</button></div>';
+}
+function medCard(d, ro) {
+  var on = !!d.med;
+  return '<div class="card" style="background:#ECFDF5"><h3 style="color:#065F46">' + esc(t('medT')) + '</h3><div class="row" style="flex-wrap:wrap">' +
+    '<button class="btn" style="background:' + (on ? '#059669' : '#fff') + ';color:' + (on ? '#fff' : '#065F46') + ';border:1px solid #10B981" data-a="med"' + (ro ? ' disabled' : '') + ' aria-pressed="' + on + '">' + esc(on ? t('medYes') : t('medNo')) + '</button>' +
+    (on ? '<label class="small" for="medt">' + esc(t('medAt')) + '</label><input id="medt" type="time" style="width:120px" value="' + esc(d.med.t) + '" data-ch="medTime"' + (ro ? ' disabled' : '') + '>' : '') + '</div></div>';
+}
+function waterCard(d, ro) {
+  var tot = d.water.reduce(function (s, w) { return s + w.ml; }, 0);
+  return '<div class="card"><div class="between"><h3>' + esc(t('wT')) + '</h3><div style="color:#1D4ED8;font-weight:700">' + tot + ' / ' + d.waterGoal + ' ml</div></div>' +
+    '<div class="muted">' + esc(t('wGoal', { g: d.waterGoal })) + '</div><div class="waterbar"><div style="width:' + Math.min(100, Math.round(tot * 100 / d.waterGoal)) + '%"></div></div>' +
+    (ro ? '' : '<div class="row" style="align-items:flex-end"><div style="flex:1"><label class="muted" for="wml">' + esc(t('wAsk')) + '</label><input id="wml" type="number" inputmode="numeric" placeholder="500" value="' + esc(S.ui.wInput) + '" data-in="wInput"></div>' +
+      '<button class="btn blue" data-a="addWater">' + esc(t('add')) + '</button></div>') +
+    '<div class="list">' + d.water.map(function (w) {
+      return '<div class="li"><span class="muted">' + esc(w.t) + '</span><b>' + w.ml + ' ml</b>' + (ro ? '<span></span>' : '<button class="iconbtn" style="color:#9F1239;font-size:18px" data-a="delWater" data-id="' + w.id + '" aria-label="×">×</button>') + '</div>';
+    }).join('') + '</div></div>';
+}
+function optList(base, custom) {
+  var all = base.slice(); (custom || []).forEach(function (c) { if (all.indexOf(c) < 0) all.push(c); }); return all;
+}
+function selectHtml(id, list, value, attrs, newLabel) {
+  var has = !value || list.indexOf(value) >= 0;
+  var opts = '<option value="">' + esc(t('choose')) + '</option>' + list.map(function (o) { return '<option' + (o === value ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') +
+    (has ? '' : '<option selected>' + esc(value) + '</option>') + '<option value="__new__">' + esc(newLabel || t('addNewOpt')) + '</option>';
+  return '<select id="' + id + '" ' + attrs + '>' + opts + '</select>';
+}
+function mealsCard(d, ro) {
+  var U = S.ui, o = d.options;
+  var rows = ['b', 'l', 's', 'd'].map(function (k) {
+    var m = d.meals[k] || {}, list = optList(t('opt_' + k), o['meal_' + k]);
+    var h = '<div style="display:flex;flex-direction:column;gap:4px"><label class="muted" for="meal-' + k + '">' + esc(t('f_' + k)) + '</label><div class="row">' +
+      '<input type="time" style="width:110px;flex-shrink:0;padding:8px" aria-label="' + esc(t('f_' + k) + ' · ' + t('time')) + '" value="' + esc(m.t || '') + '" data-ch="mealTime" data-k="' + k + '"' + (ro ? ' disabled' : '') + '>' +
+      selectHtml('meal-' + k, list, m.dish || '', 'data-ch="meal" data-k="' + k + '"' + (ro ? ' disabled' : '')) + '</div>';
+    if (U.mealOther[k]) h += '<div class="row"><input id="mo-' + k + '" data-in="mealOtherText" data-k="' + k + '" value="' + esc(U.mealOtherText[k] || '') + '" placeholder="' + esc(t('otherPh')) + '"><button class="btn" data-a="mealAdd" data-k="' + k + '">' + esc(t('add')) + '</button></div>';
+    if (k === 'l' || k === 'd') {
+      h += '<div class="row"><label class="muted" style="width:110px;flex-shrink:0" for="sab-' + k + '">' + esc(t('sabzi')) + '</label>' +
+        selectHtml('sab-' + k, optList(t('sabziList'), o.sabzi), m.sabzi || '', 'data-ch="sabzi" data-k="' + k + '"' + (ro ? ' disabled' : '')) + '</div>';
+      if (U.sabziOther[k]) h += '<div class="row"><input id="so-' + k + '" data-in="sabziOtherText" data-k="' + k + '" value="' + esc(U.sabziOtherText[k] || '') + '" placeholder="' + esc(t('otherPh')) + '"><button class="btn" data-a="sabziAdd" data-k="' + k + '">' + esc(t('add')) + '</button></div>';
+    }
+    return h + '</div>';
+  }).join('');
+  return '<div class="card"><h3>' + esc(t('fT')) + '</h3>' + rows + '</div>';
+}
+function callsCard(d, ro) {
+  var U = S.ui, list = optList(t('people'), d.options.people);
+  var h = '<div class="card"><h3>' + esc(t('cT')) + '</h3>';
+  if (!ro) {
+    h += '<label class="muted" for="cwho">' + esc(t('cWho')) + '</label>' + selectHtml('cwho', list, U.cSel === '__new__' ? '' : U.cSel, 'data-ch="cSel"', t('cNewOpt'));
+    if (U.cSel === '__new__') h += '<input id="cnew" data-in="cNew" value="' + esc(U.cNew) + '" placeholder="' + esc(t('otherPh')) + '">';
+    h += '<div class="grid2"><button class="btn teal" data-a="talked">' + esc(t('cTalked')) + '</button><button class="btn ghost" style="color:#0F766E;border-color:#0F766E" data-a="wantCall">' + esc(t('cWant')) + '</button></div>';
+  }
+  if (d.wants.length) h += '<div class="small" style="font-weight:600;color:#9A3412">' + esc(t('cWantList')) + '</div><div class="chips">' + d.wants.map(function (w) {
+    return '<button class="want" data-a="wantDone" data-w="' + esc(w) + '"' + (ro ? ' disabled' : '') + '>' + esc(w) + (ro ? '' : ' · ' + esc(t('cMark'))) + '</button>';
+  }).join('') + '</div>';
+  h += '<div class="list">' + d.calls.map(function (c) { return '<div class="li"><span class="muted">' + esc(c.t) + '</span><b>' + esc(c.who) + '</b></div>'; }).join('') + '</div>';
+  return h + '</div>';
+}
+function nightCard(d, owner, ro) {
+  var n = S.ui.night[owner + S.date] || { moods: [], energy: 0, improve: [], tomorrow: '', note: '' };
+  var chip = function (a, list, sel) {
+    return list.map(function (x) { var on = sel.indexOf(x) >= 0; return '<button class="chip' + (on ? ' on' : '') + '" data-a="' + a + '" data-v="' + esc(x) + '" aria-pressed="' + on + '"' + (ro ? ' disabled' : '') + '>' + esc(x) + '</button>'; }).join('');
+  };
+  var imp = optList(t('improve'), d.options.improve);
+  var energy = [1, 2, 3, 4, 5].map(function (e) { return '<button class="' + (n.energy === e ? 'on' : '') + '" data-a="energy" data-v="' + e + '" aria-label="' + esc(t('nEnergy')) + ' ' + e + '"' + (ro ? ' disabled' : '') + '>' + e + '</button>'; }).join('');
+  return '<div class="card night"><h3>' + esc(t('nT')) + '</h3><div class="small" style="color:#3730A3">' + esc(t('nMood')) + '</div><div class="chips">' + chip('mood', t('moods'), n.moods) + '</div>' +
+    '<div class="small" style="color:#3730A3">' + esc(t('nEnergy')) + '</div><div class="energy">' + energy + '</div>' +
+    '<div class="between small" style="color:#4338CA"><span>' + esc(t('eLow')) + '</span><span>' + esc(t('eHigh')) + '</span></div>' +
+    '<div style="border-top:1px solid #C7D2FE;padding-top:12px;display:flex;flex-direction:column;gap:10px"><h3 style="color:#312E81">' + esc(t('sT')) + '</h3>' +
+    '<div class="small" style="color:#3730A3">' + esc(t('sAsk')) + '</div><div class="chips">' + chip('imp', imp, n.improve) + '</div>' +
+    (ro ? '' : '<div class="row"><input id="newImp" data-in="newImp" value="' + esc(S.ui.newImp) + '" placeholder="' + esc(t('sNew')) + '"><button class="btn" style="background:#312E81" data-a="addImp">' + esc(t('add')) + '</button></div>') +
+    '<label class="small" style="color:#3730A3" for="tmrw">' + esc(t('sTmrw')) + '</label><input id="tmrw" data-in="tmrw" value="' + esc(n.tomorrow) + '" placeholder="' + esc(t('sTmrwPh')) + '"' + (ro ? ' readonly' : '') + '></div>' +
+    '<label class="small" style="color:#3730A3" for="nnote">' + esc(t('nNote')) + '</label><textarea id="nnote" rows="2" data-in="nnote" placeholder="' + esc(t('nNotePh')) + '"' + (ro ? ' readonly' : '') + '>' + esc(n.note) + '</textarea>' +
+    (ro ? '' : '<button class="btn wide" style="background:' + (n.savedAt ? '#0F766E' : '#4F46E5') + '" data-a="saveNight">' + esc(n.savedAt ? t('nSaved', { t: n.savedAt }) : t('nSave')) + '</button>') + '</div>';
+}
+
+// ------------------------------------------------------------------ focus mode
+function viewFocus() {
+  var d = curDay(); if (!d || !d.tasks.length) return '';
+  var i = Math.max(0, Math.min(d.tasks.length - 1, S.ui.focus)), x = d.tasks[i];
+  var late = x.s === 'done' && x.a && mins(x.a) - mins(x.t) > 10;
+  var h = '<div class="overlay" data-a="focusBg"><div class="focus" data-swipe="1">' +
+    '<div class="between" style="align-items:center"><b style="font-family:Inter,sans-serif;font-size:13px;color:#9A3412">' + (i + 1) + ' / ' + d.tasks.length + '</b>' +
+    '<button class="round" data-a="focusClose" aria-label="' + esc(t('fClose')) + '">×</button></div>' +
+    '<div class="pbar" style="background:#E7E1D8;height:4px"><div style="height:4px;background:#9A3412;width:' + Math.round((i + 1) * 100 / d.tasks.length) + '%"></div></div>' +
+    '<div class="row"><button class="round" data-a="focusGo" data-d="-1" aria-label="' + esc(t('fPrev')) + '" style="color:' + (i > 0 ? '#1F2A2E' : '#C9C2B6') + '">‹</button>' +
+    '<div class="fcard" style="border-top-color:' + KC[x.k] + '"><div style="font-family:Inter,sans-serif;font-size:15px;font-weight:700;color:#5B6468">' + esc(x.t) + '</div>' +
+    '<div style="font-size:22px;font-weight:700;line-height:1.35">' + esc(lbl(x)) + '</div>' + (x.k !== 'r' ? '<div class="tag small" style="font-weight:700;color:' + KC[x.k] + '">' + esc(t('tag_' + x.k)) + '</div>' : '') + '</div>' +
+    '<button class="round" data-a="focusGo" data-d="1" aria-label="' + esc(t('fNext')) + '" style="color:' + (i < d.tasks.length - 1 ? '#1F2A2E' : '#C9C2B6') + '">›</button></div>';
+  if (x.s === 'todo' && S.ui.sheet !== x.id) {
+    h += '<div style="display:grid;grid-template-columns:2fr 1fr;gap:10px"><button class="btn teal big" data-a="done" data-id="' + x.id + '">' + esc(t('done')) + ' ✓</button>' +
+      '<button class="btn ghost big" style="font-size:15px" data-a="notDone" data-id="' + x.id + '">' + esc(t('notDone')) + '</button></div>';
+  } else if (x.s === 'todo') {
+    h += reasonSheet(x, S.view, 'f');
+  } else if (x.s === 'done') {
+    h += '<div class="row" style="justify-content:center;flex-wrap:wrap"><input type="time" class="timechip" style="font-size:16px;background:' + (late ? '#B45309' : '#0F766E') + '" value="' + esc(x.a) + '" data-ch="actual" data-id="' + x.id + '" aria-label="' + esc(t('actualAt')) + '">' +
+      '<span class="small" style="font-weight:600;color:' + (late ? '#92400E' : '#0F766E') + '">' + esc(late ? t('late', { m: mins(x.a) - mins(x.t) }) : t('onTime')) + '</span><button class="link" data-a="undo" data-id="' + x.id + '">' + esc(t('change')) + '</button></div>';
+    if (x.q) h += '<div class="row" style="justify-content:center"><label for="fq">' + esc(t('qRun')) + '</label><input id="fq" type="number" inputmode="decimal" step="0.1" style="width:90px" value="' + esc(x.qv) + '" data-ch="qty" data-id="' + x.id + '"><span>km</span></div>';
+  } else {
+    h += '<div class="row" style="justify-content:center"><span class="skipchip" style="font-size:14px">' + esc(t('skipped') + ' · ' + x.r) + '</span><button class="link" data-a="undo" data-id="' + x.id + '">' + esc(t('change')) + '</button></div>';
+  }
+  return h + '<div class="muted" style="text-align:center">' + esc(t('fSwipe')) + '</div></div></div>';
+}
+
+// ------------------------------------------------------------------ ours view
+function viewOurs() {
+  var s = S.shared, U = S.ui;
+  if (!s) return '<div class="loading">' + esc(t('loading')) + '</div>';
+  var out = '<div class="wrap">';
+  if (s.forMe.length) {
+    out += '<div class="card approvals"><div class="between"><h3 style="color:#7C2D12">' + esc(t('apT')) + '</h3><b class="small" style="color:#9A3412">' + s.forMe.length + '</b></div><div class="small" style="color:#7C2D12">' + esc(t('apSub')) + '</div>' +
+      s.forMe.map(function (r) {
+        var step = U.apStep[r.id];
+        return '<div style="background:#fff;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px"><div style="font-size:13px;line-height:1.5"><b>' + esc(nameOf(r.by)) + '</b> ' + esc(t('apWants')) + ' <b>"' + esc(r.label) + '"</b></div>' +
+          (step ? '<div class="row"><input id="ap-' + r.id + '" class="pin" type="password" inputmode="numeric" maxlength="4" data-in="apPin" value="' + esc(U.apPin) + '" placeholder="' + esc(t('myPin')) + '"><button class="btn terra" style="height:38px;font-size:12px" data-a="apConfirm" data-id="' + r.id + '">' + esc(t('apConfirm')) + '</button></div>'
+            : '<div class="row"><button class="btn terra" style="height:40px" data-a="apStart" data-id="' + r.id + '">' + esc(t('apOk')) + '</button><button class="btn ghost" style="height:40px" data-a="apNo" data-id="' + r.id + '">' + esc(t('apNo')) + '</button></div>') + '</div>';
+      }).join('') + '</div>';
+  }
+  if (s.recent.length) out += '<div class="card"><div class="muted" style="font-weight:600">' + esc(t('recent')) + '</div>' + s.recent.map(function (r) {
+    return '<div class="small">' + esc(r.label) + ' · <b>' + esc(t('st_' + r.status)) + '</b></div>';
+  }).join('') + '</div>';
+  // todos
+  var t0 = today(), t1 = addDays(t0, 1);
+  var pend = s.todos.filter(function (x) { return !x.done; }).length;
+  out += '<div class="card"><div class="between"><h3>' + esc(t('tdT')) + '</h3><b class="small" style="color:' + (pend ? '#9A3412' : '#0F766E') + '">' + esc(t('tdLeft', { n: pend })) + '</b></div>' +
+    s.todos.map(function (x) {
+      var over = !x.done && x.due && x.due < t0;
+      var due = !x.due ? t('noDue') : x.due === t0 ? t('dueToday') : x.due === t1 ? t('dueTom') : (over ? t('overdue') + ' · ' : '') + shortDate(x.due) + (over ? '' : ' ' + t('by'));
+      var h = '<div class="todo"><button class="iconbtn" style="width:44px;height:44px" data-a="todoToggle" data-id="' + x.id + '" aria-pressed="' + x.done + '" aria-label="' + esc(x.text) + '"><div class="box' + (x.done ? ' on' : '') + '">' + (x.done ? '✓' : '') + '</div></button>' +
+        '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><div style="font-size:14px;' + (x.done ? 'color:#8A9296;text-decoration:line-through' : '') + '">' + esc(x.text) + '</div>' +
+        '<div class="row" style="font-size:11px"><b style="color:' + UC[x.who] + '">' + esc(t(x.who)) + '</b><span style="font-weight:600;color:' + (over ? '#BE123C' : x.due === t0 ? '#B45309' : '#5B6468') + '">' + esc(due) + '</span></div>';
+      if (x.del) h += '<div class="small" style="color:#9A3412;font-weight:600">' + esc(t('delPending', { n: nameOf(other(x.del.by)) })) + (x.del.by === S.user ? ' <button class="link" data-a="withdraw" data-id="' + x.del.id + '">' + esc(t('withdraw')) + '</button>' : '') + '</div>';
+      if (U.tdAsk === x.id) h += '<div class="row"><input id="td-' + x.id + '" class="pin" type="password" inputmode="numeric" maxlength="4" data-in="tdPin" value="' + esc(U.tdPin) + '" placeholder="' + esc(t('myPin')) + '"><button class="btn terra" style="height:36px;font-size:12px" data-a="todoDelSend" data-id="' + x.id + '">' + esc(t('sendReq')) + '</button></div>';
+      return h + '</div>' + (x.del ? '' : '<button class="iconbtn" data-a="todoDel" data-id="' + x.id + '" aria-label="' + esc(t('delAria')) + '">' + TRASH + '</button>') + '</div>';
+    }).join('') +
+    '<div style="border-top:1px solid #F1EDE6;padding-top:10px;display:flex;flex-direction:column;gap:8px"><input id="tdText" data-in="tdText" value="' + esc(U.todo.text) + '" placeholder="' + esc(t('tdNew')) + '">' +
+    '<div class="row"><select id="tdWho" data-ch="tdWho" aria-label="' + esc(t('tdWho')) + '">' + ['both', 'mehul', 'arpita'].map(function (w) { return '<option value="' + w + '"' + (U.todo.who === w ? ' selected' : '') + '>' + esc(t(w)) + '</option>'; }).join('') + '</select>' +
+    '<input id="tdDue" type="date" style="width:160px;flex-shrink:0" aria-label="' + esc(t('tdDue')) + '" value="' + esc(U.todo.due) + '" data-ch="tdDue"></div>' +
+    '<button class="btn wide" data-a="todoAdd">' + esc(t('tdAdd')) + '</button><div class="muted">' + esc(t('tdNote')) + '</div></div></div>';
+  // keystone
+  var max = 4;
+  var bars = s.nights.map(function (n) {
+    var v = n.wakings; return '<div><div style="height:50px;display:flex;align-items:flex-end"><div style="width:20px;border-radius:4px;height:' + (v === null ? 4 : Math.max(4, Math.min(v, max) * 12)) + 'px;background:' + (v === null ? '#E7E1D8' : v >= 2 ? '#B45309' : '#0F766E') + '"></div></div><b>' + (v === null ? '–' : v) + '</b><span class="muted">' + esc(t('wds')[n.wd]) + '</span></div>';
+  }).join('');
+  var mineKey = S.user === 'mehul' ? 'phonesM' : 'phonesA';
+  out += '<div class="card"><h3>' + esc(t('ksT')) + '</h3><div class="muted">' + esc(t('ksSub')) + '</div>' +
+    '<div class="between small" style="font-weight:600;align-items:center"><span>' + esc(t('ks1')) + '</span><div class="stepper"><button data-a="wake" data-d="-1" aria-label="-">−</button><b style="min-width:16px;text-align:center">' + (s.today.wakings === null ? '–' : s.today.wakings) + '</b><button data-a="wake" data-d="1" aria-label="+">+</button></div></div>' +
+    '<div class="nights">' + bars + '</div>' +
+    '<div class="between small" style="font-weight:600;align-items:center;border-top:1px solid #F1EDE6;padding-top:10px"><label for="bed">' + esc(t('ks2')) + '<div class="muted">' + esc(t('ks2goal')) + '</div></label><input id="bed" type="time" style="width:120px" value="' + esc(s.today.bedtime) + '" data-ch="bedtime"></div>' +
+    '<div style="border-top:1px solid #F1EDE6;padding-top:10px;display:flex;flex-direction:column;gap:8px"><div class="small" style="font-weight:600">' + esc(t('ks3')) + '</div><div class="row small">' +
+    '<span style="color:' + UC.mehul + '">' + esc(t('mehul')) + ' ' + (s.today.phonesM ? '✓' : '–') + '</span><span style="color:' + UC.arpita + '">' + esc(t('arpita')) + ' ' + (s.today.phonesA ? '✓' : '–') + '</span></div>' +
+    '<button class="btn ' + (s.today[mineKey] ? 'teal' : 'ghost') + '" data-a="phones">' + esc(s.today[mineKey] ? t('ksMine') : t('ksMineNo')) + '</button></div></div>';
+  // Shlok card
+  var st = U.story || { by: s.today.storyBy || S.user, story: s.today.story };
+  out += '<div class="card" style="background:#FFF4EC"><div class="small" style="font-weight:700;color:#9A3412">' + esc(t('valT')) + '</div><div style="font-size:17px;font-weight:700;color:#7C2D12">' + esc(S.lang === 'en' ? s.value.en : s.value.gu) + '</div>' +
+    '<div style="border-top:1px solid #F3E2D3;padding-top:10px;display:flex;flex-direction:column;gap:8px"><h3 style="color:#7C2D12">' + esc(t('storyT')) + '</h3><div class="row">' +
+    '<select id="stWho" data-ch="storyBy" aria-label="' + esc(t('storyWho')) + '" style="width:150px;flex-shrink:0">' + ['mehul', 'arpita'].map(function (w) { return '<option value="' + w + '"' + (st.by === w ? ' selected' : '') + '>' + esc(t(w)) + '</option>'; }).join('') + '</select>' +
+    '<input id="stName" data-in="story" value="' + esc(st.story) + '" placeholder="' + esc(t('storyPh')) + '"></div><button class="btn terra" data-a="storySave">' + esc(t('save')) + '</button></div></div>';
+  // visits
+  var vl = optList(t('homes'), s.options.homes);
+  out += '<div class="card"><h3>' + esc(t('vT')) + '</h3><label class="muted" for="vwho">' + esc(t('vWho')) + '</label>' + selectHtml('vwho', vl, U.vSel === '__new__' ? '' : U.vSel, 'data-ch="vSel"', t('cNewOpt')) +
+    (U.vSel === '__new__' ? '<input id="vnew" data-in="vNew" value="' + esc(U.vNew) + '" placeholder="' + esc(t('otherPh')) + '">' : '') +
+    '<div class="grid2"><button class="btn terra" data-a="visited">' + esc(t('vWent')) + '</button><button class="btn ghost" style="color:#9A3412;border-color:#9A3412" data-a="wantVisit">' + esc(t('vWant')) + '</button></div>' +
+    (s.visitWants.length ? '<div class="small" style="font-weight:600;color:#9A3412">' + esc(t('vWantList')) + '</div><div class="chips">' + s.visitWants.map(function (w) { return '<button class="want" data-a="visitDone" data-w="' + esc(w) + '">' + esc(w) + ' · ' + esc(t('vMark')) + '</button>'; }).join('') + '</div>' : '') +
+    (s.visits.length ? '<div class="muted" style="font-weight:600">' + esc(t('vRecent')) + '</div><div class="list">' + s.visits.map(function (v) { return '<div class="li"><span class="muted">' + esc(shortDate(v.date)) + '</span><b>' + esc(v.who) + '</b></div>'; }).join('') + '</div>' : '') + '</div>';
+  return out + '</div>';
+}
+
+// ------------------------------------------------------------------ report view
+function viewReport() {
+  var ws = S.weekStart || weekStart(S.date), r = S.reports[ws];
+  var out = '<div class="wrap"><div class="row" style="justify-content:space-between"><button class="round" data-a="week" data-d="-7" aria-label="-">‹</button><b>' +
+    esc(t('repWeek', { a: shortDate(ws), b: shortDate(addDays(ws, 6)) })) + '</b><button class="round" data-a="week" data-d="7" aria-label="+"' + (addDays(ws, 7) > today() ? ' disabled' : '') + '>›</button></div>';
+  if (!r) return out + '<div class="loading">' + esc(t('loading')) + '</div></div>';
+  var ai = r.ai;
+  out += '<button class="btn wide" data-a="genReport"' + (S.busy.rep ? ' disabled' : '') + '>' + (S.busy.rep ? '<span class="spin"></span> ' : '') + esc(ai ? t('repRegen') : t('repGen')) + '</button>';
+  if (!ai) out += '<div class="card"><div class="small">' + esc(t('repNone')) + '</div></div>';
+  if (ai) {
+    out += '<div class="tip"><b>AI</b><div><div class="small" style="font-weight:700">' + esc(ai.source === 'gemini' ? t('aiGemini') : t('aiRules')) + '</div>' + esc(S.lang === 'en' ? ai.summary_en : ai.summary_gu) + '</div></div>';
+    (ai.causes || []).forEach(function (c) {
+      var chain = (S.lang === 'en' ? c.chain_en : c.chain_gu) || [];
+      out += '<div class="card" style="background:#F3EEFB"><h3 style="color:#3B1B7A">' + esc(t('repCause')) + ' · ' + esc(c.owner === 'both' ? t('both') : nameOf(c.owner)) + '</h3><div class="chain">' +
+        chain.map(function (x, i) { return (i ? '<i aria-hidden="true">↓</i>' : '') + '<div>' + esc(x) + '</div>'; }).join('') + '</div><div class="small" style="color:#3B1B7A;line-height:1.6">' + esc(S.lang === 'en' ? c.advice_en : c.advice_gu) + '</div></div>';
+    });
+    out += '<div class="card"><h3>' + esc(t('repExp')) + '</h3>' + (ai.experiments || []).map(function (e, i) {
+      var on = r.accepted.indexOf(i) >= 0;
+      return '<div style="border:1px solid #E7E1D8;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px"><div class="small" style="font-size:13px;line-height:1.6"><b>' + esc(e.owner === 'both' ? t('both') : nameOf(e.owner)) + ':</b> ' + esc(S.lang === 'en' ? e.text_en : e.text_gu) + '</div>' +
+        '<button class="btn" style="align-self:flex-start;height:38px;background:' + (on ? '#0F766E' : '#fff') + ';color:' + (on ? '#fff' : '#0F766E') + ';border:1px solid #0F766E" data-a="acceptExp" data-i="' + i + '">' + esc(on ? t('accepted') : t('accept')) + '</button></div>';
+    }).join('') + '</div>';
+  }
+  ['arpita', 'mehul'].forEach(function (u) {
+    var p = r.stats.people[u]; if (!p) return;
+    var reasons = Object.keys(p.reasons).sort(function (a, b) { return p.reasons[b] - p.reasons[a]; });
+    var imp = Object.keys(p.improve).sort(function (a, b) { return p.improve[b] - p.improve[a]; });
+    var eAvg = p.energy.length ? (p.energy.reduce(function (s, x) { return s + x.e; }, 0) / p.energy.length).toFixed(1) : '–';
+    var tasks = p.tasks.slice().sort(function (a, b) { return (a.done / a.scheduled) - (b.done / b.scheduled); }).slice(0, 8);
+    out += '<div class="card"><h3 style="color:' + UC[u] + '">' + esc(nameOf(u)) + '</h3><div class="grid3">' +
+      '<div class="stat"><div>' + esc(t('repSched')) + '</div><div>' + p.scheduled + '</div></div><div class="stat"><div>' + esc(t('repDone')) + '</div><div style="color:#0F766E">' + p.done + '</div></div>' +
+      '<div class="stat"><div>' + esc(t('repOnTime')) + '</div><div style="color:#0F766E">' + p.onTime + '</div></div></div>' +
+      '<div class="small">' + esc(t('repWater', { n: p.water.daysOk })) + ' · ' + (u === 'arpita' ? esc(t('repMed', { n: p.medDays })) + ' · ' : '') + esc(t('repEnergy', { e: eAvg })) + '</div>' +
+      '<div class="small">' + esc(t('repTreats', { n: p.treats })) + '</div>' +
+      (reasons.length ? '<div class="small" style="font-weight:600">' + esc(t('repReasons')) + '</div><div class="chips">' + reasons.map(function (k) { return '<span class="skipchip">' + esc(k) + ' · ' + p.reasons[k] + '</span>'; }).join('') + '</div>' : '') +
+      (imp.length ? '<div class="small" style="font-weight:600">' + esc(t('repImprove')) + '</div><div class="chips">' + imp.map(function (k) { return '<span class="chip" style="height:30px;display:inline-flex;align-items:center">' + esc(k) + ' · ' + p.improve[k] + '</span>'; }).join('') + '</div>' : '') +
+      '<div class="small" style="font-weight:600">' + esc(t('repTasks')) + '</div>' + tasks.map(function (x) {
+        var pc = Math.round(x.done * 100 / x.scheduled);
+        return '<div style="display:flex;flex-direction:column;gap:3px"><div class="between small"><span>' + esc(S.lang === 'en' ? x.en : x.gu) + '</span><b>' + x.done + ' / ' + x.scheduled + '</b></div><div class="pbar"><div style="width:' + pc + '%;background:' + (pc >= 70 ? '#0F766E' : '#B45309') + '"></div></div></div>';
+      }).join('') +
+      '<div style="border-top:1px solid #F1EDE6;padding-top:10px;display:flex;flex-direction:column;gap:8px"><b class="small">' + esc(t('repLevel', { l: p.level + 1 })) + '</b><div class="muted">' + esc(p.suggestAdvance ? t('lvAdvised', { n: p.wakeOk }) : t('lvHoldAdv', { n: p.wakeOk })) + '</div>' +
+      '<div class="row" style="flex-wrap:wrap"><button class="btn teal" data-a="level" data-u="' + u + '" data-d="1"' + (p.level >= 6 ? ' disabled' : '') + '>' + esc(t('lvAdvance')) + '</button><button class="btn ghost" data-a="level" data-u="' + u + '" data-d="-1"' + (p.level <= 0 ? ' disabled' : '') + '>−1</button>' +
+      '<button class="btn blue" data-a="waterUp" data-u="' + u + '"' + (p.water.goal >= 3500 ? ' disabled' : '') + '>' + esc(t('wtUp')) + '</button></div></div></div>';
+  });
+  return out + '</div>';
+}
+
+// ------------------------------------------------------------------ settings view
+function viewSettings() {
+  var s = S.settings, U = S.ui.set;
+  if (!s) return '<div class="loading">' + esc(t('loading')) + '</div>';
+  return '<div class="wrap"><div class="card"><h3>' + esc(t('setPin')) + '</h3>' +
+    '<input id="sOld" type="password" inputmode="numeric" maxlength="4" placeholder="' + esc(t('oldPin')) + '" data-in="setOld" value="' + esc(U.oldPin) + '">' +
+    '<input id="sNew" type="password" inputmode="numeric" maxlength="4" placeholder="' + esc(t('newPin')) + '" data-in="setNew" value="' + esc(U.newPin) + '">' +
+    '<input id="sNew2" type="password" inputmode="numeric" maxlength="4" placeholder="' + esc(t('newPin2')) + '" data-in="setNew2" value="' + esc(U.newPin2) + '">' +
+    '<button class="btn" data-a="changePin">' + esc(t('setPin')) + '</button></div>' +
+    '<div class="card"><label for="sKey"><h3>' + esc(t('gemKey')) + '</h3></label>' + (s.hasKey ? '<div class="small" style="color:#0F766E;font-weight:600">' + esc(t('gemKeySaved')) + '</div>' : '') +
+    '<input id="sKey" type="password" placeholder="AIza…" data-in="setKey" value="' + esc(U.key) + '">' +
+    '<label class="muted" for="sModel">' + esc(t('gemModel')) + '</label><input id="sModel" value="' + esc(s.model) + '">' +
+    '<label class="muted" for="sEmails">' + esc(t('emails')) + '</label><input id="sEmails" value="' + esc(s.emails) + '">' +
+    '<label class="muted" for="sVg">' + esc(t('valGu')) + '</label><input id="sVg" value="' + esc(s.value_gu) + '">' +
+    '<label class="muted" for="sVe">' + esc(t('valEn')) + '</label><input id="sVe" value="' + esc(s.value_en) + '">' +
+    '<button class="btn teal" data-a="saveSettings">' + esc(t('save')) + '</button></div>' +
+    '<div class="card"><a href="' + esc(s.sheetUrl) + '" target="_blank" rel="noopener">' + esc(t('sheet')) + '</a></div>' + '<div style="padding:0 4px">' + credit() + '</div></div>';
+}
+
+// ------------------------------------------------------------------ actions
+function taskById(id) { var d = curDay(); if (!d) return null; for (var i = 0; i < d.tasks.length; i++) if (d.tasks[i].id === id) return d.tasks[i]; return null; }
+function idxById(id) { var d = curDay(); for (var i = 0; i < d.tasks.length; i++) if (d.tasks[i].id === id) return i; return -1; }
+function advanceFocus(id) { if (S.ui.focus !== null && idxById(id) === S.ui.focus && S.ui.focus < curDay().tasks.length - 1) S.ui.focus++; }
+function logTask(x, extra) {
+  return call('logTask', Object.assign({ date: S.date, taskId: x.id, status: x.s, actual: x.a || '', reason: x.r || '' }, extra || {})).catch(function (e) { fail(e); loadDay(S.view, true); });
+}
+function refreshDay() { loadDay(S.view, true); }
+function nightState() { var k = S.view + S.date; if (!S.ui.night[k]) S.ui.night[k] = { moods: [], energy: 0, improve: [], tomorrow: '', note: '' }; return S.ui.night[k]; }
+
+var H = {
+  go: function (el) { S.view = el.dataset.v; S.ui.focus = null; S.ui.sheet = null; S.ui.delAsk = null; if (S.view === 'report') S.weekStart = weekStart(S.date); loadView(); window.scrollTo(0, 0); },
+  logout: function () { var tok = S.token; call('logout', { token: tok }).catch(function () {}); logoutLocal(); },
+  lang: function (el) { S.lang = el.dataset.l; ls('sp_lang', S.lang); render(); if (S.token) call('setLang', { lang: S.lang }).catch(function () {}); },
+  day: function (el) { S.date = addDays(S.date, +el.dataset.d); if (S.date > today()) S.date = today(); S.ui = freshUi(); loadView(); },
+  saveApi: function () {
+    var u = String(S.setupUrl !== undefined ? S.setupUrl : apiUrl()).trim().replace(/\/u\/\d+\//, '/');
+    if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(u)) { S.setupMsg = t('setupBad'); render(); return; }
+    var prev = ls('sp_api'); ls('sp_api', u); S.busy.api = true; S.setupMsg = ''; render();
+    call('ping').then(function () { S.busy.api = false; S.setup = false; S.setupUrl = undefined; render(); })
+      .catch(function () { S.busy.api = false; ls('sp_api', prev); S.setupMsg = t('setupFail'); render(); });
+  },
+  openSetup: function () { S.setup = true; S.setupUrl = apiUrl(); render(); },
+  cancelSetup: function () { S.setup = false; S.setupUrl = undefined; render(); },
+  pickUser: function (el) { S.login.user = el.dataset.u; S.login.pin = ''; S.login.msg = ''; S.login.msgBad = false; render(); },
+  key: function (el) { keyPress(el.dataset.k); },
+  done: function (el) { var x = taskById(el.dataset.id); x.s = 'done'; x.a = nowHM(); x.r = ''; S.ui.sheet = null; advanceFocus(x.id); render(); logTask(x); },
+  notDone: function (el) { S.ui.sheet = el.dataset.id; S.ui.newReason = ''; render(); },
+  reason: function (el) { var x = taskById(el.dataset.id); x.s = 'skip'; x.r = el.dataset.r; x.a = ''; S.ui.sheet = null; advanceFocus(x.id); render(); logTask(x); },
+  addReason: function (el) {
+    var txt = (S.ui.newReason || '').trim(); if (!txt) return;
+    var x = taskById(el.dataset.id), d = curDay();
+    (d.options.reasons = d.options.reasons || []).push(txt);
+    x.s = 'skip'; x.r = txt; S.ui.sheet = null; S.ui.newReason = ''; advanceFocus(x.id); render();
+    call('addOption', { type: 'reasons', value: txt }).catch(fail); logTask(x);
+  },
+  undo: function (el) { var x = taskById(el.dataset.id); x.s = 'todo'; x.a = ''; x.r = ''; render(); logTask(x, { qty: '' }); },
+  askDel: function (el) { S.ui.delAsk = el.dataset.id; S.ui.pin = ''; S.ui.pinErr = ''; render(); },
+  cancelDel: function () { S.ui.delAsk = null; render(); },
+  sendDel: function (el) {
+    if (!/^[0-9]{4}$/.test(S.ui.pin)) { S.ui.pinErr = t('enterPin'); render(); return; }
+    call('requestDelete', { etype: 'task', eid: el.dataset.id, pin: S.ui.pin }).then(function () { S.ui.delAsk = null; S.ui.pin = ''; refreshDay(); })
+      .catch(function (e) { var m = String(e.message); S.ui.pinErr = m.indexOf('BADPIN:') === 0 ? t('badPin', { n: m.split(':')[1] }) : m === 'LOCKED' ? t('locked') : m; render(); });
+  },
+  withdraw: function (el) { call('withdrawDelete', { id: el.dataset.id }).then(function () { if (S.view === 'ours') loadShared(); else refreshDay(); }).catch(fail); },
+  ntKind: function (el) { S.ui.nt.kind = el.dataset.k; render(); },
+  ntAdd: function () {
+    var nt = S.ui.nt; if (!nt.name.trim()) { document.getElementById('ntName').focus(); return; }
+    call('addTask', { time: nt.time || nowHM(), name: nt.name, kind: nt.kind, daily: nt.daily, date: S.date }).then(function () { S.ui.nt = { time: '', name: '', kind: nt.kind, daily: true }; refreshDay(); toast(t('saved')); }).catch(fail);
+  },
+  med: function () {
+    var d = curDay(), on = !d.med; d.med = on ? { t: nowHM() } : null; render();
+    call('setMed', { date: S.date, taken: on, time: on ? d.med.t : '' }).catch(fail);
+  },
+  addWater: function () {
+    var ml = parseInt(S.ui.wInput, 10); if (!(ml > 0)) return;
+    var d = curDay(); d.water.push({ id: 'tmp', t: nowHM(), ml: ml }); S.ui.wInput = ''; render();
+    call('addWater', { date: S.date, ml: ml }).then(refreshDay).catch(fail);
+  },
+  delWater: function (el) { var d = curDay(); d.water = d.water.filter(function (w) { return w.id !== el.dataset.id; }); render(); call('delWater', { id: el.dataset.id }).catch(fail); },
+  mealAdd: function (el) {
+    var k = el.dataset.k, txt = (S.ui.mealOtherText[k] || '').trim(); if (!txt) return;
+    var d = curDay(); (d.options['meal_' + k] = d.options['meal_' + k] || []).push(txt);
+    var m = d.meals[k] = Object.assign({ t: nowHM(), sabzi: '' }, d.meals[k], { dish: txt });
+    S.ui.mealOther[k] = false; S.ui.mealOtherText[k] = ''; render();
+    call('addOption', { type: 'meal_' + k, value: txt }).catch(fail);
+    call('setMeal', { date: S.date, meal: k, time: m.t, dish: m.dish, sabzi: m.sabzi }).catch(fail);
+  },
+  sabziAdd: function (el) {
+    var k = el.dataset.k, txt = (S.ui.sabziOtherText[k] || '').trim(); if (!txt) return;
+    var d = curDay(); (d.options.sabzi = d.options.sabzi || []).push(txt);
+    var m = d.meals[k] = Object.assign({ t: nowHM(), dish: '' }, d.meals[k], { sabzi: txt });
+    S.ui.sabziOther[k] = false; S.ui.sabziOtherText[k] = ''; render();
+    call('addOption', { type: 'sabzi', value: txt }).catch(fail);
+    call('setMeal', { date: S.date, meal: k, time: m.t, dish: m.dish, sabzi: m.sabzi }).catch(fail);
+  },
+  talked: function () { personThen(function (who) { var d = curDay(); d.calls.push({ t: nowHM(), who: who }); d.wants = d.wants.filter(function (w) { return w !== who; }); render(); call('addCall', { date: S.date, who: who }).catch(fail); }); },
+  wantCall: function () { personThen(function (who) { var d = curDay(); if (d.wants.indexOf(who) < 0) d.wants.push(who); render(); call('setWant', { list: 'callWant', value: who, on: true }).catch(fail); }); },
+  wantDone: function (el) { var who = el.dataset.w, d = curDay(); d.calls.push({ t: nowHM(), who: who }); d.wants = d.wants.filter(function (w) { return w !== who; }); render(); call('addCall', { date: S.date, who: who }).catch(fail); },
+  mood: function (el) { toggleIn(nightState().moods, el.dataset.v); nightState().savedAt = ''; render(); },
+  imp: function (el) { toggleIn(nightState().improve, el.dataset.v); nightState().savedAt = ''; render(); },
+  energy: function (el) { nightState().energy = +el.dataset.v; nightState().savedAt = ''; render(); },
+  addImp: function () {
+    var txt = (S.ui.newImp || '').trim(); if (!txt) return; var d = curDay();
+    (d.options.improve = d.options.improve || []).push(txt); nightState().improve.push(txt); S.ui.newImp = ''; render();
+    call('addOption', { type: 'improve', value: txt }).catch(fail);
+  },
+  saveNight: function () {
+    var n = nightState();
+    call('saveNight', { date: S.date, moods: n.moods, energy: n.energy, improve: n.improve, tomorrow: n.tomorrow, note: n.note }).then(function (r) { n.savedAt = r.ts; render(); }).catch(fail);
+  },
+  manSave: function () { var owner = S.view; call('saveManifest', { text: S.ui.man[owner] || '' }).then(function () { toast(t('saved')); }).catch(fail); },
+  manRemove: function () { call('saveManifest', { removePhoto: true }).then(refreshDay).catch(fail); },
+  focusOpen: function () { var d = curDay(), n = -1; for (var i = 0; i < d.tasks.length; i++) if (d.tasks[i].s === 'todo') { n = i; break; } S.ui.focus = n < 0 ? 0 : n; S.ui.sheet = null; render(); },
+  focusClose: function () { S.ui.focus = null; S.ui.sheet = null; render(); },
+  focusBg: function (el, e) { if (e.target === el) H.focusClose(); },
+  focusGo: function (el) { goFocus(+el.dataset.d); },
+  // ours
+  todoToggle: function (el) { var x = S.shared.todos.filter(function (y) { return y.id === el.dataset.id; })[0]; x.done = !x.done; render(); call('toggleTodo', { id: x.id }).catch(fail); },
+  todoDel: function (el) { S.ui.tdAsk = S.ui.tdAsk === el.dataset.id ? null : el.dataset.id; S.ui.tdPin = ''; render(); },
+  todoDelSend: function (el) { call('requestDelete', { etype: 'todo', eid: el.dataset.id, pin: S.ui.tdPin }).then(function () { S.ui.tdAsk = null; S.ui.tdPin = ''; loadShared(); }).catch(fail); },
+  todoAdd: function () {
+    var td = S.ui.todo; if (!td.text.trim()) { document.getElementById('tdText').focus(); return; }
+    call('addTodo', { text: td.text, who: td.who, due: td.due }).then(function () { S.ui.todo = { text: '', who: 'both', due: '' }; loadShared(); }).catch(fail);
+  },
+  apStart: function (el) { S.ui.apStep[el.dataset.id] = true; S.ui.apPin = ''; render(); },
+  apConfirm: function (el) { call('decideDelete', { id: el.dataset.id, approve: true, pin: S.ui.apPin }).then(function () { S.ui.apPin = ''; loadShared(); }).catch(fail); },
+  apNo: function (el) { call('decideDelete', { id: el.dataset.id, approve: false }).then(loadShared).catch(fail); },
+  wake: function (el) {
+    var cur = S.shared.today.wakings === null ? 0 : S.shared.today.wakings, v = Math.max(0, Math.min(9, cur + (+el.dataset.d)));
+    if (S.shared.today.wakings === null && +el.dataset.d < 0) v = 0;
+    S.shared.today.wakings = v; S.shared.nights[6].wakings = v; render();
+    call('setFamily', { date: S.date, field: 'nightWakings', value: v }).catch(fail);
+  },
+  phones: function () {
+    var k = S.user === 'mehul' ? 'phonesM' : 'phonesA', f = S.user === 'mehul' ? 'phonesMehul' : 'phonesArpita';
+    S.shared.today[k] = !S.shared.today[k]; render(); call('setFamily', { date: S.date, field: f, value: S.shared.today[k] ? '1' : '0' }).catch(fail);
+  },
+  storySave: function () {
+    var st = S.ui.story || { by: S.shared.today.storyBy || S.user, story: S.shared.today.story };
+    Promise.all([call('setFamily', { date: S.date, field: 'storyBy', value: st.by }), call('setFamily', { date: S.date, field: 'story', value: st.story })])
+      .then(function () { toast(t('saved')); }).catch(fail);
+  },
+  visited: function () { visitThen(function (who) { S.shared.visits.unshift({ date: S.date, who: who }); S.shared.visitWants = S.shared.visitWants.filter(function (w) { return w !== who; }); render(); call('addVisit', { date: S.date, who: who }).catch(fail); }); },
+  wantVisit: function () { visitThen(function (who) { if (S.shared.visitWants.indexOf(who) < 0) S.shared.visitWants.push(who); render(); call('setWant', { list: 'visitWant', value: who, on: true }).catch(fail); }); },
+  visitDone: function (el) { var who = el.dataset.w; S.shared.visits.unshift({ date: S.date, who: who }); S.shared.visitWants = S.shared.visitWants.filter(function (w) { return w !== who; }); render(); call('addVisit', { date: S.date, who: who }).catch(fail); },
+  // report
+  week: function (el) { S.weekStart = addDays(S.weekStart || weekStart(S.date), +el.dataset.d); loadReport(); render(); },
+  genReport: function () {
+    S.busy.rep = true; render();
+    call('generateReport', { weekStart: S.weekStart }).then(function (r) { S.busy.rep = false; S.reports[S.weekStart] = r; render(); }).catch(function (e) { S.busy.rep = false; render(); fail(e); });
+  },
+  acceptExp: function (el) {
+    var i = +el.dataset.i, r = S.reports[S.weekStart], a = r.accepted, j = a.indexOf(i);
+    if (j >= 0) a.splice(j, 1); else a.push(i); render();
+    call('acceptExp', { weekStart: S.weekStart, index: i }).catch(fail);
+  },
+  level: function (el) { call('setLevel', { owner: el.dataset.u, delta: +el.dataset.d }).then(function () { S.days = {}; loadReport(); toast(t('saved')); }).catch(fail); },
+  waterUp: function (el) { call('setLevel', { owner: el.dataset.u, kind: 'water', delta: 1 }).then(function () { S.days = {}; loadReport(); toast(t('saved')); }).catch(fail); },
+  // settings
+  changePin: function () {
+    var U = S.ui.set; if (U.newPin !== U.newPin2) { toast(t('pinMismatch')); return; }
+    call('changePin', { oldPin: U.oldPin, newPin: U.newPin }).then(function () { S.ui.set = { oldPin: '', newPin: '', newPin2: '', key: '' }; toast(t('pinChanged')); render(); }).catch(fail);
+  },
+  saveSettings: function () {
+    var v = function (id) { return document.getElementById(id).value; };
+    call('saveSettings', { geminiKey: S.ui.set.key, geminiModel: v('sModel'), emails: v('sEmails'), value_gu: v('sVg'), value_en: v('sVe') })
+      .then(function (s) { S.settings = s; S.ui.set.key = ''; toast(t('saved')); render(); }).catch(fail);
+  }
+};
+function toggleIn(arr, v) { var i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); }
+function personThen(fn) {
+  var who = S.ui.cSel === '__new__' ? (S.ui.cNew || '').trim() : S.ui.cSel;
+  if (!who) { document.getElementById('cwho').focus(); return; }
+  if (S.ui.cSel === '__new__') { var d = curDay(); (d.options.people = d.options.people || []).push(who); call('addOption', { type: 'people', value: who }).catch(fail); }
+  S.ui.cSel = ''; S.ui.cNew = ''; fn(who);
+}
+function visitThen(fn) {
+  var who = S.ui.vSel === '__new__' ? (S.ui.vNew || '').trim() : S.ui.vSel;
+  if (!who) { document.getElementById('vwho').focus(); return; }
+  if (S.ui.vSel === '__new__') { (S.shared.options.homes = S.shared.options.homes || []).push(who); call('addOption', { type: 'homes', value: who }).catch(fail); }
+  S.ui.vSel = ''; S.ui.vNew = ''; fn(who);
+}
+function goFocus(d) { var n = curDay().tasks.length; S.ui.focus = Math.max(0, Math.min(n - 1, S.ui.focus + d)); S.ui.sheet = null; render(); }
+
+var IN = {
+  apiUrl: function (el) { S.setupUrl = el.value; },
+  man: function (el) { S.ui.man[S.view] = el.value; },
+  pin: function (el) { el.value = el.value.replace(/\D/g, '').slice(0, 4); S.ui.pin = el.value; },
+  apPin: function (el) { el.value = el.value.replace(/\D/g, '').slice(0, 4); S.ui.apPin = el.value; },
+  tdPin: function (el) { el.value = el.value.replace(/\D/g, '').slice(0, 4); S.ui.tdPin = el.value; },
+  newReason: function (el) { S.ui.newReason = el.value; },
+  ntName: function (el) { S.ui.nt.name = el.value; },
+  wInput: function (el) { S.ui.wInput = el.value; },
+  mealOtherText: function (el) { S.ui.mealOtherText[el.dataset.k] = el.value; },
+  sabziOtherText: function (el) { S.ui.sabziOtherText[el.dataset.k] = el.value; },
+  cNew: function (el) { S.ui.cNew = el.value; },
+  newImp: function (el) { S.ui.newImp = el.value; },
+  tmrw: function (el) { nightState().tomorrow = el.value; nightState().savedAt = ''; },
+  nnote: function (el) { nightState().note = el.value; nightState().savedAt = ''; },
+  tdText: function (el) { S.ui.todo.text = el.value; },
+  story: function (el) { S.ui.story = S.ui.story || { by: S.shared.today.storyBy || S.user, story: '' }; S.ui.story.story = el.value; },
+  vNew: function (el) { S.ui.vNew = el.value; },
+  setOld: function (el) { S.ui.set.oldPin = el.value; }, setNew: function (el) { S.ui.set.newPin = el.value; }, setNew2: function (el) { S.ui.set.newPin2 = el.value; },
+  setKey: function (el) { S.ui.set.key = el.value; }
+};
+var CH = {
+  actual: function (el) { var x = taskById(el.dataset.id); if (!x || !el.value) return; x.a = el.value; render(); logTask(x); },
+  qty: function (el) { var x = taskById(el.dataset.id); x.qv = el.value; logTask(x, { qty: el.value }); },
+  ntTime: function (el) { S.ui.nt.time = el.value; },
+  ntDaily: function (el) { S.ui.nt.daily = el.checked; },
+  medTime: function (el) { var d = curDay(); d.med = { t: el.value }; call('setMed', { date: S.date, taken: true, time: el.value }).catch(fail); },
+  meal: function (el) {
+    var k = el.dataset.k, d = curDay();
+    if (el.value === '__new__') { S.ui.mealOther[k] = true; render(); var i = document.getElementById('mo-' + k); if (i) i.focus(); return; }
+    S.ui.mealOther[k] = false;
+    var m = d.meals[k] = Object.assign({ t: '', sabzi: '' }, d.meals[k], { dish: el.value }); if (!m.t) m.t = nowHM(); render();
+    call('setMeal', { date: S.date, meal: k, time: m.t, dish: m.dish, sabzi: m.sabzi }).catch(fail);
+  },
+  sabzi: function (el) {
+    var k = el.dataset.k, d = curDay();
+    if (el.value === '__new__') { S.ui.sabziOther[k] = true; render(); var i = document.getElementById('so-' + k); if (i) i.focus(); return; }
+    S.ui.sabziOther[k] = false;
+    var m = d.meals[k] = Object.assign({ t: '', dish: '' }, d.meals[k], { sabzi: el.value }); if (!m.t) m.t = nowHM(); render();
+    call('setMeal', { date: S.date, meal: k, time: m.t, dish: m.dish, sabzi: m.sabzi }).catch(fail);
+  },
+  mealTime: function (el) {
+    var k = el.dataset.k, d = curDay(), m = d.meals[k] = Object.assign({ dish: '', sabzi: '' }, d.meals[k], { t: el.value });
+    call('setMeal', { date: S.date, meal: k, time: m.t, dish: m.dish, sabzi: m.sabzi }).catch(fail);
+  },
+  cSel: function (el) { S.ui.cSel = el.value; if (el.value === '__new__') { render(); var i = document.getElementById('cnew'); if (i) i.focus(); } },
+  vSel: function (el) { S.ui.vSel = el.value; if (el.value === '__new__') { render(); var i = document.getElementById('vnew'); if (i) i.focus(); } },
+  tdWho: function (el) { S.ui.todo.who = el.value; },
+  tdDue: function (el) { S.ui.todo.due = el.value; },
+  bedtime: function (el) { S.shared.today.bedtime = el.value; call('setFamily', { date: S.date, field: 'shlokBedtime', value: el.value }).catch(fail); },
+  storyBy: function (el) { S.ui.story = S.ui.story || { by: S.user, story: S.shared.today.story }; S.ui.story.by = el.value; },
+  manPhoto: function (el) {
+    var f = el.files && el.files[0]; if (!f) return;
+    shrinkImage(f, 1200, function (dataUrl) { call('saveManifest', { photo: dataUrl }).then(refreshDay).catch(fail); });
+  }
+};
+function shrinkImage(file, max, cb) {
+  var rd = new FileReader();
+  rd.onload = function () {
+    var img = new Image();
+    img.onload = function () {
+      var s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      cb(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.src = rd.result;
+  };
+  rd.readAsDataURL(file);
+}
+
+// ------------------------------------------------------------------ finance (inserted into Js.html)
+var FCATS = ['groc', 'veg', 'dairy', 'shlok', 'toys', 'snack', 'food', 'home', 'care', 'cloth', 'med', 'bills', 'fuel', 'help', 'elec', 'study', 'gift', 'subs', 'fees', 'other'];
+var FCOL = { groc: '#B45309', veg: '#15803D', dairy: '#0369A1', shlok: '#DB2777', toys: '#C026D3', snack: '#DC2626', food: '#EA580C', home: '#0F766E', care: '#9333EA', cloth: '#4F46E5',
+  med: '#059669', bills: '#475569', fuel: '#78350F', help: '#0E7490', elec: '#1D4ED8', study: '#6D28D9', gift: '#BE123C', subs: '#7C3AED', fees: '#9F1239', other: '#6B7280' };
+var FAPPS = ['Blinkit', 'Zepto', 'Swiggy Instamart', 'BigBasket', 'Amazon', 'Flipkart', 'JioMart', 'Swiggy', 'Zomato', 'Meesho', 'Myntra', 'Nykaa', 'DMart'];
+Object.assign(I.gu, {
+  tabF: 'ખર્ચ', fin: 'ખર્ચ અને બચત', week: 'અઠવાડિયું', month: 'મહિનો', total: 'કુલ ખર્ચ', vsPrev: 'ગયા {p} કરતાં', perDay: 'રોજનો સરેરાશ', entries: 'નોંધો',
+  more: 'વધુ', less: 'ઓછો', same: 'એટલો જ', noPrev: 'સરખામણી માટે અગાઉનો ડેટા નથી',
+  need: 'જરૂરી', want: 'જોઈતું', avoid: 'ટાળી શકાયું હોત', none: 'નક્કી નથી',
+  addT: 'ખર્ચ ઉમેરો', shotBtn: 'સ્ક્રીનશોટ ઉમેરો', manualBtn: 'જાતે લખો', shotHint: 'ઓર્ડર હિસ્ટ્રી કે બિલનો સ્ક્રીનશોટ (એક ઓર્ડરના 6 સુધી) પસંદ કરો. AI થોડી મિનિટમાં વસ્તુવાર ખર્ચ અને કેટેગરી બનાવી દેશે. ફોટો 7 દિવસ પછી આપોઆપ ડિલીટ થશે; ખર્ચની વિગતો રહેશે.',
+  shotsChosen: '{n} ફોટો પસંદ', appAuto: 'એપ: AI જાતે ઓળખશે', upload: 'અપલોડ કરો', uploaded: 'અપલોડ થયું. AI થોડી મિનિટમાં વાંચી લેશે.',
+  amount: 'રકમ (₹)', date: 'તારીખ', category: 'કેટેગરી', details: 'વિગત', detailsPh: 'જેમ કે: શાક માર્કેટ, પેટ્રોલ', paidBy: 'કોણે ચૂકવ્યું', mode: 'રીત',
+  whyAvoid: 'કેમ ખરીદ્યું?', whyAvoidPh: 'જેમ કે: કંટાળો, ઑફર, થાક', saveExp: 'ખર્ચ સાચવો',
+  rcT: 'સ્ક્રીનશોટ', st_pending: 'AI ની રાહ', st_retry: 'ફરી પ્રયત્ન થશે', st_processing: 'AI વાંચે છે…', st_done: 'તૈયાર', st_error: 'વાંચી ન શકાયું', st_duplicate: 'આ ઓર્ડર પહેલાં ઉમેરાયો છે',
+  readNow: 'હમણાં વાંચો', noKey: 'સ્ક્રીનશોટ વાંચવા માટે સેટિંગ્સમાં Gemini key ઉમેરો.', mismatch: 'વસ્તુઓનો સરવાળો (₹{a}) ઓર્ડરના કુલ (₹{b}) સાથે મેળ ખાતો નથી. સ્ક્રીનશોટ તપાસો.',
+  revT: 'AI એ બનાવેલી યાદી ચકાસો', revSub: 'કેટેગરી ખોટી લાગે તો બદલો. એપ આગલી વખતે યાદ રાખશે.', allOk: 'બધું બરાબર ✓',
+  catT: 'કેટેગરી પ્રમાણે', ofBudget: 'બજેટ ₹{b}', overBudget: 'બજેટ કરતાં ₹{a} વધુ', share: 'કુલના {p}%',
+  itemsT: 'સૌથી વધુ ખર્ચ થયેલી વસ્તુઓ', freqT: 'વારંવાર ખરીદાયેલી', times: '{n} વાર', appT: 'એપ પ્રમાણે', feesT: 'ફી અને બચત', feesPaid: 'ડિલિવરી/હેન્ડલિંગ ફી', discounts: 'ડિસ્કાઉન્ટથી બચત',
+  priceT: 'ભાવ બદલાયા', biggestT: 'સૌથી મોટા ખર્ચ', personT: 'કોણે કેટલું', reasonsT: 'ટાળી શકાય તેવા ખર્ચનાં કારણો',
+  aiT: 'AI વિશ્લેષણ', aiMake: 'AI વિશ્લેષણ બનાવો', aiRemake: 'ફરી બનાવો', aiIns: 'મુખ્ય તારણો', aiExp: 'આવતા સમયગાળાના પ્રયોગ', aiAuto: 'દર રવિવારે (અઠવાડિયું) અને દર મહિનાની 1 તારીખે (મહિનો) આપોઆપ બને છે.',
+  listT: 'બધી નોંધો', del: 'કાઢો', budgetT: 'માસિક બજેટ', budgetSub: 'દરેક કેટેગરી માટે મહિનાનું બજેટ (₹). ખાલી = બજેટ નથી.', recT: 'દર મહિને આવતા ખર્ચ', recSub: 'જેમ કે: રસોઈવાળાં બહેનનો પગાર, મોબાઈલ, ઇન્ટરનેટ. નક્કી કરેલી તારીખે આપોઆપ ઉમેરાશે.',
+  recDay: 'તારીખ', recAdd: '+ ઉમેરો', show: 'બતાવો', hide: 'છુપાવો', noData: 'આ સમયગાળામાં હજુ કોઈ ખર્ચ નથી.', noteFees: 'નાના ઓર્ડર ભેગા કરવાથી ફી બચે.',
+  m_upi: 'UPI', m_card: 'કાર્ડ', m_cash: 'રોકડ', m_online: 'ઓનલાઈન',
+  cat_groc: 'કરિયાણું', cat_veg: 'શાકભાજી-ફળ', cat_dairy: 'દૂધ-ડેરી', cat_shlok: 'શ્લોકની જરૂરિયાતો', cat_toys: 'શ્લોકનાં રમકડાં-પુસ્તકો', cat_snack: 'નાસ્તો-ફરસાણ-મીઠાઈ',
+  cat_food: 'ફૂડ ડિલિવરી / બહાર જમવું', cat_home: 'ઘરવપરાશ-સફાઈ', cat_care: 'પર્સનલ કેર-બ્યુટી', cat_cloth: 'કપડાં-ચંપલ', cat_med: 'દવા-આરોગ્ય', cat_bills: 'બિલ',
+  cat_fuel: 'ઇંધણ-મુસાફરી', cat_help: 'કામવાળાં-રસોઈવાળાં', cat_elec: 'ઘરનાં સાધનો-ઇલેક્ટ્રોનિક્સ', cat_study: 'પુસ્તકો-અભ્યાસ', cat_gift: 'ભેટ-પ્રસંગ-ધાર્મિક',
+  cat_subs: 'સબ્સ્ક્રિપ્શન-OTT', cat_fees: 'ડિલિવરી-હેન્ડલિંગ ફી', cat_other: 'અન્ય'
+});
+Object.assign(I.en, {
+  tabF: 'Money', fin: 'Spending & saving', week: 'Week', month: 'Month', total: 'Total spent', vsPrev: 'vs last {p}', perDay: 'Daily average', entries: 'Entries',
+  more: 'more', less: 'less', same: 'same', noPrev: 'No earlier data to compare yet',
+  need: 'Need', want: 'Want', avoid: 'Should have avoided', none: 'Not tagged',
+  addT: 'Add spending', shotBtn: 'Add screenshot', manualBtn: 'Enter manually', shotHint: 'Choose screenshots of an order history or bill (up to 6 for one order). AI turns them into item-wise spending with categories within a few minutes. Photos are deleted automatically after 7 days; the spending details stay.',
+  shotsChosen: '{n} photo(s) chosen', appAuto: 'App: AI will detect', upload: 'Upload', uploaded: 'Uploaded. AI will read it within a few minutes.',
+  amount: 'Amount (₹)', date: 'Date', category: 'Category', details: 'Details', detailsPh: 'e.g. vegetable market, petrol', paidBy: 'Paid by', mode: 'Mode',
+  whyAvoid: 'Why did you buy it?', whyAvoidPh: 'e.g. bored, offer, tired', saveExp: 'Save spending',
+  rcT: 'Screenshots', st_pending: 'Waiting for AI', st_retry: 'Will retry', st_processing: 'AI is reading…', st_done: 'Ready', st_error: 'Could not read', st_duplicate: 'This order was already added',
+  readNow: 'Read now', noKey: 'Add a Gemini key in Settings so screenshots can be read.', mismatch: 'Items add up to ₹{a} but the order total is ₹{b}. Please check the screenshot.',
+  revT: 'Check the list AI made', revSub: 'Change a category if it looks wrong. The app remembers it next time.', allOk: 'All correct ✓',
+  catT: 'By category', ofBudget: 'budget ₹{b}', overBudget: '₹{a} over budget', share: '{p}% of total',
+  itemsT: 'Items with the most spending', freqT: 'Bought again and again', times: '{n} times', appT: 'By app', feesT: 'Fees & savings', feesPaid: 'Delivery/handling fees', discounts: 'Saved through discounts',
+  priceT: 'Price changes', biggestT: 'Biggest spends', personT: 'Who paid', reasonsT: 'Why avoidable things were bought',
+  aiT: 'AI analysis', aiMake: 'Create AI analysis', aiRemake: 'Create again', aiIns: 'Key findings', aiExp: 'Experiments for the next period', aiAuto: 'Created automatically every Sunday (week) and on the 1st (month).',
+  listT: 'All entries', del: 'Remove', budgetT: 'Monthly budget', budgetSub: 'Monthly budget per category (₹). Empty = no budget.', recT: 'Monthly fixed spending', recSub: "e.g. cook's salary, mobile, internet. Added automatically on that date.",
+  recDay: 'Day', recAdd: '+ Add', show: 'Show', hide: 'Hide', noData: 'No spending in this period yet.', noteFees: 'Combining small orders saves fees.',
+  m_upi: 'UPI', m_card: 'Card', m_cash: 'Cash', m_online: 'Online',
+  cat_groc: 'Groceries & staples', cat_veg: 'Vegetables & fruits', cat_dairy: 'Milk & dairy', cat_shlok: "Shlok's essentials", cat_toys: "Shlok's toys & books", cat_snack: 'Snacks & sweets',
+  cat_food: 'Food delivery & eating out', cat_home: 'Household & cleaning', cat_care: 'Personal care & beauty', cat_cloth: 'Clothes & footwear', cat_med: 'Medicine & health', cat_bills: 'Bills',
+  cat_fuel: 'Fuel & travel', cat_help: 'Household help', cat_elec: 'Home & electronics', cat_study: 'Books & study', cat_gift: 'Gifts & functions',
+  cat_subs: 'Subscriptions & OTT', cat_fees: 'Delivery & handling fees', cat_other: 'Other'
+});
+S.fin = { mode: 'week', anchor: today(), data: null, files: [], app: '', manual: false, edit: null, showBudget: false, showRec: false, busy: false,
+  form: { amount: '', date: today(), category: 'groc', item: '', need: 'need', reason: '', paidBy: '', mode: 'upi' }, rec: { item: '', amount: '', day: '1', category: 'bills' }, budgets: {} };
+
+function rs(n) { var v = Math.round(+n || 0); return '₹' + v.toLocaleString('en-IN'); }
+function catName(c) { return t('cat_' + c); }
+function loadFin() {
+  var F = S.fin;
+  return call('getFinance', { mode: F.mode, anchor: F.anchor }).then(function (d) { F.data = d; F.budgets = Object.assign({}, d.budgets); if (S.view === 'fin') render(); }).catch(fail);
+}
+function catSelect(id, val, attrs) {
+  return '<select id="' + id + '" ' + attrs + '>' + FCATS.map(function (c) { return '<option value="' + c + '"' + (c === val ? ' selected' : '') + '>' + esc(catName(c)) + '</option>'; }).join('') + '</select>';
+}
+function needChips(a, id, val) {
+  return '<div class="chips">' + ['need', 'want', 'avoid'].map(function (n) {
+    var col = n === 'need' ? '#0F766E' : n === 'want' ? '#B45309' : '#BE123C', on = val === n;
+    return '<button class="chip" style="height:32px;font-size:12px;border-color:' + col + ';' + (on ? 'background:' + col + ';color:#fff' : 'color:' + col) + '" data-a="' + a + '" data-id="' + id + '" data-n="' + n + '" aria-pressed="' + on + '">' + esc(t(n)) + '</button>';
+  }).join('') + '</div>';
+}
+function deltaHtml(cur, prev, unitLabel) {
+  if (!prev) return '<span class="muted">' + esc(t('noPrev')) + '</span>';
+  var d = Math.round((cur - prev) * 100 / prev), up = d > 0;
+  return '<span style="font-weight:700;color:' + (d === 0 ? '#5B6468' : up ? '#BE123C' : '#0F766E') + '">' + (d === 0 ? '=' : (up ? '▲ ' : '▼ ') + Math.abs(d) + '%') + '</span> <span class="muted">' + esc(t('vsPrev', { p: unitLabel })) + ' (' + rs(prev) + ')</span>';
+}
+function viewFin() {
+  var F = S.fin, d = F.data;
+  var per = d ? d.period : null;
+  var label = !per ? '' : F.mode === 'month' ? t('mo')[+per.start.slice(5, 7) - 1] + ' ' + per.start.slice(0, 4) : shortDate(per.start) + ' – ' + shortDate(per.end);
+  var out = '<div class="wrap"><div class="row" style="justify-content:space-between"><div class="lang" role="group">' +
+    ['week', 'month'].map(function (m) { return '<button class="' + (F.mode === m ? 'on' : '') + '" data-a="finMode" data-m="' + m + '">' + esc(t(m)) + '</button>'; }).join('') + '</div>' +
+    '<div class="row"><button class="round" data-a="finNav" data-d="-1" aria-label="-">‹</button><b class="small" style="min-width:96px;text-align:center">' + esc(label) + '</b>' +
+    '<button class="round" data-a="finNav" data-d="1" aria-label="+"' + (per && per.end >= today() ? ' disabled' : '') + '>›</button></div></div>';
+  out += finAddCard();
+  if (!d) return out + '<div class="loading">' + esc(t('loading')) + '</div></div>';
+  var s = d.stats, pv = d.prev, unit = t(F.mode);
+  // receipts + review
+  var open = d.receipts.filter(function (r) { return r.status !== 'done' || !r.reviewed; });
+  if (open.length) {
+    out += '<div class="card"><h3>' + esc(t('rcT')) + '</h3>' + (d.hasKey ? '' : '<div class="small" style="color:#BE123C">' + esc(t('noKey')) + '</div>') +
+      open.map(function (r) {
+        var col = r.status === 'done' ? '#0F766E' : r.status === 'error' || r.status === 'duplicate' ? '#BE123C' : '#B45309';
+        return '<div class="li" style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;padding:6px 0;border-top:1px solid #F1EDE6"><span>' + esc(shortDate(r.date) + ' · ' + (r.app || '—') + ' · ' + nameOf(r.by)) + '</span>' +
+          '<b style="color:' + col + '">' + esc(t('st_' + r.status)) + (r.total ? ' · ' + rs(r.total) : '') + '</b></div>' +
+          (r.status === 'done' && r.note === 'MISMATCH' ? '<div class="small" style="color:#B45309">' + esc(t('mismatch', { a: Math.round(r.itemsTotal), b: Math.round(r.total) })) + '</div>' : '');
+      }).join('') +
+      (d.hasKey && open.some(function (r) { return r.status === 'pending' || r.status === 'retry'; }) ? '<button class="btn" data-a="finReadNow"' + (F.busy ? ' disabled' : '') + '>' + (F.busy ? '<span class="spin"></span> ' : '') + esc(t('readNow')) + '</button>' : '') + '</div>';
+  }
+  if (d.review.length) {
+    var groups = {};
+    d.review.forEach(function (e) { (groups[e.source] = groups[e.source] || []).push(e); });
+    out += '<div class="card" style="background:#F3EEFB"><h3 style="color:#3B1B7A">' + esc(t('revT')) + '</h3><div class="small" style="color:#3B1B7A">' + esc(t('revSub')) + '</div>' +
+      Object.keys(groups).map(function (src) {
+        var g = groups[src];
+        return '<div style="background:#fff;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px"><b class="small">' + esc((g[0].app || '') + ' · ' + shortDate(g[0].date)) + '</b>' +
+          g.map(function (e) {
+            return '<div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid #F1EDE6;padding-top:6px"><div class="between small"><span>' + esc(e.item) + (e.qty ? ' × ' + esc(e.qty) : '') + '</span><b>' + rs(e.amount) + '</b></div>' +
+              catSelect('rc-' + e.id, e.category, 'data-ch="expCat" data-id="' + e.id + '" style="padding:8px"') + (e.amount > 0 ? needChips('expNeed', e.id, e.need) : '') + '</div>';
+          }).join('') + '<button class="btn teal" data-a="finReviewed" data-r="' + src + '">' + esc(t('allOk')) + '</button></div>';
+      }).join('') + '</div>';
+  }
+  if (!s.count) return out + '<div class="card"><div class="small">' + esc(t('noData')) + '</div></div>' + finSettingsCards() + '</div>';
+  // summary
+  var nb = s.byNeed, ntot = nb.need + nb.want + nb.avoid + nb.none || 1;
+  out += '<div class="card"><div class="between"><div><div class="muted">' + esc(t('total')) + '</div><div style="font-size:30px;font-weight:800">' + rs(s.total) + '</div></div>' +
+    '<div style="text-align:right"><div class="muted">' + esc(t('perDay')) + '</div><b>' + rs(s.perDay) + '</b><div class="muted">' + s.count + ' ' + esc(t('entries')) + '</div></div></div>' +
+    '<div class="small">' + deltaHtml(s.total, pv.total, unit) + '</div>' +
+    '<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;background:#EEE9E2">' +
+    [['need', '#0F766E'], ['want', '#E0A13A'], ['avoid', '#BE123C'], ['none', '#C9C2B6']].map(function (x) { return '<div style="width:' + (nb[x[0]] * 100 / ntot) + '%;background:' + x[1] + '"></div>'; }).join('') + '</div>' +
+    '<div class="row small" style="flex-wrap:wrap;gap:4px 12px">' + [['need', '#0F766E'], ['want', '#B45309'], ['avoid', '#BE123C']].map(function (x) {
+      return '<span><b style="color:' + x[1] + '">' + esc(t(x[0])) + '</b> ' + rs(nb[x[0]]) + '</span>'; }).join('') + '</div></div>';
+  // AI
+  var ai = d.ai, L = S.lang === 'en' ? 'en' : 'gu';
+  out += '<div class="card" style="background:#F3EEFB"><div class="between"><h3 style="color:#3B1B7A">' + esc(t('aiT')) + '</h3>' +
+    '<button class="btn" style="height:36px;font-size:12px;background:#6D28D9" data-a="finAi"' + (F.busy ? ' disabled' : '') + '>' + (F.busy ? '<span class="spin"></span> ' : '') + esc(ai ? t('aiRemake') : t('aiMake')) + '</button></div>' +
+    (ai ? '<div class="small" style="color:#3B1B7A;line-height:1.6">' + esc(ai['summary_' + L]) + '</div>' +
+      '<b class="small" style="color:#3B1B7A">' + esc(t('aiIns')) + '</b>' + (ai.insights || []).map(function (x) { return '<div class="small" style="background:#fff;border-radius:10px;padding:8px 10px;line-height:1.55">' + esc(x[L]) + '</div>'; }).join('') +
+      '<b class="small" style="color:#3B1B7A">' + esc(t('aiExp')) + '</b>' + (ai.experiments || []).map(function (x) { return '<div class="small" style="background:#fff;border-radius:10px;padding:8px 10px;line-height:1.55">' + esc(x[L]) + '</div>'; }).join('')
+      : '<div class="muted">' + esc(t('aiAuto')) + '</div>') + '</div>';
+  // categories
+  var cats = Object.keys(s.byCat).filter(function (c) { return s.byCat[c] > 0; }).sort(function (a, b) { return s.byCat[b] - s.byCat[a]; });
+  out += '<div class="card"><h3>' + esc(t('catT')) + '</h3>' + cats.map(function (c) {
+    var v = s.byCat[c], b = d.budget[c], p = pv.byCat[c] || 0, over = b && v > b;
+    var w = b ? Math.min(100, v * 100 / b) : v * 100 / s.total;
+    var dd = p ? Math.round((v - p) * 100 / p) : null;
+    return '<div style="display:flex;flex-direction:column;gap:3px"><div class="between small"><span><i style="display:inline-block;width:8px;height:8px;border-radius:4px;background:' + FCOL[c] + ';margin-right:6px"></i>' + esc(catName(c)) + '</span><b>' + rs(v) + '</b></div>' +
+      '<div class="pbar"><div style="width:' + w + '%;background:' + (over ? '#BE123C' : FCOL[c]) + '"></div></div>' +
+      '<div class="between muted"><span>' + esc(b ? (over ? t('overBudget', { a: Math.round(v - b).toLocaleString('en-IN') }) : t('ofBudget', { b: b.toLocaleString('en-IN') })) : t('share', { p: Math.round(v * 100 / s.total) })) + '</span>' +
+      '<span style="color:' + (dd === null ? '#5B6468' : dd > 0 ? '#BE123C' : '#0F766E') + '">' + (dd === null ? '' : (dd > 0 ? '▲ ' : dd < 0 ? '▼ ' : '') + Math.abs(dd) + '%') + '</span></div></div>';
+  }).join('') + '</div>';
+  // items
+  if (s.topItems.length) out += '<div class="card"><h3>' + esc(t('itemsT')) + '</h3><div class="list">' + s.topItems.map(function (x) {
+    return '<div class="li"><span>' + esc(x.name) + ' <span class="muted">· ' + esc(t('times', { n: x.times })) + '</span></span><b>' + rs(x.amount) + '</b></div>'; }).join('') + '</div></div>';
+  if (s.frequent.length) out += '<div class="card"><h3>' + esc(t('freqT')) + '</h3><div class="chips">' + s.frequent.map(function (x) {
+    return '<span class="chip" style="height:auto;padding:6px 10px">' + esc(x.name) + ' · ' + esc(t('times', { n: x.times })) + ' · ' + rs(x.amount) + '</span>'; }).join('') + '</div></div>';
+  var apps = Object.keys(s.byApp).sort(function (a, b) { return s.byApp[b] - s.byApp[a]; });
+  if (apps.length || s.fees || s.discounts) {
+    out += '<div class="card"><h3>' + esc(t('appT')) + '</h3><div class="list">' + apps.map(function (a) {
+      var p = pv.byApp[a] || 0; return '<div class="li"><span>' + esc(a) + '</span><span><b>' + rs(s.byApp[a]) + '</b>' + (p ? ' <span class="muted">(' + rs(p) + ')</span>' : '') + '</span></div>'; }).join('') + '</div>' +
+      '<h3 style="margin-top:6px">' + esc(t('feesT')) + '</h3><div class="grid2"><div class="stat"><div>' + esc(t('feesPaid')) + '</div><div style="color:#9F1239">' + rs(s.fees) + '</div></div>' +
+      '<div class="stat"><div>' + esc(t('discounts')) + '</div><div style="color:#0F766E">' + rs(s.discounts) + '</div></div></div>' + (s.fees ? '<div class="muted">' + esc(t('noteFees')) + '</div>' : '') + '</div>';
+  }
+  if (d.prices.length) out += '<div class="card"><h3>' + esc(t('priceT')) + '</h3><div class="list">' + d.prices.map(function (x) {
+    return '<div class="li"><span>' + esc(x.name) + '</span><span>' + rs(x.before) + ' → <b style="color:' + (x.pct > 0 ? '#BE123C' : '#0F766E') + '">' + rs(x.now) + ' (' + (x.pct > 0 ? '+' : '') + x.pct + '%)</b></span></div>'; }).join('') + '</div></div>';
+  var reasons = Object.keys(s.avoidReasons);
+  out += '<div class="card"><h3>' + esc(t('biggestT')) + '</h3><div class="list">' + s.biggest.map(function (x) {
+    return '<div class="li"><span>' + esc(x.item || catName(x.category)) + ' <span class="muted">· ' + esc(shortDate(x.date)) + '</span></span><b>' + rs(x.amount) + '</b></div>'; }).join('') + '</div>' +
+    '<h3 style="margin-top:6px">' + esc(t('personT')) + '</h3><div class="row small">' + Object.keys(s.byPerson).map(function (u) { return '<span><b style="color:' + (UC[u] || '#1F2A2E') + '">' + esc(nameOf(u)) + '</b> ' + rs(s.byPerson[u]) + '</span>'; }).join(' · ') + '</div>' +
+    (reasons.length ? '<h3 style="margin-top:6px">' + esc(t('reasonsT')) + '</h3><div class="chips">' + reasons.map(function (r) { return '<span class="skipchip">' + esc(r) + ' · ' + s.avoidReasons[r] + '</span>'; }).join('') + '</div>' : '') + '</div>';
+  // entries
+  out += '<div class="card"><h3>' + esc(t('listT')) + '</h3>' + d.list.map(function (e) {
+    var open = F.edit === e.id;
+    var tagCol = e.need === 'need' ? '#0F766E' : e.need === 'want' ? '#B45309' : e.need === 'avoid' ? '#BE123C' : '#8A9296';
+    var h = '<div style="border-top:1px solid #F1EDE6;padding:8px 0;display:flex;flex-direction:column;gap:6px"><button data-a="finEdit" data-id="' + e.id + '" style="all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:flex-start">' +
+      '<span style="display:flex;flex-direction:column;gap:2px;font-size:13px"><span>' + esc(e.item || catName(e.category)) + '</span><span class="muted"><i style="display:inline-block;width:7px;height:7px;border-radius:4px;background:' + FCOL[e.category] + ';margin-right:4px"></i>' +
+      esc(catName(e.category) + ' · ' + shortDate(e.date) + (e.app ? ' · ' + e.app : '')) + (e.need ? ' · <b style="color:' + tagCol + '">' + esc(t(e.need)) + '</b>' : '') + '</span></span><b style="font-size:14px">' + rs(e.amount) + '</b></button>';
+    if (open) h += catSelect('ec-' + e.id, e.category, 'data-ch="expCat" data-id="' + e.id + '" style="padding:8px"') + needChips('expNeed', e.id, e.need) +
+      (e.need === 'avoid' ? '<div class="row"><input id="er-' + e.id + '" placeholder="' + esc(t('whyAvoidPh')) + '" value="' + esc(e.reason) + '" data-ch="expReason" data-id="' + e.id + '"></div>' : '') +
+      '<button class="link" style="align-self:flex-start;color:#BE123C" data-a="finDel" data-id="' + e.id + '">' + esc(t('del')) + '</button>';
+    return h + '</div>';
+  }).join('') + '</div>';
+  return out + finSettingsCards() + '</div>';
+}
+function finAddCard() {
+  var F = S.fin, f = F.form;
+  var h = '<div class="card"><h3>' + esc(t('addT')) + '</h3><div class="grid2">' +
+    '<label class="btn terra" style="display:flex;align-items:center;justify-content:center;cursor:pointer" for="finShots">' + esc(t('shotBtn')) + '</label>' +
+    '<button class="btn ghost" data-a="finManual">' + esc(t('manualBtn')) + '</button></div>' +
+    '<input id="finShots" type="file" accept="image/*" multiple data-ch="finShots" style="position:absolute;width:1px;height:1px;opacity:0">';
+  if (F.files.length) {
+    h += '<div class="muted" style="line-height:1.6">' + esc(t('shotHint')) + '</div><div class="row" style="flex-wrap:wrap">' + F.files.map(function (u) { return '<img src="' + u + '" alt="" style="width:56px;height:80px;object-fit:cover;border-radius:8px">'; }).join('') + '</div>' +
+      '<div class="small">' + esc(t('shotsChosen', { n: F.files.length })) + '</div>' +
+      '<select id="finApp" data-ch="finApp"><option value="">' + esc(t('appAuto')) + '</option>' + FAPPS.map(function (a) { return '<option' + (F.app === a ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select>' +
+      '<div class="row"><button class="btn teal" style="flex:1" data-a="finUpload"' + (F.busy ? ' disabled' : '') + '>' + (F.busy ? '<span class="spin"></span> ' : '') + esc(t('upload')) + '</button><button class="link" data-a="finClearShots">' + esc(t('cancel')) + '</button></div>';
+  }
+  if (F.manual) {
+    h += '<div style="border-top:1px solid #F1EDE6;padding-top:10px;display:flex;flex-direction:column;gap:8px">' +
+      '<div class="row"><input id="fAmt" type="number" inputmode="decimal" placeholder="' + esc(t('amount')) + '" value="' + esc(f.amount) + '" data-in="fAmt">' +
+      '<input id="fDate" type="date" style="width:160px;flex-shrink:0" aria-label="' + esc(t('date')) + '" value="' + esc(f.date) + '" data-ch="fDate"></div>' +
+      catSelect('fCat', f.category, 'data-ch="fCat" aria-label="' + esc(t('category')) + '"') +
+      '<input id="fItem" placeholder="' + esc(t('detailsPh')) + '" aria-label="' + esc(t('details')) + '" value="' + esc(f.item) + '" data-in="fItem">' +
+      needChips('fNeed', '', f.need) +
+      (f.need === 'avoid' ? '<input id="fReason" placeholder="' + esc(t('whyAvoidPh')) + '" aria-label="' + esc(t('whyAvoid')) + '" value="' + esc(f.reason) + '" data-in="fReason">' : '') +
+      '<div class="row"><select id="fPaid" data-ch="fPaid" aria-label="' + esc(t('paidBy')) + '">' + ['mehul', 'arpita'].map(function (u) { return '<option value="' + u + '"' + ((f.paidBy || S.user) === u ? ' selected' : '') + '>' + esc(t(u)) + '</option>'; }).join('') + '</select>' +
+      '<select id="fMode" data-ch="fMode" aria-label="' + esc(t('mode')) + '">' + ['upi', 'card', 'cash', 'online'].map(function (m) { return '<option value="' + m + '"' + (f.mode === m ? ' selected' : '') + '>' + esc(t('m_' + m)) + '</option>'; }).join('') + '</select></div>' +
+      '<button class="btn teal wide" data-a="finSave">' + esc(t('saveExp')) + '</button></div>';
+  }
+  return h + '</div>';
+}
+function finSettingsCards() {
+  var F = S.fin, d = F.data || { recurring: [] }, r = F.rec;
+  var h = '<div class="card"><div class="between"><h3>' + esc(t('budgetT')) + '</h3><button class="link" data-a="finToggle" data-k="showBudget">' + esc(F.showBudget ? t('hide') : t('show')) + '</button></div>';
+  if (F.showBudget) h += '<div class="muted">' + esc(t('budgetSub')) + '</div>' + FCATS.map(function (c) {
+    return '<div class="row"><label class="small" style="flex:1" for="b-' + c + '">' + esc(catName(c)) + '</label><input id="b-' + c + '" type="number" inputmode="numeric" style="width:120px" value="' + esc(F.budgets[c] || '') + '" data-in="budget" data-c="' + c + '"></div>';
+  }).join('') + '<button class="btn teal" data-a="finBudgetSave">' + esc(t('save')) + '</button>';
+  h += '</div><div class="card"><div class="between"><h3>' + esc(t('recT')) + '</h3><button class="link" data-a="finToggle" data-k="showRec">' + esc(F.showRec ? t('hide') : t('show')) + '</button></div>';
+  if (F.showRec) h += '<div class="muted">' + esc(t('recSub')) + '</div><div class="list">' + d.recurring.map(function (x) {
+    return '<div class="li"><span>' + esc(x.item || catName(x.category)) + ' <span class="muted">· ' + esc(t('recDay')) + ' ' + x.day + '</span></span><span><b>' + rs(x.amount) + '</b> <button class="link" style="color:#BE123C" data-a="finRecDel" data-id="' + x.id + '">' + esc(t('del')) + '</button></span></div>';
+  }).join('') + '</div>' +
+    '<input id="rItem" placeholder="' + esc(t('details')) + '" value="' + esc(r.item) + '" data-in="rItem">' +
+    '<div class="row"><input id="rAmt" type="number" inputmode="decimal" placeholder="' + esc(t('amount')) + '" value="' + esc(r.amount) + '" data-in="rAmt"><input id="rDay" type="number" min="1" max="28" style="width:90px" aria-label="' + esc(t('recDay')) + '" value="' + esc(r.day) + '" data-in="rDay"></div>' +
+    catSelect('rCat', r.category, 'data-ch="rCat"') + '<button class="btn" data-a="finRecAdd">' + esc(t('recAdd')) + '</button>';
+  return h + '</div>';
+}
+function finExp(id) { var d = S.fin.data; if (!d) return null; var all = d.list.concat(d.review); for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i]; return null; }
+function finUpdate(id, patch) {
+  [S.fin.data.list, S.fin.data.review].forEach(function (arr) { arr.forEach(function (e) { if (e.id === id) Object.assign(e, patch); }); });
+  render(); call('updateExpense', Object.assign({ id: id }, patch)).then(function () { if (!S.fin.edit) loadFin(); }).catch(fail);
+}
+Object.assign(H, {
+  finMode: function (el) { S.fin.mode = el.dataset.m; S.fin.data = null; render(); loadFin(); },
+  finNav: function (el) {
+    var F = S.fin, dd = +el.dataset.d;
+    if (F.mode === 'week') F.anchor = addDays(F.data ? F.data.period.start : F.anchor, 7 * dd);
+    else { var p = (F.data ? F.data.period.start : F.anchor).split('-'), m = new Date(+p[0], +p[1] - 1 + dd, 1, 12); F.anchor = m.getFullYear() + '-' + pad(m.getMonth() + 1) + '-01'; }
+    F.data = null; render(); loadFin();
+  },
+  finManual: function () { S.fin.manual = !S.fin.manual; render(); },
+  finClearShots: function () { S.fin.files = []; render(); },
+  finUpload: function () {
+    var F = S.fin; F.busy = true; render();
+    call('uploadReceipt', { images: F.files, app: F.app, date: today() }).then(function () { F.busy = false; F.files = []; F.app = ''; toast(t('uploaded')); loadFin(); })
+      .catch(function (e) { F.busy = false; render(); fail(e); });
+  },
+  finReadNow: function () { var F = S.fin; F.busy = true; render(); call('processNow').then(function () { F.busy = false; loadFin(); }).catch(function (e) { F.busy = false; render(); fail(e); }); },
+  finReviewed: function (el) {
+    var src = el.dataset.r, d = S.fin.data;
+    d.review = d.review.filter(function (e) { return e.source !== src; }); render();
+    call('markReviewed', { receiptId: src }).then(loadFin).catch(fail);
+  },
+  expNeed: function (el) {
+    var id = el.dataset.id, n = el.dataset.n;
+    if (!id) { S.fin.form.need = n; render(); return; }
+    finUpdate(id, { need: n });
+  },
+  fNeed: function (el) { S.fin.form.need = el.dataset.n; render(); },
+  finSave: function () {
+    var F = S.fin, f = F.form, amt = parseFloat(f.amount);
+    if (!(amt > 0)) { document.getElementById('fAmt').focus(); return; }
+    call('addExpense', { amount: amt, date: f.date, category: f.category, item: f.item, need: f.need, reason: f.need === 'avoid' ? f.reason : '', paidBy: f.paidBy || S.user, mode: f.mode })
+      .then(function () { F.form = { amount: '', date: today(), category: f.category, item: '', need: 'need', reason: '', paidBy: f.paidBy, mode: f.mode }; toast(t('saved')); loadFin(); }).catch(fail);
+  },
+  finEdit: function (el) { S.fin.edit = S.fin.edit === el.dataset.id ? null : el.dataset.id; render(); },
+  finDel: function (el) {
+    var id = el.dataset.id, d = S.fin.data; d.list = d.list.filter(function (e) { return e.id !== id; }); render();
+    call('deleteExpense', { id: id }).then(loadFin).catch(fail);
+  },
+  finAi: function () {
+    var F = S.fin; F.busy = true; render();
+    call('finAnalysis', { mode: F.mode, anchor: F.anchor }).then(function (d) { F.busy = false; F.data = d; render(); }).catch(function (e) { F.busy = false; render(); fail(e); });
+  },
+  finToggle: function (el) { S.fin[el.dataset.k] = !S.fin[el.dataset.k]; render(); },
+  finBudgetSave: function () { call('saveBudgets', { budgets: S.fin.budgets }).then(function () { toast(t('saved')); loadFin(); }).catch(fail); },
+  finRecAdd: function () {
+    var r = S.fin.rec; if (!(parseFloat(r.amount) > 0)) return;
+    call('addRecurring', { item: r.item, amount: r.amount, day: r.day, category: r.category }).then(function () { S.fin.rec = { item: '', amount: '', day: '1', category: r.category }; loadFin(); }).catch(fail);
+  },
+  finRecDel: function (el) { call('deleteRecurring', { id: el.dataset.id }).then(loadFin).catch(fail); }
+});
+Object.assign(IN, {
+  fAmt: function (el) { S.fin.form.amount = el.value; }, fItem: function (el) { S.fin.form.item = el.value; }, fReason: function (el) { S.fin.form.reason = el.value; },
+  budget: function (el) { S.fin.budgets[el.dataset.c] = el.value; },
+  rItem: function (el) { S.fin.rec.item = el.value; }, rAmt: function (el) { S.fin.rec.amount = el.value; }, rDay: function (el) { S.fin.rec.day = el.value; }
+});
+Object.assign(CH, {
+  fDate: function (el) { S.fin.form.date = el.value; }, fCat: function (el) { S.fin.form.category = el.value; },
+  fPaid: function (el) { S.fin.form.paidBy = el.value; }, fMode: function (el) { S.fin.form.mode = el.value; },
+  rCat: function (el) { S.fin.rec.category = el.value; },
+  finApp: function (el) { S.fin.app = el.value; },
+  expCat: function (el) { finUpdate(el.dataset.id, { category: el.value }); },
+  expReason: function (el) { finUpdate(el.dataset.id, { reason: el.value }); },
+  finShots: function (el) {
+    var files = Array.prototype.slice.call(el.files || [], 0, 6), out = [], F = S.fin;
+    if (!files.length) return;
+    files.forEach(function (f, i) { shrinkImage(f, 1600, function (u) { out[i] = u; if (out.filter(Boolean).length === files.length) { F.files = out; render(); } }); });
+  }
+});
+
+// ------------------------------------------------------------------ events
+document.addEventListener('click', function (e) {
+  var el = e.target.closest('[data-a]'); if (!el || el.disabled) return;
+  var fn = H[el.dataset.a]; if (fn) fn(el, e);
+});
+document.addEventListener('input', function (e) { var el = e.target.closest('[data-in]'); if (el && IN[el.dataset.in]) IN[el.dataset.in](el); });
+document.addEventListener('change', function (e) { var el = e.target.closest('[data-ch]'); if (el && CH[el.dataset.ch]) CH[el.dataset.ch](el); });
+
+// long-press on a task row opens one-thing-now; swipe inside focus card moves between tasks
+var lp = { timer: null, x: 0, y: 0, el: null }, sw = { x: null };
+document.addEventListener('pointerdown', function (e) {
+  var f = e.target.closest('[data-swipe]');
+  if (f) { sw.x = e.target.closest('input,select,textarea,button') ? null : e.clientX; return; }
+  var row = e.target.closest('[data-lp]');
+  if (!row || S.view !== S.user || e.target.closest('button,input,select,textarea,label')) return;
+  lp.x = e.clientX; lp.y = e.clientY; lp.el = row; row.classList.add('press');
+  lp.timer = setTimeout(function () {
+    row.classList.remove('press'); lp.el = null;
+    S.ui.focus = +row.dataset.lp; S.ui.sheet = null; render();
+    if (navigator.vibrate) try { navigator.vibrate(20); } catch (x) {}
+  }, 650);
+});
+function lpCancel() { clearTimeout(lp.timer); if (lp.el) lp.el.classList.remove('press'); lp.el = null; }
+document.addEventListener('pointermove', function (e) { if (lp.el && (Math.abs(e.clientX - lp.x) > 10 || Math.abs(e.clientY - lp.y) > 10)) lpCancel(); });
+document.addEventListener('pointerup', function (e) {
+  lpCancel();
+  if (sw.x !== null && S.ui.focus !== null) { var dx = e.clientX - sw.x; sw.x = null; if (dx < -50) goFocus(1); else if (dx > 50) goFocus(-1); }
+});
+document.addEventListener('pointercancel', lpCancel);
+document.addEventListener('contextmenu', function (e) { if (e.target.closest('[data-lp]')) e.preventDefault(); });
+
+// ------------------------------------------------------------------ start
+window.SP = { S: S, H: H, render: render };
+if (S.token) startApp(); else render();
+})();
+</script>
