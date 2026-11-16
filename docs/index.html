@@ -848,7 +848,7 @@ function viewSettings() {
     '<label class="muted" for="sEmails">' + esc(t('emails')) + '</label><input id="sEmails" value="' + esc(s.emails) + '">' +
     '<label class="muted" for="sVg">' + esc(t('valGu')) + '</label><input id="sVg" value="' + esc(s.value_gu) + '">' +
     '<label class="muted" for="sVe">' + esc(t('valEn')) + '</label><input id="sVe" value="' + esc(s.value_en) + '">' +
-    '<button class="btn teal" data-a="saveSettings">' + esc(t('save')) + '</button></div>' +
+    '<div class="row"><button class="btn teal" data-a="saveSettings">' + esc(t('save')) + '</button><button class="btn ghost" data-a="testKey">' + esc(t('testKey')) + '</button></div></div>' +
     '<div class="card"><a href="' + esc(s.sheetUrl) + '" target="_blank" rel="noopener">' + esc(t('sheet')) + '</a></div>' + '<div style="padding:0 4px">' + credit() + '</div></div>';
 }
 
@@ -1094,6 +1094,7 @@ var FCOL = { groc: '#B45309', veg: '#15803D', dairy: '#0369A1', shlok: '#DB2777'
   med: '#059669', bills: '#475569', fuel: '#78350F', help: '#0E7490', elec: '#1D4ED8', study: '#6D28D9', gift: '#BE123C', subs: '#7C3AED', fees: '#9F1239', other: '#6B7280' };
 var FAPPS = ['Blinkit', 'Zepto', 'Swiggy Instamart', 'BigBasket', 'Amazon', 'Flipkart', 'JioMart', 'Swiggy', 'Zomato', 'Meesho', 'Myntra', 'Nykaa', 'DMart'];
 Object.assign(I.gu, {
+  retry: 'ફરી પ્રયત્ન કરો', testKey: 'Key ચકાસો', keyOk: 'Gemini key બરાબર કામ કરે છે ✓',
   tabF: 'ખર્ચ', fin: 'ખર્ચ અને બચત', week: 'અઠવાડિયું', month: 'મહિનો', total: 'કુલ ખર્ચ', vsPrev: 'ગયા {p} કરતાં', perDay: 'રોજનો સરેરાશ', entries: 'નોંધો',
   more: 'વધુ', less: 'ઓછો', same: 'એટલો જ', noPrev: 'સરખામણી માટે અગાઉનો ડેટા નથી',
   need: 'જરૂરી', want: 'જોઈતું', avoid: 'ટાળી શકાયું હોત', none: 'નક્કી નથી',
@@ -1117,6 +1118,7 @@ Object.assign(I.gu, {
   cat_subs: 'સબ્સ્ક્રિપ્શન-OTT', cat_fees: 'ડિલિવરી-હેન્ડલિંગ ફી', cat_other: 'અન્ય'
 });
 Object.assign(I.en, {
+  retry: 'Try again', testKey: 'Test key', keyOk: 'Gemini key works ✓',
   tabF: 'Money', fin: 'Spending & saving', week: 'Week', month: 'Month', total: 'Total spent', vsPrev: 'vs last {p}', perDay: 'Daily average', entries: 'Entries',
   more: 'more', less: 'less', same: 'same', noPrev: 'No earlier data to compare yet',
   need: 'Need', want: 'Want', avoid: 'Should have avoided', none: 'Not tagged',
@@ -1181,7 +1183,9 @@ function viewFin() {
         var col = r.status === 'done' ? '#0F766E' : r.status === 'error' || r.status === 'duplicate' ? '#BE123C' : '#B45309';
         return '<div class="li" style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;padding:6px 0;border-top:1px solid #F1EDE6"><span>' + esc(shortDate(r.date) + ' · ' + (r.app || '—') + ' · ' + nameOf(r.by)) + '</span>' +
           '<b style="color:' + col + '">' + esc(t('st_' + r.status)) + (r.total ? ' · ' + rs(r.total) : '') + '</b></div>' +
-          (r.status === 'done' && r.note === 'MISMATCH' ? '<div class="small" style="color:#B45309">' + esc(t('mismatch', { a: Math.round(r.itemsTotal), b: Math.round(r.total) })) + '</div>' : '');
+          (r.status === 'done' && r.note === 'MISMATCH' ? '<div class="small" style="color:#B45309">' + esc(t('mismatch', { a: Math.round(r.itemsTotal), b: Math.round(r.total) })) + '</div>' : '') +
+          (r.status === 'error' ? '<div class="small" style="color:#9F1239;line-height:1.5">' + esc(String(r.note).replace(/#retry\s*/g, '').trim().split(' Gemini').pop().slice(-200)) + '</div>' +
+            '<button class="btn ghost" style="height:36px;font-size:12px;align-self:flex-start" data-a="finRetry" data-id="' + r.id + '"' + (F.busy ? ' disabled' : '') + '>' + esc(t('retry')) + '</button>' : '');
       }).join('') +
       (d.hasKey && open.some(function (r) { return r.status === 'pending' || r.status === 'retry'; }) ? '<button class="btn" data-a="finReadNow"' + (F.busy ? ' disabled' : '') + '>' + (F.busy ? '<span class="spin"></span> ' : '') + esc(t('readNow')) + '</button>' : '') + '</div>';
   }
@@ -1320,6 +1324,11 @@ Object.assign(H, {
     var F = S.fin; F.busy = true; render();
     call('uploadReceipt', { images: F.files, app: F.app, date: today() }).then(function () { F.busy = false; F.files = []; F.app = ''; toast(t('uploaded')); loadFin(); })
       .catch(function (e) { F.busy = false; render(); fail(e); });
+  },
+  finRetry: function (el) { var F = S.fin; F.busy = true; render(); call('retryReceipt', { id: el.dataset.id }).then(function () { F.busy = false; loadFin(); }).catch(function (e) { F.busy = false; render(); fail(e); }); },
+  testKey: function () {
+    var k = (S.ui.set.key || '').trim();
+    call('testGemini', { key: k }).then(function (r) { toast(t('keyOk') + (r.model ? ' (' + r.model + ')' : '')); }).catch(fail);
   },
   finReadNow: function () { var F = S.fin; F.busy = true; render(); call('processNow').then(function () { F.busy = false; loadFin(); }).catch(function (e) { F.busy = false; render(); fail(e); }); },
   finReviewed: function (el) {
