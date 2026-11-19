@@ -1,5 +1,5 @@
 // Keeps the app shell available offline. Data always comes live from the server.
-const CACHE = 'shloks-parents-v1';
+const CACHE = 'shloks-parents-v2';
 const SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'icons/logo-160.jpg', 'icons/icon-192.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {

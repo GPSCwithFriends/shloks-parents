@@ -2,4 +2,6 @@
 <resources>
     <string name="app_name">Shlok\'s Parents</string>
     <string name="offline">ઇન્ટરનેટ નથી. જોડાણ પછી ફરી ખોલો.\nNo internet. Please reconnect and reopen.</string>
+    <string name="channel_meds">દવાનાં રિમાઇન્ડર</string>
+    <string name="channel_meds_desc">દવાનો સમય થાય ત્યારે સૂચના</string>
 </resources>

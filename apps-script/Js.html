@@ -687,7 +687,7 @@ function viewSettings() {
     '<label class="muted" for="sEmails">' + esc(t('emails')) + '</label><input id="sEmails" value="' + esc(s.emails) + '">' +
     '<label class="muted" for="sVg">' + esc(t('valGu')) + '</label><input id="sVg" value="' + esc(s.value_gu) + '">' +
     '<label class="muted" for="sVe">' + esc(t('valEn')) + '</label><input id="sVe" value="' + esc(s.value_en) + '">' +
-    '<button class="btn teal" data-a="saveSettings">' + esc(t('save')) + '</button></div>' +
+    '<div class="row"><button class="btn teal" data-a="saveSettings">' + esc(t('save')) + '</button><button class="btn ghost" data-a="testKey">' + esc(t('testKey')) + '</button></div></div>' +
     '<div class="card"><a href="' + esc(s.sheetUrl) + '" target="_blank" rel="noopener">' + esc(t('sheet')) + '</a></div>' + '<div style="padding:0 4px">' + credit() + '</div></div>';
 }
 
@@ -702,7 +702,7 @@ function refreshDay() { loadDay(S.view, true); }
 function nightState() { var k = S.view + S.date; if (!S.ui.night[k]) S.ui.night[k] = { moods: [], energy: 0, improve: [], tomorrow: '', note: '' }; return S.ui.night[k]; }
 
 var H = {
-  go: function (el) { S.view = el.dataset.v; S.ui.focus = null; S.ui.sheet = null; S.ui.delAsk = null; if (S.view === 'report') S.weekStart = weekStart(S.date); loadView(); window.scrollTo(0, 0); },
+  go: function (el) { S.view = el.dataset.v; S.ui.focus = null; S.ui.sheet = null; S.ui.delAsk = null; if (S.view === 'report') S.weekStart = weekStart(S.date); loadView(); try { window.scrollTo(0, 0); } catch (e) {} },
   logout: function () { var tok = S.token; call('logout', { token: tok }).catch(function () {}); logoutLocal(); },
   lang: function (el) { S.lang = el.dataset.l; ls('sp_lang', S.lang); render(); if (S.token) call('setLang', { lang: S.lang }).catch(function () {}); },
   day: function (el) { S.date = addDays(S.date, +el.dataset.d); if (S.date > today()) S.date = today(); S.ui = freshUi(); loadView(); },
@@ -933,6 +933,7 @@ var FCOL = { groc: '#B45309', veg: '#15803D', dairy: '#0369A1', shlok: '#DB2777'
   med: '#059669', bills: '#475569', fuel: '#78350F', help: '#0E7490', elec: '#1D4ED8', study: '#6D28D9', gift: '#BE123C', subs: '#7C3AED', fees: '#9F1239', other: '#6B7280' };
 var FAPPS = ['Blinkit', 'Zepto', 'Swiggy Instamart', 'BigBasket', 'Amazon', 'Flipkart', 'JioMart', 'Swiggy', 'Zomato', 'Meesho', 'Myntra', 'Nykaa', 'DMart'];
 Object.assign(I.gu, {
+  retry: 'ફરી પ્રયત્ન કરો', testKey: 'Key ચકાસો', keyOk: 'Gemini key બરાબર કામ કરે છે ✓',
   tabF: 'ખર્ચ', fin: 'ખર્ચ અને બચત', week: 'અઠવાડિયું', month: 'મહિનો', total: 'કુલ ખર્ચ', vsPrev: 'ગયા {p} કરતાં', perDay: 'રોજનો સરેરાશ', entries: 'નોંધો',
   more: 'વધુ', less: 'ઓછો', same: 'એટલો જ', noPrev: 'સરખામણી માટે અગાઉનો ડેટા નથી',
   need: 'જરૂરી', want: 'જોઈતું', avoid: 'ટાળી શકાયું હોત', none: 'નક્કી નથી',
@@ -956,6 +957,7 @@ Object.assign(I.gu, {
   cat_subs: 'સબ્સ્ક્રિપ્શન-OTT', cat_fees: 'ડિલિવરી-હેન્ડલિંગ ફી', cat_other: 'અન્ય'
 });
 Object.assign(I.en, {
+  retry: 'Try again', testKey: 'Test key', keyOk: 'Gemini key works ✓',
   tabF: 'Money', fin: 'Spending & saving', week: 'Week', month: 'Month', total: 'Total spent', vsPrev: 'vs last {p}', perDay: 'Daily average', entries: 'Entries',
   more: 'more', less: 'less', same: 'same', noPrev: 'No earlier data to compare yet',
   need: 'Need', want: 'Want', avoid: 'Should have avoided', none: 'Not tagged',
@@ -1020,7 +1022,9 @@ function viewFin() {
         var col = r.status === 'done' ? '#0F766E' : r.status === 'error' || r.status === 'duplicate' ? '#BE123C' : '#B45309';
         return '<div class="li" style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;padding:6px 0;border-top:1px solid #F1EDE6"><span>' + esc(shortDate(r.date) + ' · ' + (r.app || '—') + ' · ' + nameOf(r.by)) + '</span>' +
           '<b style="color:' + col + '">' + esc(t('st_' + r.status)) + (r.total ? ' · ' + rs(r.total) : '') + '</b></div>' +
-          (r.status === 'done' && r.note === 'MISMATCH' ? '<div class="small" style="color:#B45309">' + esc(t('mismatch', { a: Math.round(r.itemsTotal), b: Math.round(r.total) })) + '</div>' : '');
+          (r.status === 'done' && r.note === 'MISMATCH' ? '<div class="small" style="color:#B45309">' + esc(t('mismatch', { a: Math.round(r.itemsTotal), b: Math.round(r.total) })) + '</div>' : '') +
+          (r.status === 'error' ? '<div class="small" style="color:#9F1239;line-height:1.5">' + esc(String(r.note).replace(/#retry\s*/g, '').trim().split(' Gemini').pop().slice(-200)) + '</div>' +
+            '<button class="btn ghost" style="height:36px;font-size:12px;align-self:flex-start" data-a="finRetry" data-id="' + r.id + '"' + (F.busy ? ' disabled' : '') + '>' + esc(t('retry')) + '</button>' : '');
       }).join('') +
       (d.hasKey && open.some(function (r) { return r.status === 'pending' || r.status === 'retry'; }) ? '<button class="btn" data-a="finReadNow"' + (F.busy ? ' disabled' : '') + '>' + (F.busy ? '<span class="spin"></span> ' : '') + esc(t('readNow')) + '</button>' : '') + '</div>';
   }
@@ -1160,6 +1164,11 @@ Object.assign(H, {
     call('uploadReceipt', { images: F.files, app: F.app, date: today() }).then(function () { F.busy = false; F.files = []; F.app = ''; toast(t('uploaded')); loadFin(); })
       .catch(function (e) { F.busy = false; render(); fail(e); });
   },
+  finRetry: function (el) { var F = S.fin; F.busy = true; render(); call('retryReceipt', { id: el.dataset.id }).then(function () { F.busy = false; loadFin(); }).catch(function (e) { F.busy = false; render(); fail(e); }); },
+  testKey: function () {
+    var k = (S.ui.set.key || '').trim();
+    call('testGemini', { key: k }).then(function (r) { toast(t('keyOk') + (r.model ? ' (' + r.model + ')' : '')); }).catch(fail);
+  },
   finReadNow: function () { var F = S.fin; F.busy = true; render(); call('processNow').then(function () { F.busy = false; loadFin(); }).catch(function (e) { F.busy = false; render(); fail(e); }); },
   finReviewed: function (el) {
     var src = el.dataset.r, d = S.fin.data;
@@ -1214,6 +1223,578 @@ Object.assign(CH, {
   }
 });
 
+// ------------------------------------------------------------------ v2: simple design (overrides earlier screens)
+Object.assign(I.gu, {
+  nToday: 'આજે', nShlok: 'શ્લોક', nMoney: 'ખર્ચ', nReport: 'અહેવાલ', nMore: 'વધુ',
+  hiM: 'શુભ સવાર', hiA: 'શુભ બપોર', hiE: 'શુભ સાંજ', hiN: 'શુભ રાત્રિ',
+  pt_m: 'સવાર', pt_a: 'બપોર', pt_e: 'સાંજ', pt_n: 'રાત', ps_m: 'સ', ps_a: 'બ', ps_e: 'સાં', ps_n: 'રા',
+  pr_m: '11:00 સુધી', pr_a: '11:00 – 16:00', pr_e: '16:00 – 20:00', pr_n: '20:00 પછી', nowPart: 'હમણાં',
+  tapHint: 'ટૅપ = થયું ✓ · ફરી ટૅપ કે દબાવી રાખો = સમય બદલો / ન થયું', planLine: 'આ અઠવાડિયે: ',
+  dueT: 'દવાનો સમય થઈ ગયો', taken: 'લીધી ✓', later: '30 મિ. પછી', forShlok: 'શ્લોક માટે',
+  q_water: 'પાણી', q_med: 'દવા', q_food: 'જમવાનું', q_call: 'ફોન-વાત', learnQ: 'આજે શું શીખ્યા?', manTap: 'મારું Manifestation',
+  close: 'બંધ', taskOpts: 'કાર્ય', undoIt: 'ફરી ખાલી કરો', markDone: 'થયું ✓', markNot: 'ન થયું', reqRemove: 'આ કાર્ય કાઢવાની વિનંતી',
+  partnerDay: '{n}નો દિવસ જુઓ', oursT: 'આપણું: સાથે કરવાનાં કામ, મુલાકાત', medsT: 'દવા', readT: 'વાંચન-શીખ', settingsT: 'સેટિંગ્સ', langT: 'ભાષા',
+  dose: 'ડોઝ', medName: 'દવાનું નામ', medNote: 'નોંધ (જેમ કે: જમ્યા પછી)', forWhom: 'કોના માટે', times: 'સમય', addTime: '+ સમય',
+  freq: 'કેટલી વાર', f_daily: 'દરરોજ', f_days: 'અમુક વારે', f_every: 'દર X દિવસે', everyN: 'દર કેટલા દિવસે?', startD: 'શરૂ', endD: 'સુધી (ખાલી = ચાલુ)',
+  saveMed: 'સાચવો · રિમાઇન્ડર ચાલુ', newMed: '+ નવી દવા', editMed: 'ફેરફાર', stopMed: 'બંધ કરો', todayDoses: 'આજના ડોઝ', activeMeds: 'ચાલુ દવાઓ', all: 'બધા',
+  remOn: 'રિમાઇન્ડર ચાલુ', noMeds: 'હજુ કોઈ દવા ઉમેરી નથી.', shlok: 'શ્લોક', untilD: '{d} સુધી', ongoing: 'ચાલુ', everyDays: 'દર {n} દિવસે',
+  androidRem: 'Android એપમાં સમય થતાં ફોનમાં સૂચના આવશે. iPhone પર એપ ખોલતાં બાકી દવા ઉપર દેખાશે.',
+  sAddMilk: '+ દૂધ', sAddSleep: '+ ઊંઘ', sAddFood: '+ જમ્યો', sAddStory: '+ વાર્તા', sAddWord: '+ નવો શબ્દ',
+  milkT: 'દૂધ આજે', sleepT: 'દિવસની ઊંઘ', wakeT: 'ગઈ રાતે જાગ્યો', bedT: 'રાત્રે ઊંઘ્યો', screenT: 'સ્ક્રીન ટાઈમ', times2: '{n} વાર',
+  ml: 'ml', formula: 'ફોર્મ્યુલા', cow: 'ગાયનું દૂધ', breast: 'માતાનું દૂધ', sleepFrom: 'સૂઈ ગયો', sleepTo: 'જાગ્યો', ateWhat: 'શું જમ્યો?',
+  storyName: 'વાર્તાનું નામ', wordPh: 'નવો શબ્દ', dayT: 'આજનો દિવસ', storyToday: 'આજની વાર્તા', storyPending: 'હજુ બાકી', yStory: 'ગઈ કાલે: ',
+  newWord: 'નવો શબ્દ', valueT: 'આ મહિનાનું મૂલ્ય', shlokMeds: 'શ્લોકની દવા', ty_milk: 'દૂધ', ty_sleep: 'ઊંઘ', ty_food: 'જમ્યો', ty_word: 'નવો શબ્દ', ty_note: 'નોંધ', ty_milestone: 'માઈલસ્ટોન',
+  hm: '{h} ક {m} મિ', both: 'બંને',
+  mt_book: 'પુસ્તક', mt_movie: 'ફિલ્મ', mt_doc: 'ડૉક્યુમેન્ટરી', mt_series: 'વેબ સિરીઝ', mt_podcast: 'પોડકાસ્ટ', mt_video: 'વીડિયો / લેખ',
+  learnT: 'આજે શું શીખ્યા?', pickMedia: '— પુસ્તક / ફિલ્મ પસંદ કરો —', newMedia: '+ નવું ઉમેરો', mediaTitle: 'નામ', mediaTotal: 'કુલ પાન / એપિસોડ', progressPh: 'આજે ક્યાં સુધી (પાન / એપિસોડ)',
+  learnPh: 'આજે શું શીખ્યા, જીવન વિશે શું સમજાયું…', finished: 'પૂરું થયું ✓', nowReading: 'હાલ ચાલુ', ourLearn: 'આપણી શીખ', doneShelf: 'પૂરાં થયેલાં',
+  reopen: 'ફરી ચાલુ કરો', noLearn: 'હજુ કોઈ શીખ લખી નથી.', repLearn: 'આ અઠવાડિયાની શીખ', phonesT: 'ફોન બેડરૂમની બહાર'
+});
+Object.assign(I.en, {
+  nToday: 'Today', nShlok: 'Shlok', nMoney: 'Money', nReport: 'Report', nMore: 'More',
+  hiM: 'Good morning', hiA: 'Good afternoon', hiE: 'Good evening', hiN: 'Good night',
+  pt_m: 'Morning', pt_a: 'Afternoon', pt_e: 'Evening', pt_n: 'Night', ps_m: 'M', ps_a: 'A', ps_e: 'E', ps_n: 'N',
+  pr_m: 'until 11:00', pr_a: '11:00 – 16:00', pr_e: '16:00 – 20:00', pr_n: 'after 20:00', nowPart: 'now',
+  tapHint: 'Tap = done ✓ · tap again or hold = change time / not done', planLine: 'This week: ',
+  dueT: 'Medicine time', taken: 'Taken ✓', later: 'In 30 min', forShlok: 'for Shlok',
+  q_water: 'Water', q_med: 'Medicine', q_food: 'Meals', q_call: 'Calls', learnQ: 'What did you learn today?', manTap: 'My manifestation',
+  close: 'Close', taskOpts: 'Task', undoIt: 'Clear', markDone: 'Done ✓', markNot: 'Not done', reqRemove: 'Request to remove this task',
+  partnerDay: "See {n}'s day", oursT: 'Ours: shared to-do, visits', medsT: 'Medicine', readT: 'Reading & learning', settingsT: 'Settings', langT: 'Language',
+  dose: 'Dose', medName: 'Medicine name', medNote: 'Note (e.g. after food)', forWhom: 'For whom', times: 'Times', addTime: '+ time',
+  freq: 'How often', f_daily: 'Every day', f_days: 'Some weekdays', f_every: 'Every X days', everyN: 'Every how many days?', startD: 'Start', endD: 'Until (empty = ongoing)',
+  saveMed: 'Save · reminder on', newMed: '+ New medicine', editMed: 'Edit', stopMed: 'Stop', todayDoses: "Today's doses", activeMeds: 'Current medicines', all: 'All',
+  remOn: 'Reminder on', noMeds: 'No medicines added yet.', shlok: 'Shlok', untilD: 'until {d}', ongoing: 'ongoing', everyDays: 'every {n} days',
+  androidRem: 'The Android app sends a notification at the time. On iPhone, pending medicines show at the top when you open the app.',
+  sAddMilk: '+ Milk', sAddSleep: '+ Sleep', sAddFood: '+ Ate', sAddStory: '+ Story', sAddWord: '+ New word',
+  milkT: 'Milk today', sleepT: 'Day naps', wakeT: 'Woke last night', bedT: 'Slept at night', screenT: 'Screen time', times2: '{n} times',
+  ml: 'ml', formula: 'Formula', cow: "Cow's milk", breast: 'Breast milk', sleepFrom: 'Fell asleep', sleepTo: 'Woke up', ateWhat: 'What did he eat?',
+  storyName: 'Story name', wordPh: 'New word', dayT: 'His day', storyToday: "Today's story", storyPending: 'Not yet', yStory: 'Yesterday: ',
+  newWord: 'New word', valueT: "This month's value", shlokMeds: "Shlok's medicine", ty_milk: 'Milk', ty_sleep: 'Sleep', ty_food: 'Ate', ty_word: 'New word', ty_note: 'Note', ty_milestone: 'Milestone',
+  hm: '{h} h {m} min', both: 'Both',
+  mt_book: 'Book', mt_movie: 'Movie', mt_doc: 'Documentary', mt_series: 'Web series', mt_podcast: 'Podcast', mt_video: 'Video / article',
+  learnT: 'What did you learn today?', pickMedia: '— Choose a book / show —', newMedia: '+ Add new', mediaTitle: 'Title', mediaTotal: 'Total pages / episodes', progressPh: 'Up to (page / episode)',
+  learnPh: 'What did you learn today, what did it teach you about life…', finished: 'Finished ✓', nowReading: 'In progress', ourLearn: 'Our learnings', doneShelf: 'Completed',
+  reopen: 'Reopen', noLearn: 'No learnings written yet.', repLearn: "This week's learnings", phonesT: 'Phones outside the bedroom'
+});
+var PARTS = ['m', 'a', 'e', 'n'];
+function partOf(t) { var m = mins(t); return m < 660 ? 'm' : m < 960 ? 'a' : m < 1200 ? 'e' : 'n'; }
+function curPart() { return partOf(nowHM()); }
+function dayOwner() { return S.view === 'partner' ? other(S.user) : S.user; }
+function isDayView() { return S.view === 'today' || S.view === 'partner'; }
+function curDay() { return S.days[dayOwner() + S.date]; }
+function refreshDay() { loadDay(dayOwner(), true); }
+function nightState() { var k = dayOwner() + S.date; if (!S.ui.night[k]) S.ui.night[k] = { moods: [], energy: 0, improve: [], tomorrow: '', note: '' }; return S.ui.night[k]; }
+function ownerName(o) { return o === 'shlok' ? t('shlok') : nameOf(o); }
+
+function render() {
+  var a = document.activeElement, id = a && a.id, sel = null;
+  try { sel = a && a.selectionStart; } catch (e) {}
+  var html;
+  if (!GAS && (!apiUrl() || S.setup)) html = viewSetup();
+  else if (!S.token || S.login.step === 'new' || S.login.step === 'confirm') html = viewLogin();
+  else html = header() + '<main style="padding-bottom:92px">' + body() + '</main>' + bottomNav() + modal();
+  document.getElementById('app').innerHTML = html;
+  document.documentElement.lang = S.lang;
+  if (id) { var el = document.getElementById(id); if (el) { el.focus(); try { if (sel !== null) el.setSelectionRange(sel, sel); } catch (e) {} } }
+}
+function body() {
+  switch (S.view) {
+    case 'shlok': return viewShlok();
+    case 'fin': return viewFin();
+    case 'report': return viewReport();
+    case 'more': return viewMore();
+    case 'ours': return viewOurs();
+    case 'meds': return viewMeds();
+    case 'reading': return viewReading();
+    case 'settings': return viewSettings();
+    default: return viewDay(dayOwner());
+  }
+}
+function header() {
+  var v = S.view, title, sub = '';
+  var withDate = isDayView() || v === 'shlok' || v === 'ours';
+  if (v === 'today') title = t({ m: 'hiM', a: 'hiA', e: 'hiE', n: 'hiN' }[curPart()]) + ', ' + nameOf(S.user);
+  else if (v === 'partner') title = t('dayOf', { n: nameOf(other(S.user)) });
+  else title = { shlok: t('shlok'), fin: t('fin'), report: t('report'), more: t('nMore'), ours: t('ours'), meds: t('medsT'), reading: t('readT'), settings: t('settingsT') }[v] || '';
+  if (withDate) sub = '<div class="datenav"><button data-a="day" data-d="-1" aria-label="-1">‹</button><span>' + esc(fmtDate(S.date)) + '</span>' +
+    (S.date < today() ? '<button data-a="day" data-d="1" aria-label="+1">›</button>' : '') + '</div>';
+  var back = ['ours', 'meds', 'reading', 'settings', 'partner'].indexOf(v) >= 0 ? '<button class="round" style="width:38px;height:38px" data-a="go" data-v="more" aria-label="‹">‹</button>' : '<img src="' + window.LOGO + '" alt="" style="width:36px;height:36px;border-radius:10px">';
+  return '<header style="display:flex;align-items:center;gap:10px;padding:16px 16px 8px">' + back +
+    '<div style="flex:1;min-width:0">' + sub + '<h1 style="margin:2px 0 0;font-size:21px;font-weight:800;line-height:1.25">' + esc(title) + '</h1></div>' +
+    '<button class="round" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center" data-a="go" data-v="settings" aria-label="' + esc(t('settingsT')) + '">' + GEAR + '</button></header>';
+}
+var NAVI = { today: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z', shlok: 'M12 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 22v-5a6 6 0 0 1 12 0v5', fin: 'M3 7h18v12H3zM3 11h18M7 15h3', report: 'M4 20V10M10 20V4M16 20v-7M22 20H2', more: 'M5 12h.01M12 12h.01M19 12h.01' };
+function bottomNav() {
+  var act = isDayView() && S.view === 'today' ? 'today' : ['ours', 'meds', 'reading', 'settings', 'partner'].indexOf(S.view) >= 0 ? 'more' : S.view;
+  return '<nav class="bnav">' + [['today', 'nToday'], ['shlok', 'nShlok'], ['fin', 'nMoney'], ['report', 'nReport'], ['more', 'nMore']].map(function (x) {
+    var on = act === x[0], c = on ? '#9A3412' : '#6B7378';
+    return '<button data-a="go" data-v="' + x[0] + '" style="color:' + c + ';font-weight:' + (on ? 700 : 500) + '" aria-current="' + on + '"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="' + (x[0] === 'more' ? 2.8 : 1.8) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + NAVI[x[0]] + '"/></svg>' + esc(t(x[1])) + '</button>';
+  }).join('') + '</nav>';
+}
+
+// ------------------------------------------------------------------ modal sheet
+function modal() {
+  var m = S.ui.modal; if (!m) return '';
+  var inner = '';
+  var d = curDay();
+  if (m.type === 'task') inner = taskSheet(m.id);
+  else if (m.type === 'water' && d) inner = waterCard(d, false);
+  else if (m.type === 'meals' && d) inner = mealsCard(d, false);
+  else if (m.type === 'calls' && d) inner = callsCard(d, false);
+  else if (m.type === 'meds' && d) inner = dayMedsCard(d);
+  else if (m.type === 'manifest' && d) inner = manifestCard(d, false);
+  else if (m.type === 'add') inner = addTaskCard(S.user);
+  else if (m.type === 'shlok') inner = shlokForm(m.kind);
+  else if (m.type === 'med') inner = medForm();
+  return '<div class="overlay" data-a="modalBg" style="align-items:flex-end;padding:0"><div class="msheet">' +
+    '<div style="display:flex;justify-content:flex-end"><button class="round" data-a="modalClose" aria-label="' + esc(t('close')) + '">×</button></div>' + inner + '</div></div>';
+}
+function openModal(m) { S.ui.modal = m; S.ui.sheet = null; S.ui.delAsk = null; render(); }
+
+// ------------------------------------------------------------------ today
+function viewDay(owner) {
+  var d = S.days[owner + S.date];
+  if (!d) return '<div class="loading">' + esc(t('loading')) + '</div>';
+  var ro = owner !== S.user, U = S.ui;
+  var out = '<div class="wrap">';
+  if (ro) out += '<div class="readonly">' + esc(t('readonly', { n: nameOf(owner) })) + '</div>';
+  // due medicines (iPhone-style on-open reminder)
+  (d.due || []).filter(function (x) { return !U.snooze[x.key]; }).forEach(function (x) {
+    out += '<div class="card" style="background:#FFF4E5;border:1px solid #F5C27A"><div class="small" style="font-weight:700;color:#92400E">' + esc(t('dueT')) + ' · ' + esc(x.time) +
+      (x.owner === 'shlok' ? ' · ' + esc(t('forShlok')) : '') + '</div><div style="font-size:16px;font-weight:700">' + esc(x.name) + (x.dose ? ' · ' + esc(x.dose) : '') + '</div>' +
+      (x.note ? '<div class="small" style="color:#92400E">' + esc(x.note) + '</div>' : '') +
+      '<div class="row"><button class="btn" style="background:#047857" data-a="doseTake" data-k="' + esc(x.key) + '">' + esc(t('taken')) + '</button><button class="btn ghost" data-a="doseLater" data-k="' + esc(x.key) + '">' + esc(t('later')) + '</button></div></div>';
+  });
+  // quick row
+  var water = d.water.reduce(function (s, w) { return s + w.ml; }, 0);
+  var medsTaken = (d.doses || []).filter(function (x) { return x.takenAt; }).length;
+  var mealsN = Object.keys(d.meals).filter(function (k) { return d.meals[k] && d.meals[k].dish; }).length;
+  var Q = [['water', 'q_water', (water / 1000).toFixed(1).replace('.0', '') + ' L', '#1D4ED8', '#E3ECFF', 'M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z'],
+    ['meds', 'q_med', medsTaken + ' / ' + (d.doses || []).length, '#047857', '#DDF5EA', 'M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7zM8.5 8.5l7 7'],
+    ['meals', 'q_food', mealsN + ' / 4', '#B45309', '#FDEFD9', 'M4 11h16M5 11a7 7 0 0 0 14 0M12 4v3'],
+    ['calls', 'q_call', String(d.calls.length), '#0F766E', '#D9F0EC', 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z']];
+  out += '<div style="display:flex;justify-content:space-between;padding:0 6px">' + Q.map(function (q) {
+    return '<button class="qbtn" data-a="openM" data-m="' + q[0] + '"' + (ro ? ' disabled' : '') + '><div style="background:' + q[4] + '"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="' + q[3] + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + q[5] + '"/></svg></div>' +
+      '<span>' + esc(t(q[1])) + '</span><b style="color:' + q[3] + '">' + esc(q[2]) + '</b></button>';
+  }).join('') + '</div>';
+  // plan line + manifestation line
+  var ch = d.tasks.filter(function (x) { return x.k === 'n' && x.goal; })[0];
+  out += '<div class="row" style="gap:8px">' +
+    '<div class="small" style="flex:1;background:#fff;border-radius:12px;padding:8px 12px">' + (ch ? esc(t('planLine')) + '<b>' + esc(lbl(ch) + ' ' + ch.t + ' → ' + ch.goal) + '</b>' : esc(t('goalReached'))) + '</div>' +
+    '<button class="small" style="background:#FFF8E7;border:none;border-radius:12px;padding:8px 12px;color:#78350F;font-weight:600;max-width:46%;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" data-a="openM" data-m="manifest">' + esc(d.manifest.text || t('manTap')) + '</button></div>';
+  // rows grouped by part (tasks + own doses)
+  var rows = d.tasks.map(function (x) { return { kind: 'task', x: x, t: x.t }; })
+    .concat((d.doses || []).map(function (x) { return { kind: 'dose', x: x, t: x.time }; }))
+    .sort(function (a, b) { return a.t < b.t ? -1 : a.t > b.t ? 1 : 0; });
+  var isToday = S.date === today(), cp = isToday ? curPart() : '';
+  if (U.openPart === undefined) U.openPart = cp || 'n';
+  PARTS.forEach(function (p) {
+    var list = rows.filter(function (r) { return partOf(r.t) === p; });
+    var doneN = list.filter(function (r) { return r.kind === 'task' ? r.x.s !== 'todo' : !!r.x.takenAt; }).length;
+    var open = U.openPart === p, cur = cp === p, full = list.length && doneN === list.length;
+    out += '<div class="part" style="border:' + (cur ? '2px solid #0F766E' : '1px solid #EEE7DC') + '">' +
+      '<button class="parth" style="background:' + (open ? '#FBF8F3' : '#fff') + '" data-a="part" data-p="' + p + '" aria-expanded="' + open + '">' +
+      '<i style="background:' + (cur ? '#0F766E' : full ? '#D9F0EC' : '#F1EDE6') + ';color:' + (cur ? '#fff' : '#1F2A2E') + '">' + esc(t('ps_' + p)) + '</i>' +
+      '<span style="flex:1;display:flex;flex-direction:column;text-align:left"><b style="font-size:16px">' + esc(t('pt_' + p)) + '</b><small class="muted">' + esc(t('pr_' + p)) + (cur ? ' · ' + esc(t('nowPart')) : '') + '</small></span>' +
+      '<b class="small" style="color:' + (full ? '#0F766E' : '#5B6468') + '">' + doneN + ' / ' + list.length + '</b><span class="muted" style="transform:' + (open ? 'rotate(180deg)' : 'none') + '">⌄</span></button>';
+    if (open) {
+      out += '<div style="padding:0 10px 8px">' + list.map(function (r) { return r.kind === 'task' ? taskLine(r.x, ro) : doseLine(r.x, ro); }).join('');
+      if (p === 'n') out += '<div style="padding-top:8px">' + nightCard(d, owner, ro) + '</div>';
+      out += '</div>';
+    }
+    out += '</div>';
+  });
+  if (!ro) out += '<button class="card" style="background:#FFF8E7;flex-direction:row;align-items:center;border:none;text-align:left;font-family:inherit" data-a="go" data-v="reading">' +
+    '<span style="width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78350F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5"/></svg></span>' +
+    '<b style="flex:1;color:#78350F">' + esc(t('learnQ')) + '</b><span style="color:#78350F;font-size:18px">›</span></button>';
+  if (!ro) out += '<div class="muted" style="text-align:center">' + esc(t('tapHint')) + '</div>';
+  if (owner === 'mehul' && d.runs.n) out += '<div class="muted" style="text-align:center">' + esc(t('runs', { n: d.runs.n, k: Math.round(d.runs.km * 10) / 10 })) + '</div>';
+  out += '</div>';
+  if (!ro) out += '<button class="fab" data-a="openM" data-m="add" aria-label="' + esc(t('ntT')) + '">+</button>';
+  return out;
+}
+function taskLine(x, ro) {
+  var done = x.s === 'done', skip = x.s === 'skip', late = done && x.a && mins(x.a) - mins(x.t) > 10;
+  var tag = x.k !== 'r' ? '<small style="font-weight:700;color:' + KC[x.k] + '">' + esc(t('tag_' + x.k)) + '</small>' : '';
+  var sub = done ? '<small style="color:' + (late ? '#B45309' : '#0F766E') + ';font-weight:600">' + esc(x.a) + (late ? ' · ' + esc(t('late', { m: mins(x.a) - mins(x.t) })) : '') + (x.qv ? ' · ' + esc(x.qv) + ' km' : '') + '</small>'
+    : skip ? '<small style="color:#9F1239;font-weight:600">' + esc(t('skipped') + ' · ' + x.r) + '</small>' : '';
+  var ring = done ? '<span class="ring on">✓</span>' : skip ? '<span class="ring skip">–</span>' : '<span class="ring"></span>';
+  return '<button class="tline2" data-a="' + (ro ? 'noop' : 'tapTask') + '" data-id="' + x.id + '" data-lp="' + x.id + '"' + (ro ? ' tabindex="-1"' : '') + '>' +
+    '<span class="tt">' + esc(x.t) + '</span><span style="flex:1;display:flex;flex-direction:column;gap:2px;text-align:left"><span style="font-size:14px;' + (done || skip ? 'color:#8A9296' : '') + '">' + esc(lbl(x)) + '</span>' + tag + sub +
+    (x.del ? '<small style="color:#9A3412;font-weight:600">' + esc(t('delPending', { n: nameOf(other(x.del.by)) })) + '</small>' : '') + '</span>' + ring + '</button>';
+}
+function doseLine(x, ro) {
+  return '<button class="tline2" data-a="' + (ro ? 'noop' : 'doseToggle') + '" data-k="' + esc(x.key) + '">' +
+    '<span class="tt">' + esc(x.time) + '</span><span style="flex:1;display:flex;flex-direction:column;gap:2px;text-align:left"><span style="font-size:14px;' + (x.takenAt ? 'color:#8A9296' : '') + '">' + esc(x.name) + (x.dose ? ' · ' + esc(x.dose) : '') + '</span>' +
+    '<small style="font-weight:700;color:#047857">' + esc(t('q_med')) + (x.takenAt ? ' · ' + esc(x.takenAt) : '') + '</small></span>' +
+    (x.takenAt ? '<span class="ring on" style="background:#047857;border-color:#047857">✓</span>' : '<span class="ring" style="border-color:#6EE7B7"></span>') + '</button>';
+}
+function taskSheet(id) {
+  var x = taskById(id); if (!x) return '';
+  var U = S.ui, owner = S.user;
+  var h = '<div style="display:flex;flex-direction:column;gap:12px"><div><div class="muted">' + esc(x.t) + '</div><div style="font-size:19px;font-weight:800">' + esc(lbl(x)) + '</div></div>';
+  if (x.s === 'done') {
+    var late = x.a && mins(x.a) - mins(x.t) > 10;
+    h += '<div class="row" style="flex-wrap:wrap"><label class="small" for="sa-' + x.id + '">' + esc(t('actualAt')) + '</label><input id="sa-' + x.id + '" type="time" style="width:130px" value="' + esc(x.a) + '" data-ch="actual" data-id="' + x.id + '">' +
+      '<b class="small" style="color:' + (late ? '#B45309' : '#0F766E') + '">' + esc(late ? t('late', { m: mins(x.a) - mins(x.t) }) : t('onTime')) + '</b></div>';
+    if (x.q) h += '<div class="row"><label class="small" for="sq-' + x.id + '">' + esc(t('qRun')) + '</label><input id="sq-' + x.id + '" type="number" inputmode="decimal" step="0.1" style="width:100px" value="' + esc(x.qv) + '" data-ch="qty" data-id="' + x.id + '"><span>km</span></div>';
+  } else if (x.s === 'skip') h += '<span class="skipchip" style="align-self:flex-start;font-size:14px">' + esc(t('skipped') + ' · ' + x.r) + '</span>';
+  if (x.s !== 'done') h += '<button class="btn teal wide big" data-a="done" data-id="' + x.id + '">' + esc(t('markDone')) + '</button>';
+  if (x.s === 'todo' || x.s === 'done') h += reasonSheet(x, owner, 'm');
+  if (x.s !== 'todo') h += '<button class="btn ghost" data-a="undo" data-id="' + x.id + '">' + esc(t('undoIt')) + '</button>';
+  if (!x.del) {
+    if (U.delAsk === x.id) h += '<div class="delbox">' + esc(t('delInfo', { n: nameOf(other(owner)) })) + '<div class="row"><input id="pin-' + x.id + '" class="pin" type="password" inputmode="numeric" maxlength="4" data-in="pin" value="' + esc(U.pin) + '" placeholder="' + esc(t('myPin')) + '">' +
+      '<button class="btn terra" style="height:38px;font-size:12px" data-a="sendDel" data-id="' + x.id + '">' + esc(t('sendReq')) + '</button></div>' + (U.pinErr ? '<div style="color:#BE123C">' + esc(U.pinErr) + '</div>' : '') + '</div>';
+    else h += '<button class="link" style="align-self:flex-start;color:#9F1239" data-a="askDel" data-id="' + x.id + '">' + esc(t('reqRemove')) + '</button>';
+  } else h += '<div class="pending"><span>' + esc(t('delPending', { n: nameOf(other(x.del.by)) })) + '</span>' + (x.del.by === S.user ? '<button class="link" data-a="withdraw" data-id="' + x.del.id + '">' + esc(t('withdraw')) + '</button>' : '') + '</div>';
+  return h + '</div>';
+}
+function manifestCard(d, ro) {
+  var owner = dayOwner(), U = S.ui;
+  return '<div class="card manifest"><label for="man-' + owner + '"><h3 style="color:#78350F">' + esc(t('mT')) + '</h3></label>' +
+    '<textarea id="man-' + owner + '" rows="4" data-in="man" placeholder="' + esc(t('mPh')) + '"' + (ro ? ' readonly' : '') + '>' + esc(U.man[owner] !== undefined ? U.man[owner] : d.manifest.text) + '</textarea>' +
+    (d.manifest.photo ? '<img src="' + d.manifest.photo + '" alt="">' : '') +
+    (ro ? '' : '<div class="row" style="flex-wrap:wrap"><button class="btn terra" data-a="manSave">' + esc(t('save')) + '</button>' +
+      '<label class="btn ghost" style="display:inline-flex;align-items:center;cursor:pointer" for="manPhoto">' + esc(d.manifest.photo ? t('mChange') : t('mAdd')) + '</label>' +
+      '<input id="manPhoto" type="file" accept="image/*" data-ch="manPhoto" style="position:absolute;width:1px;height:1px;opacity:0">' +
+      (d.manifest.photo ? '<button class="link" data-a="manRemove">' + esc(t('mRemove')) + '</button>' : '') + '</div>') + '</div>';
+}
+function dayMedsCard(d) {
+  var list = d.doses || [];
+  return '<div class="card"><h3>' + esc(t('todayDoses')) + '</h3>' + (list.length ? list.map(function (x) { return doseLine(x, false); }).join('') : '<div class="muted">' + esc(t('noMeds')) + '</div>') +
+    '<button class="btn ghost" data-a="go" data-v="meds">' + esc(t('medsT')) + ' ›</button></div>';
+}
+function findDose(key) {
+  var pools = [];
+  var d = curDay(); if (d) pools = pools.concat(d.doses || [], d.due || []);
+  if (S.meds) pools = pools.concat(S.meds.today || []);
+  if (S.shlok) pools = pools.concat(S.shlok.doses || []);
+  return pools.filter(function (x) { return x.key === key; });
+}
+function setDose(key, taken) {
+  var at = taken ? nowHM() : '', xs = findDose(key); if (!xs.length) return;
+  xs.forEach(function (x) { x.takenAt = at; });
+  var d = curDay(); if (d && d.due) d.due = d.due.filter(function (x) { return x.key !== key || !taken; });
+  render();
+  call('takeMed', { date: S.date, medId: xs[0].medId, time: xs[0].time, taken: taken, at: at }).then(syncReminders).catch(fail);
+}
+
+// ------------------------------------------------------------------ Shlok
+function loadShlok() { return call('getShlok', { date: S.date }).then(function (d) { S.shlok = d; if (S.view === 'shlok') render(); }).catch(fail); }
+function viewShlok() {
+  var s = S.shlok;
+  if (!s) return '<div class="loading">' + esc(t('loading')) + '</div>';
+  var q = [['milk', 'sAddMilk', '#1D4ED8', '#E3ECFF'], ['sleep', 'sAddSleep', '#6D28D9', '#EDE9FE'], ['food', 'sAddFood', '#B45309', '#FDEFD9'], ['story', 'sAddStory', '#9A3412', '#FBE6DC']];
+  var out = '<div class="wrap"><div class="grid4">' + q.map(function (x) {
+    return '<button class="btn" style="background:' + x[3] + ';color:' + x[2] + ';height:48px;padding:0 4px;border-radius:16px" data-a="shlokM" data-k="' + x[0] + '">' + esc(t(x[1])) + '</button>'; }).join('') + '</div>';
+  var hm = function (m) { return t('hm', { h: Math.floor(m / 60), m: m % 60 }); };
+  out += '<div class="grid2">' +
+    tile(t('milkT'), s.milk + ' ' + t('ml'), t('times2', { n: s.milkN }), '#1D4ED8') + tile(t('sleepT'), hm(s.napMin), '', '#6D28D9') +
+    '<div class="stat" style="background:#fff;border-radius:16px;padding:12px"><div>' + esc(t('wakeT')) + '</div><div class="stepper" style="margin-top:4px"><button data-a="wake2" data-d="-1" aria-label="-">−</button><b style="font-size:19px;color:#B45309;min-width:18px;text-align:center">' + (s.wakings === null ? '–' : s.wakings) + '</b><button data-a="wake2" data-d="1" aria-label="+">+</button></div></div>' +
+    '<div class="stat" style="background:#fff;border-radius:16px;padding:12px"><label for="bed2">' + esc(t('bedT')) + '</label><input id="bed2" type="time" style="margin-top:4px;padding:6px" value="' + esc(s.bedtime) + '" data-ch="bed2"></div></div>';
+  // timeline
+  var col = { milk: '#1D4ED8', sleep: '#6D28D9', food: '#B45309', word: '#0F766E', note: '#5B6468', milestone: '#DB2777' };
+  out += '<div class="card"><h3>' + esc(t('dayT')) + '</h3>' + (s.logs.length ? s.logs.map(function (l) {
+    var txt = l.type === 'milk' ? (l.value + ' ' + t('ml') + (l.extra ? ' · ' + t(l.extra) : '')) : l.type === 'sleep' ? (l.time + ' → ' + (l.extra || '…')) : l.value;
+    return '<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #F1EDE6"><span class="tt">' + esc(l.time) + '</span><i style="width:4px;align-self:stretch;border-radius:2px;background:' + col[l.type] + '"></i>' +
+      '<span style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px">' + esc(txt) + '</span><small class="muted"><b style="color:' + col[l.type] + '">' + esc(t('ty_' + l.type)) + '</b> · ' + esc(nameOf(l.by)) + '</small></span>' +
+      '<button class="iconbtn" data-a="shlokDel" data-id="' + l.id + '" aria-label="×" style="color:#9F1239;font-size:18px">×</button></div>';
+  }).join('') : '<div class="muted">–</div>') + '</div>';
+  // story
+  out += '<div class="card" style="background:#FFF4EC"><div class="small" style="font-weight:700;color:#9A3412">' + esc(t('storyToday')) + '</div>' +
+    '<div style="font-size:16px;font-weight:700;color:#7C2D12">' + esc(s.story ? s.story + ' · ' + nameOf(s.storyBy) : t('storyPending')) + '</div>' +
+    (s.yStory ? '<div class="small" style="color:#7C2D12">' + esc(t('yStory') + s.yStory + (s.yStoryBy ? ' (' + nameOf(s.yStoryBy) + ')' : '')) + '</div>' : '') + '</div>';
+  // doses
+  if (s.doses.length) out += '<div class="card"><h3>' + esc(t('shlokMeds')) + '</h3>' + s.doses.map(function (x) { return doseLine(x, false); }).join('') + '</div>';
+  out += '<div class="grid2"><button class="stat" style="background:#fff;border:none;border-radius:16px;padding:12px;text-align:left;font-family:inherit" data-a="shlokM" data-k="word"><div>' + esc(t('newWord')) + '</div><div style="font-size:18px;font-weight:800">' + esc(s.words[0] ? '"' + s.words[0].value + '"' : '+') + '</div></button>' +
+    '<div class="stat" style="background:#fff;border-radius:16px;padding:12px"><div>' + esc(t('valueT')) + '</div><div style="font-size:15px;font-weight:800;color:#9A3412">' + esc(S.lang === 'en' ? s.value.en : s.value.gu) + '</div></div></div>';
+  out += '<div class="muted" style="text-align:center">' + esc(t('screenT')) + ': 0</div>';
+  return out + '</div>';
+}
+function tile(a, b, c, col) { return '<div class="stat" style="background:#fff;border-radius:16px;padding:12px"><div>' + esc(a) + '</div><div style="font-size:19px;font-weight:800;color:' + col + '">' + esc(b) + '</div>' + (c ? '<div class="muted">' + esc(c) + '</div>' : '') + '</div>'; }
+function shlokForm(kind) {
+  var f = S.ui.sf = S.ui.sf || {};
+  if (f.kind !== kind) { S.ui.sf = f = { kind: kind, time: nowHM(), value: '', extra: kind === 'milk' ? 'formula' : kind === 'sleep' ? '' : '', by: S.user }; }
+  var h = '<div style="display:flex;flex-direction:column;gap:10px"><h3 style="margin:0">' + esc(t({ milk: 'sAddMilk', sleep: 'sAddSleep', food: 'sAddFood', story: 'sAddStory', word: 'sAddWord' }[kind])) + '</h3>';
+  if (kind !== 'story' && kind !== 'word') h += '<div class="row"><label class="small" style="width:110px" for="sfT">' + esc(kind === 'sleep' ? t('sleepFrom') : t('time')) + '</label><input id="sfT" type="time" value="' + esc(f.time) + '" data-ch="sfTime"></div>';
+  if (kind === 'milk') h += '<input id="sfV" type="number" inputmode="numeric" placeholder="180 ml" value="' + esc(f.value) + '" data-in="sfValue"><div class="chips">' + ['formula', 'cow', 'breast'].map(function (k) {
+    return '<button class="chip' + (f.extra === k ? ' on' : '') + '" data-a="sfExtra" data-k="' + k + '">' + esc(t(k)) + '</button>'; }).join('') + '</div>';
+  if (kind === 'sleep') h += '<div class="row"><label class="small" style="width:110px" for="sfE">' + esc(t('sleepTo')) + '</label><input id="sfE" type="time" value="' + esc(f.extra) + '" data-ch="sfEnd"></div>';
+  if (kind === 'food') h += '<input id="sfV" placeholder="' + esc(t('ateWhat')) + '" value="' + esc(f.value) + '" data-in="sfValue">';
+  if (kind === 'word') h += '<input id="sfV" placeholder="' + esc(t('wordPh')) + '" value="' + esc(f.value) + '" data-in="sfValue">';
+  if (kind === 'story') h += '<select id="sfBy" data-ch="sfBy">' + ['mehul', 'arpita'].map(function (w) { return '<option value="' + w + '"' + (f.by === w ? ' selected' : '') + '>' + esc(nameOf(w)) + '</option>'; }).join('') + '</select>' +
+    '<input id="sfV" placeholder="' + esc(t('storyName')) + '" value="' + esc(f.value) + '" data-in="sfValue">';
+  return h + '<button class="btn teal wide big" data-a="sfSave">' + esc(t('save')) + '</button></div>';
+}
+
+// ------------------------------------------------------------------ medicine
+function loadMeds() { return call('getMeds', { date: S.date }).then(function (d) { S.meds = d; if (S.view === 'meds') render(); }).catch(fail); }
+function freqText(m) {
+  if (m.freq === 'daily') return t('f_daily');
+  if (m.freq.indexOf('days:') === 0) return m.freq.slice(5).split(',').map(function (x) { return t('wds')[+x]; }).join(', ');
+  if (m.freq.indexOf('every:') === 0) return t('everyDays', { n: m.freq.slice(6) });
+  return '';
+}
+function viewMeds() {
+  var d = S.meds, U = S.ui;
+  if (!d) return '<div class="loading">' + esc(t('loading')) + '</div>';
+  var f = U.medFilter || 'all';
+  var ok = function (o) { return f === 'all' || o === f; };
+  var OC = { arpita: '#9A3412', mehul: '#0F766E', shlok: '#DB2777' };
+  var out = '<div class="wrap"><div class="muted" style="line-height:1.6">' + esc(t('androidRem')) + '</div><div class="chips">' + ['all', 'arpita', 'mehul', 'shlok'].map(function (o) {
+    return '<button class="chip' + (f === o ? ' on' : '') + '" data-a="medFilter" data-o="' + o + '">' + esc(o === 'all' ? t('all') : ownerName(o)) + '</button>'; }).join('') + '</div>';
+  var today = d.today.filter(function (x) { return ok(x.owner); });
+  out += '<div class="card"><h3>' + esc(t('todayDoses')) + '</h3>' + (today.length ? today.map(function (x) {
+    return '<button class="tline2" data-a="doseToggle" data-k="' + esc(x.key) + '"><span class="tt">' + esc(x.time) + '</span><span style="flex:1;display:flex;flex-direction:column;text-align:left"><span style="font-size:14px;font-weight:600">' + esc(x.name) + '</span>' +
+      '<small class="muted">' + esc(ownerName(x.owner) + (x.dose ? ' · ' + x.dose : '') + (x.note ? ' · ' + x.note : '')) + '</small></span>' +
+      (x.takenAt ? '<b class="small" style="color:#047857">' + esc(x.takenAt) + ' ✓</b>' : '<span class="btn" style="height:34px;font-size:12px;background:#047857;display:inline-flex;align-items:center">' + esc(t('taken')) + '</span>') + '</button>';
+  }).join('') : '<div class="muted">' + esc(t('noMeds')) + '</div>') + '</div>';
+  out += '<div class="between" style="align-items:center"><h3 style="margin:0;font-size:15px">' + esc(t('activeMeds')) + '</h3><button class="btn" style="background:#047857;height:38px" data-a="medNew">' + esc(t('newMed')) + '</button></div>';
+  d.meds.filter(function (m) { return ok(m.owner); }).forEach(function (m) {
+    out += '<div class="card" style="gap:6px"><div class="between" style="align-items:center"><b style="font-size:15px">' + esc(m.name) + '</b><span class="small" style="font-weight:700;color:' + OC[m.owner] + ';background:' + OC[m.owner] + '1A;border-radius:10px;padding:2px 8px">' + esc(ownerName(m.owner)) + '</span></div>' +
+      '<div class="muted">' + esc([m.dose, m.note].filter(Boolean).join(' · ')) + '</div><div class="row" style="flex-wrap:wrap;gap:6px">' + m.times.map(function (x) { return '<b class="small" style="background:#F1EDE6;border-radius:8px;padding:2px 8px">' + esc(x) + '</b>'; }).join('') +
+      '<span class="muted">· ' + esc(freqText(m)) + ' · ' + esc(m.end ? t('untilD', { d: shortDate(m.end) }) : t('ongoing')) + '</span></div>' +
+      '<div class="row"><small style="flex:1;color:#047857;font-weight:600">' + esc(t('remOn')) + '</small><button class="link" data-a="medEdit" data-id="' + m.id + '">' + esc(t('editMed')) + '</button><button class="link" style="color:#9F1239" data-a="medStop" data-id="' + m.id + '">' + esc(t('stopMed')) + '</button></div></div>';
+  });
+  return out + '</div>';
+}
+function medForm() {
+  var f = S.ui.mf;
+  var seg = ['daily', 'days', 'every'].map(function (k) { return '<button class="' + (f.fk === k ? 'on' : '') + '" data-a="mfFreq" data-k="' + k + '">' + esc(t('f_' + k)) + '</button>'; }).join('');
+  var h = '<div style="display:flex;flex-direction:column;gap:10px"><h3 style="margin:0;color:#065F46">' + esc(f.id ? t('editMed') : t('newMed')) + '</h3>' +
+    '<input id="mfN" placeholder="' + esc(t('medName')) + '" value="' + esc(f.name) + '" data-in="mfName">' +
+    '<div class="row"><input id="mfD" placeholder="' + esc(t('dose')) + '" value="' + esc(f.dose) + '" data-in="mfDose"><select id="mfO" aria-label="' + esc(t('forWhom')) + '" data-ch="mfOwner">' +
+    ['arpita', 'mehul', 'shlok'].map(function (o) { return '<option value="' + o + '"' + (f.owner === o ? ' selected' : '') + '>' + esc(ownerName(o)) + '</option>'; }).join('') + '</select></div>' +
+    '<input id="mfNote" placeholder="' + esc(t('medNote')) + '" value="' + esc(f.note) + '" data-in="mfNote">' +
+    '<div class="small">' + esc(t('times')) + '</div><div class="row" style="flex-wrap:wrap">' + f.times.map(function (x, i) {
+      return '<span class="row" style="gap:2px"><input id="mft' + i + '" type="time" style="width:116px;padding:6px" value="' + esc(x) + '" data-ch="mfTime" data-i="' + i + '"><button class="iconbtn" data-a="mfDelTime" data-i="' + i + '" aria-label="×">×</button></span>'; }).join('') +
+    '<button class="btn ghost" style="height:36px;font-size:12px" data-a="mfAddTime">' + esc(t('addTime')) + '</button></div>' +
+    '<div class="small">' + esc(t('freq')) + '</div><div class="lang" style="align-self:flex-start">' + seg + '</div>';
+  if (f.fk === 'days') h += '<div class="chips">' + [1, 2, 3, 4, 5, 6, 0].map(function (w) { var on = f.days.indexOf(w) >= 0; return '<button class="chip' + (on ? ' on' : '') + '" data-a="mfDay" data-w="' + w + '">' + esc(t('wds')[w]) + '</button>'; }).join('') + '</div>';
+  if (f.fk === 'every') h += '<div class="row"><label class="small" for="mfE">' + esc(t('everyN')) + '</label><input id="mfE" type="number" min="2" style="width:90px" value="' + esc(f.every) + '" data-in="mfEvery"></div>';
+  h += '<div class="row"><label class="small" style="width:60px" for="mfS">' + esc(t('startD')) + '</label><input id="mfS" type="date" value="' + esc(f.start) + '" data-ch="mfStart"></div>' +
+    '<div class="row"><label class="small" style="width:60px" for="mfX">' + esc(t('endD')) + '</label><input id="mfX" type="date" value="' + esc(f.end) + '" data-ch="mfEnd"></div>' +
+    '<button class="btn wide big" style="background:#047857" data-a="mfSave">' + esc(t('saveMed')) + '</button></div>';
+  return h;
+}
+function syncReminders() {
+  if (!window.AndroidBridge || !S.token) return;
+  call('myReminders').then(function (r) { try { window.AndroidBridge.setReminders(JSON.stringify(r)); } catch (e) {} }).catch(function () {});
+}
+
+// ------------------------------------------------------------------ reading
+function loadReading() { return call('getReading').then(function (d) { S.reading = d; if (S.view === 'reading') render(); }).catch(fail); }
+function viewReading() {
+  var d = S.reading, U = S.ui, L = U.lf = U.lf || { mediaId: '', text: '', progress: '', newOpen: false, nt: { type: 'book', title: '', total: '' }, filter: 'all' };
+  if (!d) return '<div class="loading">' + esc(t('loading')) + '</div>';
+  var active = d.media.filter(function (m) { return m.status === 'active'; }), doneM = d.media.filter(function (m) { return m.status === 'done'; });
+  var MC = { book: '#B45309', movie: '#BE123C', doc: '#0F766E', series: '#6D28D9', podcast: '#1D4ED8', video: '#5B6468' };
+  var out = '<div class="wrap"><div class="card" style="background:#FFF8E7"><h3 style="color:#78350F">' + esc(t('learnT')) + '</h3>' +
+    '<select id="lfM" data-ch="lfMedia"><option value="">' + esc(t('pickMedia')) + '</option>' + active.map(function (m) { return '<option value="' + m.id + '"' + (L.mediaId === m.id ? ' selected' : '') + '>' + esc(m.title + ' (' + t('mt_' + m.type) + ')') + '</option>'; }).join('') +
+    '<option value="__new__"' + (L.newOpen ? ' selected' : '') + '>' + esc(t('newMedia')) + '</option></select>';
+  if (L.newOpen) out += '<div class="chips">' + ['book', 'movie', 'doc', 'series', 'podcast', 'video'].map(function (k) { return '<button class="chip' + (L.nt.type === k ? ' on' : '') + '" data-a="lfType" data-k="' + k + '">' + esc(t('mt_' + k)) + '</button>'; }).join('') + '</div>' +
+    '<input id="lfTitle" placeholder="' + esc(t('mediaTitle')) + '" value="' + esc(L.nt.title) + '" data-in="lfTitle"><input id="lfTotal" type="number" placeholder="' + esc(t('mediaTotal')) + '" value="' + esc(L.nt.total) + '" data-in="lfTotal">';
+  out += '<input id="lfP" type="number" inputmode="numeric" placeholder="' + esc(t('progressPh')) + '" value="' + esc(L.progress) + '" data-in="lfProgress">' +
+    '<textarea id="lfText" rows="3" placeholder="' + esc(t('learnPh')) + '" data-in="lfText">' + esc(L.text) + '</textarea>' +
+    '<div class="row"><button class="btn wide" style="background:#78350F;flex:1" data-a="lfSave">' + esc(t('save')) + '</button>' + (L.mediaId ? '<button class="btn ghost" data-a="lfFinish">' + esc(t('finished')) + '</button>' : '') + '</div></div>';
+  if (active.length) out += '<h3 style="margin:4px 0 0;font-size:15px">' + esc(t('nowReading')) + '</h3>' + active.map(function (m) {
+    var pc = m.total ? Math.min(100, Math.round(m.progress * 100 / m.total)) : 0;
+    return '<div class="card" style="flex-direction:row;align-items:center;gap:12px"><i style="width:40px;height:54px;border-radius:6px;background:' + MC[m.type] + ';flex-shrink:0"></i><div style="flex:1;display:flex;flex-direction:column;gap:4px"><b>' + esc(m.title) + '</b>' +
+      '<small class="muted">' + esc(t('mt_' + m.type) + ' · ' + nameOf(m.owner)) + '</small>' + (m.total ? '<div class="pbar"><div style="width:' + pc + '%;background:' + MC[m.type] + '"></div></div><small class="muted">' + m.progress + ' / ' + m.total + '</small>' : '') + '</div></div>';
+  }).join('');
+  var titles = {}; d.media.forEach(function (m) { titles[m.id] = m.title; });
+  out += '<h3 style="margin:4px 0 0;font-size:15px">' + esc(t('ourLearn')) + '</h3>' + (d.learnings.length ? d.learnings.map(function (l) {
+    return '<div class="card" style="gap:6px"><div class="between small"><b style="color:' + UC[l.owner] + '">' + esc(nameOf(l.owner)) + '</b><span class="muted">' + esc(l.date === today() ? t('dueToday') : shortDate(l.date)) + '</span></div>' +
+      '<small class="muted">' + esc((titles[l.mediaId] || '') + (l.progress ? ' · ' + l.progress : '')) + '</small>' + (l.text ? '<div style="font-size:14px;line-height:1.6">' + esc(l.text) + '</div>' : '') + '</div>';
+  }).join('') : '<div class="muted">' + esc(t('noLearn')) + '</div>');
+  if (doneM.length) out += '<div class="card"><h3>' + esc(t('doneShelf')) + ' · ' + doneM.length + '</h3>' + doneM.map(function (m) {
+    return '<div class="between small" style="padding:4px 0;border-top:1px solid #F1EDE6;align-items:center"><span>' + esc(m.title) + ' <span class="muted">· ' + esc(t('mt_' + m.type)) + '</span></span><button class="link" data-a="lfReopen" data-id="' + m.id + '">' + esc(t('reopen')) + '</button></div>'; }).join('') + '</div>';
+  return out + '</div>';
+}
+
+// ------------------------------------------------------------------ more, ours (trimmed), report learnings
+function viewMore() {
+  var item = function (v, label, sub, col) {
+    return '<button class="card" style="flex-direction:row;align-items:center;border:none;text-align:left;font-family:inherit" data-a="go" data-v="' + v + '"><i style="width:10px;height:40px;border-radius:5px;background:' + col + '"></i><span style="flex:1;display:flex;flex-direction:column"><b style="font-size:16px">' + esc(label) + '</b>' + (sub ? '<small class="muted">' + esc(sub) + '</small>' : '') + '</span><span style="font-size:20px;color:#5B6468">›</span></button>';
+  };
+  return '<div class="wrap">' + item('meds', t('medsT'), '', '#047857') + item('reading', t('readT'), '', '#78350F') + item('ours', t('oursT'), '', '#6D28D9') +
+    item('partner', t('partnerDay', { n: nameOf(other(S.user)) }), '', UC[other(S.user)]) + item('settings', t('settingsT'), t('langT') + ' · PIN · Gemini', '#5B6468') + '</div>';
+}
+var viewOursOld = viewOurs;
+viewOurs = function () {
+  var html = viewOursOld();
+  if (!S.shared) return html;
+  // drop the parts that moved to Shlok's section (night wakings, bedtime, story)
+  var tmp = document.createElement('div'); tmp.innerHTML = html;
+  var cards = tmp.querySelectorAll('.card');
+  Array.prototype.forEach.call(cards, function (c) {
+    if (c.querySelector('[data-a="wake"]') || c.querySelector('[data-a="storySave"]')) c.parentNode.removeChild(c);
+  });
+  var s = S.shared, mineKey = S.user === 'mehul' ? 'phonesM' : 'phonesA';
+  var ph = '<div class="card"><h3>' + esc(t('phonesT')) + '</h3><div class="row small"><span style="color:' + UC.mehul + '">' + esc(t('mehul')) + ' ' + (s.today.phonesM ? '✓' : '–') + '</span><span style="color:' + UC.arpita + '">' + esc(t('arpita')) + ' ' + (s.today.phonesA ? '✓' : '–') + '</span></div>' +
+    '<button class="btn ' + (s.today[mineKey] ? 'teal' : 'ghost') + '" data-a="phones">' + esc(s.today[mineKey] ? t('ksMine') : t('ksMineNo')) + '</button></div>';
+  var wrap = tmp.querySelector('.wrap'); if (wrap) wrap.insertAdjacentHTML('beforeend', ph);
+  return tmp.innerHTML;
+};
+var viewReportOld = viewReport;
+viewReport = function () {
+  var html = viewReportOld(), r = S.reports[S.weekStart || weekStart(S.date)];
+  if (!r) return html;
+  var extra = '';
+  ['arpita', 'mehul'].forEach(function (u) {
+    var p = r.stats.people[u], ls2 = p && p.learnings || [];
+    if (!ls2.length) return;
+    extra += '<div class="card" style="background:#FFF8E7"><h3 style="color:#78350F">' + esc(t('repLearn')) + ' · ' + esc(nameOf(u)) + '</h3>' + ls2.slice(-5).map(function (l) {
+      return '<div class="small" style="line-height:1.6"><b>' + esc(l.title) + '</b>: ' + esc(l.text) + '</div>'; }).join('') + '</div>';
+  });
+  return html.replace(/<\/div>$/, extra + '</div>');
+};
+var viewSettingsOld = viewSettings;
+viewSettings = function () {
+  var html = viewSettingsOld();
+  var top2 = '<div class="card"><div class="between" style="align-items:center"><h3>' + esc(t('langT')) + '</h3>' + langToggle() + '</div>' +
+    '<div class="between" style="align-items:center"><span class="small">' + esc(t('loggedAs', { n: nameOf(S.user) })) + '</span><button class="btn ghost" data-a="logout">' + esc(t('logout')) + '</button></div></div>';
+  return html.replace('<div class="wrap">', '<div class="wrap">' + top2);
+};
+
+// ------------------------------------------------------------------ data + handlers
+function loadDay(owner, silent) {
+  var date = S.date;
+  if (!silent && !S.days[owner + date]) render();
+  return call('getDay', { owner: owner, date: date }).then(function (d) {
+    S.days[owner + date] = d;
+    if (!S.ui.night[owner + date]) S.ui.night[owner + date] = d.night ? JSON.parse(JSON.stringify(d.night)) : { moods: [], energy: 0, improve: [], tomorrow: '', note: '' };
+    if (S.ui.man[owner] === undefined) S.ui.man[owner] = d.manifest.text;
+    if (isDayView() && dayOwner() === owner) render();
+    if (owner === S.user && date === today()) syncReminders();
+  }).catch(fail);
+}
+function loadView() {
+  var v = S.view;
+  if (v === 'ours') loadShared();
+  else if (v === 'report') loadReport();
+  else if (v === 'fin') loadFin();
+  else if (v === 'shlok') loadShlok();
+  else if (v === 'meds') loadMeds();
+  else if (v === 'reading') loadReading();
+  else if (v === 'settings') call('getSettings').then(function (s) { S.settings = s; render(); }).catch(fail);
+  else if (isDayView()) loadDay(dayOwner());
+  render();
+}
+function startApp() { S.view = 'today'; S.ui = freshUi(); loadView(); }
+var freshUiOld = freshUi;
+freshUi = function () { var u = freshUiOld(); u.modal = null; u.snooze = {}; u.openPart = undefined; return u; };
+S.ui = freshUi();
+
+Object.assign(H, {
+  noop: function () {},
+  go: function (el) { S.view = el.dataset.v; S.ui.modal = null; if (S.view === 'report') S.weekStart = weekStart(S.date); loadView(); try { window.scrollTo(0, 0); } catch (e) {} },
+  day: function (el) { S.date = addDays(S.date, +el.dataset.d); if (S.date > today()) S.date = today(); var v = S.view; S.ui = freshUi(); S.view = v; loadView(); },
+  part: function (el) { S.ui.openPart = S.ui.openPart === el.dataset.p ? '' : el.dataset.p; render(); },
+  tapTask: function (el) {
+    if (lp.fired) { lp.fired = false; return; }
+    var x = taskById(el.dataset.id); if (!x) return;
+    if (x.s === 'todo') { x.s = 'done'; x.a = nowHM(); x.r = ''; render(); logTask(x); }
+    else openModal({ type: 'task', id: x.id });
+  },
+  done: function (el) { var x = taskById(el.dataset.id); x.s = 'done'; x.a = nowHM(); x.r = ''; S.ui.modal = null; render(); logTask(x); },
+  reason: function (el) { var x = taskById(el.dataset.id); x.s = 'skip'; x.r = el.dataset.r; x.a = ''; S.ui.modal = null; render(); logTask(x); },
+  addReason: function (el) {
+    var txt = (S.ui.newReason || '').trim(); if (!txt) return;
+    var x = taskById(el.dataset.id), d = curDay(); (d.options.reasons = d.options.reasons || []).push(txt);
+    x.s = 'skip'; x.r = txt; S.ui.newReason = ''; S.ui.modal = null; render();
+    call('addOption', { type: 'reasons', value: txt }).catch(fail); logTask(x);
+  },
+  undo: function (el) { var x = taskById(el.dataset.id); x.s = 'todo'; x.a = ''; x.r = ''; S.ui.modal = null; render(); logTask(x, { qty: '' }); },
+  openM: function (el) { openModal({ type: el.dataset.m }); },
+  modalClose: function () { S.ui.modal = null; render(); },
+  modalBg: function (el, e) { if (e.target === el) H.modalClose(); },
+  ntAdd: function () {
+    var nt = S.ui.nt; if (!nt.name.trim()) { document.getElementById('ntName').focus(); return; }
+    call('addTask', { time: nt.time || nowHM(), name: nt.name, kind: nt.kind, daily: nt.daily, date: S.date }).then(function () { S.ui.nt = { time: '', name: '', kind: nt.kind, daily: true }; S.ui.modal = null; refreshDay(); toast(t('saved')); }).catch(fail);
+  },
+  manSave: function () { call('saveManifest', { text: S.ui.man[S.user] || '' }).then(function () { toast(t('saved')); refreshDay(); }).catch(fail); },
+  doseTake: function (el) { setDose(el.dataset.k, true); },
+  doseLater: function (el) { S.ui.snooze[el.dataset.k] = true; render(); },
+  doseToggle: function (el) { var xs = findDose(el.dataset.k); if (xs.length) setDose(el.dataset.k, !xs[0].takenAt); },
+  // shlok
+  shlokM: function (el) { S.ui.sf = null; openModal({ type: 'shlok', kind: el.dataset.k }); },
+  sfExtra: function (el) { S.ui.sf.extra = el.dataset.k; render(); },
+  sfSave: function () {
+    var f = S.ui.sf;
+    var done = function () { S.ui.modal = null; S.ui.sf = null; loadShlok(); toast(t('saved')); };
+    if (f.kind === 'story') {
+      if (!f.value.trim()) return;
+      Promise.all([call('setFamily', { date: S.date, field: 'storyBy', value: f.by }), call('setFamily', { date: S.date, field: 'story', value: f.value })]).then(done).catch(fail);
+      return;
+    }
+    if ((f.kind === 'milk' && !(+f.value > 0)) || ((f.kind === 'food' || f.kind === 'word') && !f.value.trim())) { var i = document.getElementById('sfV'); if (i) i.focus(); return; }
+    call('shlokAdd', { date: S.date, type: f.kind, time: f.time, value: f.value, extra: f.extra }).then(done).catch(fail);
+  },
+  shlokDel: function (el) { S.shlok.logs = S.shlok.logs.filter(function (l) { return l.id !== el.dataset.id; }); render(); call('shlokDel', { id: el.dataset.id }).then(loadShlok).catch(fail); },
+  wake2: function (el) {
+    var s = S.shlok, cur = s.wakings === null ? 0 : s.wakings, v = Math.max(0, Math.min(9, cur + (+el.dataset.d)));
+    if (s.wakings === null && +el.dataset.d < 0) v = 0;
+    s.wakings = v; render(); call('setFamily', { date: S.date, field: 'nightWakings', value: v }).catch(fail);
+  },
+  // meds
+  medFilter: function (el) { S.ui.medFilter = el.dataset.o; render(); },
+  medNew: function () { S.ui.mf = { id: '', name: '', dose: '', note: '', owner: S.user, times: ['09:00'], fk: 'daily', days: [], every: '2', start: today(), end: '' }; openModal({ type: 'med' }); },
+  medEdit: function (el) {
+    var m = S.meds.meds.filter(function (x) { return x.id === el.dataset.id; })[0]; if (!m) return;
+    var fk = m.freq === 'daily' ? 'daily' : m.freq.indexOf('days:') === 0 ? 'days' : 'every';
+    S.ui.mf = { id: m.id, name: m.name, dose: m.dose, note: m.note, owner: m.owner, times: m.times.slice(), fk: fk,
+      days: fk === 'days' ? m.freq.slice(5).split(',').map(Number) : [], every: fk === 'every' ? m.freq.slice(6) : '2', start: m.start, end: m.end };
+    openModal({ type: 'med' });
+  },
+  medStop: function (el) {
+    var m = S.meds.meds.filter(function (x) { return x.id === el.dataset.id; })[0];
+    if (!m || !window.confirm(t('stopMed') + ': ' + m.name + '?')) return;
+    call('deleteMed', { id: m.id }).then(function () { loadMeds(); syncReminders(); }).catch(fail);
+  },
+  mfFreq: function (el) { S.ui.mf.fk = el.dataset.k; render(); },
+  mfDay: function (el) { toggleIn(S.ui.mf.days, +el.dataset.w); render(); },
+  mfAddTime: function () { S.ui.mf.times.push('21:00'); render(); },
+  mfDelTime: function (el) { S.ui.mf.times.splice(+el.dataset.i, 1); render(); },
+  mfSave: function () {
+    var f = S.ui.mf;
+    var freq = f.fk === 'daily' ? 'daily' : f.fk === 'days' ? (f.days.length ? 'days:' + f.days.sort().join(',') : 'daily') : 'every:' + Math.max(2, parseInt(f.every, 10) || 2);
+    call('saveMed', { id: f.id, name: f.name, dose: f.dose, note: f.note, owner: f.owner, times: f.times, freq: freq, start: f.start, end: f.end })
+      .then(function () { S.ui.modal = null; toast(t('saved')); loadMeds(); S.days = {}; syncReminders(); }).catch(fail);
+  },
+  // reading
+  lfType: function (el) { S.ui.lf.nt.type = el.dataset.k; render(); },
+  lfSave: function () {
+    var L = S.ui.lf;
+    var go = function (mediaId) {
+      return call('addLearning', { mediaId: mediaId, text: L.text, progress: L.progress, date: S.date }).then(function () {
+        S.ui.lf = { mediaId: mediaId, text: '', progress: '', newOpen: false, nt: { type: 'book', title: '', total: '' } }; toast(t('saved')); loadReading();
+      });
+    };
+    if (L.newOpen) {
+      if (!L.nt.title.trim()) { document.getElementById('lfTitle').focus(); return; }
+      call('saveMedia', { type: L.nt.type, title: L.nt.title, total: L.nt.total }).then(function (r) { return L.text.trim() || L.progress ? go(r.id) : (S.ui.lf.newOpen = false, S.ui.lf.mediaId = r.id, loadReading()); }).catch(fail);
+    } else if (L.mediaId) go(L.mediaId).catch(fail);
+    else { document.getElementById('lfM').focus(); }
+  },
+  lfFinish: function () { var id = S.ui.lf.mediaId; S.ui.lf.mediaId = ''; call('finishMedia', { id: id }).then(loadReading).catch(fail); },
+  lfReopen: function (el) { call('finishMedia', { id: el.dataset.id, undo: true }).then(loadReading).catch(fail); }
+});
+Object.assign(IN, {
+  man: function (el) { S.ui.man[S.user] = el.value; },
+  sfValue: function (el) { S.ui.sf.value = el.value; },
+  mfName: function (el) { S.ui.mf.name = el.value; }, mfDose: function (el) { S.ui.mf.dose = el.value; }, mfNote: function (el) { S.ui.mf.note = el.value; }, mfEvery: function (el) { S.ui.mf.every = el.value; },
+  lfText: function (el) { S.ui.lf.text = el.value; }, lfProgress: function (el) { S.ui.lf.progress = el.value; },
+  lfTitle: function (el) { S.ui.lf.nt.title = el.value; }, lfTotal: function (el) { S.ui.lf.nt.total = el.value; }
+});
+Object.assign(CH, {
+  sfTime: function (el) { S.ui.sf.time = el.value; }, sfEnd: function (el) { S.ui.sf.extra = el.value; }, sfBy: function (el) { S.ui.sf.by = el.value; },
+  bed2: function (el) { S.shlok.bedtime = el.value; call('setFamily', { date: S.date, field: 'shlokBedtime', value: el.value }).catch(fail); },
+  mfOwner: function (el) { S.ui.mf.owner = el.value; }, mfTime: function (el) { S.ui.mf.times[+el.dataset.i] = el.value; },
+  mfStart: function (el) { S.ui.mf.start = el.value; }, mfEnd: function (el) { S.ui.mf.end = el.value; },
+  lfMedia: function (el) { var L = S.ui.lf; if (el.value === '__new__') { L.newOpen = true; L.mediaId = ''; } else { L.newOpen = false; L.mediaId = el.value; } render(); }
+});
+
 // ------------------------------------------------------------------ events
 document.addEventListener('click', function (e) {
   var el = e.target.closest('[data-a]'); if (!el || el.disabled) return;
@@ -1222,31 +1803,29 @@ document.addEventListener('click', function (e) {
 document.addEventListener('input', function (e) { var el = e.target.closest('[data-in]'); if (el && IN[el.dataset.in]) IN[el.dataset.in](el); });
 document.addEventListener('change', function (e) { var el = e.target.closest('[data-ch]'); if (el && CH[el.dataset.ch]) CH[el.dataset.ch](el); });
 
-// long-press on a task row opens one-thing-now; swipe inside focus card moves between tasks
-var lp = { timer: null, x: 0, y: 0, el: null }, sw = { x: null };
+// long-press on a task row opens its options sheet
+var lp = { timer: null, x: 0, y: 0, el: null, fired: false };
 document.addEventListener('pointerdown', function (e) {
-  var f = e.target.closest('[data-swipe]');
-  if (f) { sw.x = e.target.closest('input,select,textarea,button') ? null : e.clientX; return; }
   var row = e.target.closest('[data-lp]');
-  if (!row || S.view !== S.user || e.target.closest('button,input,select,textarea,label')) return;
+  lp.fired = false;
+  if (!row || S.view !== 'today') return;
   lp.x = e.clientX; lp.y = e.clientY; lp.el = row; row.classList.add('press');
   lp.timer = setTimeout(function () {
-    row.classList.remove('press'); lp.el = null;
-    S.ui.focus = +row.dataset.lp; S.ui.sheet = null; render();
+    row.classList.remove('press'); lp.el = null; lp.fired = true;
+    openModal({ type: 'task', id: row.dataset.lp });
     if (navigator.vibrate) try { navigator.vibrate(20); } catch (x) {}
-  }, 650);
+  }, 600);
 });
 function lpCancel() { clearTimeout(lp.timer); if (lp.el) lp.el.classList.remove('press'); lp.el = null; }
 document.addEventListener('pointermove', function (e) { if (lp.el && (Math.abs(e.clientX - lp.x) > 10 || Math.abs(e.clientY - lp.y) > 10)) lpCancel(); });
-document.addEventListener('pointerup', function (e) {
-  lpCancel();
-  if (sw.x !== null && S.ui.focus !== null) { var dx = e.clientX - sw.x; sw.x = null; if (dx < -50) goFocus(1); else if (dx > 50) goFocus(-1); }
-});
+document.addEventListener('pointerup', lpCancel);
 document.addEventListener('pointercancel', lpCancel);
 document.addEventListener('contextmenu', function (e) { if (e.target.closest('[data-lp]')) e.preventDefault(); });
 
 // ------------------------------------------------------------------ start
 window.SP = { S: S, H: H, render: render };
+window.addEventListener('focus', function () { if (S.token && S.view === 'today' && S.date === today()) refreshDay(); });
+document.addEventListener('visibilitychange', function () { if (!document.hidden && S.token && S.view === 'today' && S.date === today()) refreshDay(); });
 if (S.token) startApp(); else render();
 })();
 </script>

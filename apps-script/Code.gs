@@ -60,6 +60,7 @@ function api(token, action, payload) {
   var lock = null;
   try {
     if (typeof registerFinance_ === 'function') registerFinance_();
+    if (typeof registerLife_ === 'function') registerLife_();
     var fn = ACTIONS[action];
     if (!fn) throw new Error('Unknown action: ' + action);
     var user = (action === 'login' || action === 'ping') ? null : auth_(token);
@@ -168,6 +169,7 @@ function checkOwner_(user, owner) { if (owner && owner !== user) throw new Error
 
 function setup() {
   if (typeof registerFinance_ === 'function') registerFinance_();
+  if (typeof registerLife_ === 'function') registerLife_();
   var props = PropertiesService.getScriptProperties();
   var id = props.getProperty('SHEET_ID');
   var ss = id ? SpreadsheetApp.openById(id) : SpreadsheetApp.create("Shlok's Parents — Data");
@@ -399,7 +401,17 @@ function getDay_(user, p) {
     if (l.owner === owner && d >= ws && d <= addDays_(ws, 6) && l.status === 'done' && str_(l.qty)) { runs.n++; runs.km += +l.qty || 0; }
   });
   var exp = latestExperiments_(owner);
+  var doses = [], due = [];
+  if (typeof dosesFor_ === 'function') {
+    registerLife_();
+    doses = dosesFor_(date, [owner]);
+    if (owner === user && date === today_()) {
+      var nowT = nowTime_();
+      due = dosesFor_(date, [owner, 'shlok']).filter(function (x) { return !x.takenAt && x.time <= nowT; });
+    }
+  }
   return {
+    doses: doses, due: due,
     owner: owner, date: date, level: lv, maxLevel: MAX_LEVEL, tasks: tasks,
     water: water, waterGoal: waterGoal_(owner), meals: meals,
     med: med ? { t: str_(med.time) } : null, medFor: setting_('medFor', 'arpita').split(',').indexOf(owner) >= 0,
@@ -696,6 +708,14 @@ function weekStats_(ws) {
       wakeOk: wakeOk, suggestAdvance: wakeOk >= 5 && lv < MAX_LEVEL, suggestWater: waterOk >= 5
     };
   });
+  if (typeof registerLife_ === 'function') {
+    registerLife_();
+    var mt = {}; rows_('Media').forEach(function (m) { mt[m.id] = str_(m.title); });
+    rows_('Learnings').forEach(function (l) {
+      var d = str_(l.date); if (d < ws || d > we || !out.people[l.owner]) return;
+      (out.people[l.owner].learnings = out.people[l.owner].learnings || []).push({ date: d, title: mt[l.mediaId] || '', text: str_(l.text) });
+    });
+  }
   out.family = fam.map(function (f) { return { date: str_(f.date), wakings: str_(f.nightWakings), bedtime: str_(f.shlokBedtime) }; });
   return out;
 }

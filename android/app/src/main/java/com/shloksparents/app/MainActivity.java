@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -70,8 +74,29 @@ public class MainActivity extends Activity {
             }
         });
 
+        Reminders.createChannel(this);
+        web.addJavascriptInterface(new Bridge(), "AndroidBridge");
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 7);
+        }
+
         if (savedInstanceState != null) web.restoreState(savedInstanceState);
         else web.loadUrl(BuildConfig.APP_URL);
+    }
+
+    /** Called from the web app with the list of upcoming doses. */
+    private class Bridge {
+        @JavascriptInterface
+        public void setReminders(String json) { Reminders.replaceAll(getApplicationContext(), json); }
+
+        @JavascriptInterface
+        public boolean isAndroid() { return true; }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (web != null) web.evaluateJavascript("window.dispatchEvent(new Event('focus'))", null);
     }
 
     @Override

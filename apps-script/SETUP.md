@@ -1,11 +1,11 @@
 # Shlok's Parents: setup guide (Google Apps Script)
 
 You need about 15 minutes, a Google account (the one that will own the data), and these 7 files:
-`Code.gs`, `Finance.gs`, `Index.html`, `Css.html`, `Js.html`, `Logo.html`, `appsscript.json`.
+`Code.gs`, `Finance.gs`, `Life.gs`, `Index.html`, `Css.html`, `Js.html`, `Logo.html`, `appsscript.json`.
 
 ## 1. Create the project
 1. Open **script.google.com** and click **New project**. Rename it to **Shlok's Parents**.
-2. In the editor, `Code.gs` already exists. Delete everything in it and paste in the contents of **Code.gs**. Then click **+ → Script**, name it **Finance**, and paste in **Finance.gs**.
+2. In the editor, `Code.gs` already exists. Delete everything in it and paste in the contents of **Code.gs**. Then click **+ → Script**, name it **Finance**, and paste in **Finance.gs**. Do the same once more: **+ → Script**, name it **Life**, paste in **Life.gs**.
 3. Click **+ → HTML** four times and create files named exactly **Index**, **Css**, **Js** and **Logo** (the editor adds `.html` itself). Paste the matching file's contents into each one.
 4. Open **Project Settings (gear icon)** and tick **"Show appsscript.json manifest file in editor"**. Go back to the editor, open `appsscript.json`, and replace its contents with the provided **appsscript.json**.
 5. Save (Ctrl + S).
@@ -50,6 +50,16 @@ Without a key, the report still works using simple rules (counts and the most co
 1. Click **+ → Script**, name it **Finance**, and paste in **Finance.gs**. Replace **Code.gs**, **Js.html** and **Css.html** with the new versions.
 2. Run **setup** once more. It only adds the new sheets (Expenses, Receipts, Rules, Recurring, FinReports) and the 5-minute screenshot reader. Your existing data is not touched.
 3. **Deploy → Manage deployments → ✏ → New version → Deploy**.
+
+## Update: simple design, Medicine, Shlok, Reading (Nov 2026)
+1. Click **+ → Script**, name it **Life**, and paste in **Life.gs**.
+2. Replace **Code.gs**, **Finance.gs**, **Js.html** and **Css.html** with the new versions.
+3. Choose `setup` in the function dropdown and click **Run** (this adds the sheets Medicines, MedLog, ShlokLog, Media and Learnings).
+4. **Deploy → Manage deployments → ✏️ → Version: New version → Deploy.** The link stays the same.
+5. GitHub: upload the new `docs/index.html`, `docs/sw.js` and the `android/` folder. The Android app builds again by itself (Actions tab); install the new APK over the old one.
+6. On Android, allow notifications when the app asks. On Android 12, if reminders come late, open Settings → Apps → Shlok's Parents → Alarms & reminders → Allow.
+
+Medicine reminders: Android rings at the time even when the app is closed. iPhone shows pending medicines at the top of Today whenever you open the app. Both phones get Shlok's medicine reminders.
 
 ## If something goes wrong
 - **Screenshots stay on "Waiting for AI"**: add the Gemini key in ⚙ Settings, or tap **Read now**. The automatic reader runs every 5 minutes.

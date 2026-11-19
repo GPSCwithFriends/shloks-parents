@@ -37,6 +37,9 @@ function registerFinance_() {
   ACTIONS.addRecurring = addRecurring_;
   ACTIONS.deleteRecurring = deleteRecurring_;
   ACTIONS.finAnalysis = finAnalysis_;
+  ACTIONS.testGemini = testGemini_;
+  ACTIONS.retryReceipt = retryReceipt_;
+  WRITES.retryReceipt = 1;
 }
 
 // ---------------------------------------------------------------- helpers
@@ -136,6 +139,7 @@ function uploadReceipt_(user, p) {
 /** Time-driven (every 5 minutes) and "Read now": reads pending screenshots with Gemini. */
 function processReceipts() {
   registerFinance_();
+  if (typeof registerLife_ === 'function') registerLife_();
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(2000)) return 0;
   try { return processReceiptsLocked_(); } finally { lock.releaseLock(); }
@@ -216,16 +220,46 @@ function receiptPrompt_() {
 }
 
 function geminiJson_(parts, key) {
-  var model = setting_('geminiModel', 'gemini-2.5-flash');
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
-  var res = UrlFetchApp.fetch(url, {
-    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-    payload: JSON.stringify({ contents: [{ role: 'user', parts: parts }], generationConfig: { responseMimeType: 'application/json', temperature: 0.1 } })
-  });
-  if (res.getResponseCode() !== 200) throw new Error('Gemini ' + res.getResponseCode() + ': ' + res.getContentText().slice(0, 160));
-  var body = JSON.parse(res.getContentText());
-  var text = body.candidates[0].content.parts.map(function (x) { return x.text || ''; }).join('');
-  return JSON.parse(text.replace(/^```json|```$/g, '').trim());
+  var first = setting_('geminiModel', 'gemini-2.5-flash');
+  var models = [first, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest'].filter(function (m, i, a) { return m && a.indexOf(m) === i; });
+  var lastErr = '';
+  for (var i = 0; i < models.length; i++) {
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(models[i]) + ':generateContent?key=' + encodeURIComponent(key);
+    var res = UrlFetchApp.fetch(url, {
+      method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+      payload: JSON.stringify({ contents: [{ role: 'user', parts: parts }], generationConfig: { responseMimeType: 'application/json', temperature: 0.1 } })
+    });
+    var code = res.getResponseCode(), txt = res.getContentText();
+    if (code === 404) { lastErr = 'Model ' + models[i] + ' not found'; continue; }       // try the next model name
+    if (code !== 200) {
+      var msg = txt; try { msg = JSON.parse(txt).error.message; } catch (e) {}
+      throw new Error('Gemini ' + code + ': ' + String(msg).slice(0, 180));
+    }
+    var body = JSON.parse(txt);
+    var cand = body.candidates && body.candidates[0];
+    if (!cand || !cand.content) throw new Error('Gemini gave no answer (' + (cand && cand.finishReason || 'blocked') + ')');
+    var text = cand.content.parts.filter(function (x) { return !x.thought; }).map(function (x) { return x.text || ''; }).join('');
+    var s = text.indexOf('{'), e2 = text.lastIndexOf('}');
+    if (s < 0 || e2 < s) throw new Error('Gemini reply was not JSON');
+    if (models[i] !== first) setSetting_('geminiModel', models[i]);                         // remember the model that works
+    return JSON.parse(text.slice(s, e2 + 1));
+  }
+  throw new Error(lastErr || 'No Gemini model available');
+}
+
+/** Settings button: checks that the Gemini key works. */
+function testGemini_(user, p) {
+  var key = String(p.key || setting_('geminiKey', '')).trim();
+  if (!key) throw new Error('No key saved');
+  var j = geminiJson_([{ text: 'Reply with this JSON only: {"ok": true}' }], key);
+  return { ok: !!j.ok, model: setting_('geminiModel', '') };
+}
+function retryReceipt_(user, p) {
+  var r = find_('Receipts', function (x) { return x.id === p.id; });
+  if (!r) throw new Error('Not found');
+  if (!str_(r.photoIds)) throw new Error('Photo already deleted');
+  update_('Receipts', r._row, { status: 'pending', note: '' });
+  return processReceipts();
 }
 
 // ---------------------------------------------------------------- recurring
