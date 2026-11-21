@@ -26,7 +26,7 @@ var SCHEMA = {
   Visits:   ['id', 'date', 'who', 'by'],
   Night:    ['date', 'owner', 'moods', 'energy', 'improve', 'tomorrow', 'note', 'ts'],
   Manifest: ['owner', 'text', 'photoId', 'ts'],
-  Todos:    ['id', 'text', 'who', 'due', 'done', 'createdBy', 'createdAt', 'active', 'reminded'],
+  Todos:    ['id', 'text', 'who', 'due', 'done', 'createdBy', 'createdAt', 'active', 'reminded', 'star', 'doneBy', 'doneAt'],
   DelReq:   ['id', 'etype', 'eid', 'label', 'by', 'at', 'status', 'decidedBy', 'decidedAt'],
   Family:   ['date', 'nightWakings', 'shlokBedtime', 'phonesMehul', 'phonesArpita', 'storyBy', 'story'],
   Reports:  ['weekStart', 'json', 'ts'],
@@ -35,7 +35,11 @@ var SCHEMA = {
 
 // ---------------------------------------------------------------- web app
 
-function doGet() {
+function doGet(e) {
+  // background check from the Android app: only the nudge poll is allowed over GET
+  if (e && e.parameter && e.parameter.api === 'pollNudges') {
+    return ContentService.createTextOutput(api(e.parameter.token, 'pollNudges', {})).setMimeType(ContentService.MimeType.JSON);
+  }
   var t = HtmlService.createTemplateFromFile('Index');
   return t.evaluate()
     .setTitle("Shlok's Parents")
@@ -61,6 +65,7 @@ function api(token, action, payload) {
   try {
     if (typeof registerFinance_ === 'function') registerFinance_();
     if (typeof registerLife_ === 'function') registerLife_();
+    if (typeof registerDetox_ === 'function') registerDetox_();
     var fn = ACTIONS[action];
     if (!fn) throw new Error('Unknown action: ' + action);
     var user = (action === 'login' || action === 'ping') ? null : auth_(token);
@@ -76,7 +81,7 @@ function api(token, action, payload) {
 
 var WRITES = {
   login: 1, logout: 1, changePin: 1, setLang: 1, logTask: 1, addTask: 1, addOption: 1, addWater: 1, delWater: 1,
-  setMeal: 1, setMed: 1, addCall: 1, setWant: 1, addVisit: 1, saveNight: 1, saveManifest: 1, addTodo: 1, toggleTodo: 1,
+  setMeal: 1, setMed: 1, addCall: 1, setWant: 1, addVisit: 1, saveNight: 1, saveManifest: 1, addTodo: 1, toggleTodo: 1, starTodo: 1, delCall: 1, delVisit: 1, delTodo: 1,
   requestDelete: 1, decideDelete: 1, withdrawDelete: 1, setFamily: 1, generateReport: 1, setLevel: 1, acceptExp: 1, saveSettings: 1
 };
 
@@ -85,7 +90,7 @@ var ACTIONS = {
   getDay: getDay_, logTask: logTask_, addTask: addTask_, addOption: addOption_,
   addWater: addWater_, delWater: delWater_, setMeal: setMeal_, setMed: setMed_,
   addCall: addCall_, setWant: setWant_, addVisit: addVisit_, saveNight: saveNight_, saveManifest: saveManifest_,
-  getShared: getShared_, addTodo: addTodo_, toggleTodo: toggleTodo_,
+  getShared: getShared_, addTodo: addTodo_, toggleTodo: toggleTodo_, starTodo: starTodo_, delTodo: delTodo_, delCall: delCall_, delVisit: delVisit_,
   requestDelete: requestDelete_, decideDelete: decideDelete_, withdrawDelete: withdrawDelete_,
   setFamily: setFamily_, getReport: getReport_, generateReport: generateReport_, setLevel: setLevel_, acceptExp: acceptExp_,
   getSettings: getSettings_, saveSettings: saveSettings_
@@ -170,6 +175,7 @@ function checkOwner_(user, owner) { if (owner && owner !== user) throw new Error
 function setup() {
   if (typeof registerFinance_ === 'function') registerFinance_();
   if (typeof registerLife_ === 'function') registerLife_();
+  if (typeof registerDetox_ === 'function') registerDetox_();
   var props = PropertiesService.getScriptProperties();
   var id = props.getProperty('SHEET_ID');
   var ss = id ? SpreadsheetApp.openById(id) : SpreadsheetApp.create("Shlok's Parents — Data");
@@ -385,7 +391,7 @@ function getDay_(user, p) {
   });
   var med = find_('Medicine', function (m) { return str_(m.date) === date && m.owner === owner; });
   var calls = rows_('Calls').filter(function (c) { return str_(c.date) === date && c.owner === owner; })
-    .map(function (c) { return { t: str_(c.time), who: str_(c.who) }; });
+    .map(function (c) { return { id: c.id, t: str_(c.time), who: str_(c.who) }; });
   var wants = rows_('Lists').filter(function (l) { return l.list === 'callWant' && l.owner === owner && String(l.active) === '1'; })
     .map(function (l) { return str_(l.value); });
   var night = find_('Night', function (n) { return str_(n.date) === date && n.owner === owner; });
@@ -410,8 +416,10 @@ function getDay_(user, p) {
       due = dosesFor_(date, [owner, 'shlok']).filter(function (x) { return !x.takenAt && x.time <= nowT; });
     }
   }
+  var detoxDue = owner === user && date === today_() && typeof detoxDue_ === 'function' ? (registerDetox_(), detoxDue_(user)) : false;
+  var extra2 = owner === user && typeof myNudges_ === 'function' ? { nudges: (registerLife_(), myNudges_(user)), recentWater: waterRecent_(owner) } : { nudges: [], recentWater: [] };
   return {
-    doses: doses, due: due,
+    nudges: extra2.nudges, recentWater: extra2.recentWater, detoxDue: detoxDue, doses: doses, due: due,
     owner: owner, date: date, level: lv, maxLevel: MAX_LEVEL, tasks: tasks,
     water: water, waterGoal: waterGoal_(owner), meals: meals,
     med: med ? { t: str_(med.time) } : null, medFor: setting_('medFor', 'arpita').split(',').indexOf(owner) >= 0,
@@ -504,13 +512,33 @@ function addCall_(user, p) {
   if (w) update_('Lists', w._row, { active: '0' });
   return true;
 }
+/** Adds or removes names on the "want to call" (mine) or "want to visit" (both) list. value can hold several names. */
 function setWant_(user, p) {
   var list = p.list === 'visitWant' ? 'visitWant' : 'callWant';
   var owner = list === 'visitWant' ? 'both' : user;
-  var v = String(p.value || '').trim(); if (!v) throw new Error('Empty');
-  var w = find_('Lists', function (l) { return l.list === list && l.owner === owner && str_(l.value) === v; });
-  if (w) update_('Lists', w._row, { active: p.on ? '1' : '0', ts: nowIso_() });
-  else if (p.on) append_('Lists', { list: list, owner: owner, value: v, active: '1', ts: nowIso_() });
+  var vals = (Array.isArray(p.values) ? p.values : String(p.value || '').split(/[,\n]/)).map(function (v) { return String(v).trim(); })
+    .filter(function (v, i, a) { return v && a.indexOf(v) === i; });
+  if (!vals.length) throw new Error('Empty');
+  var all = rows_('Lists');
+  vals.forEach(function (v) {
+    var w = all.filter(function (l) { return l.list === list && l.owner === owner && str_(l.value) === v; })[0];
+    if (w) update_('Lists', w._row, { active: p.on ? '1' : '0', ts: nowIso_() });
+    else if (p.on) append_('Lists', { list: list, owner: owner, value: v, active: '1', ts: nowIso_() });
+    if (p.on) addOptionIfNew_(list === 'visitWant' ? 'homes' : 'people', v);
+  });
+  return true;
+}
+function addOptionIfNew_(type, v) {
+  try { if (!find_('Options', function (o) { return o.type === type && str_(o.value) === v; })) addOption_(null, { type: type, value: v }); } catch (e) {}
+}
+function delCall_(user, p) {
+  var r = find_('Calls', function (x) { return x.id === p.id && x.owner === user; });
+  if (r) deleteRow_('Calls', r._row);
+  return true;
+}
+function delVisit_(user, p) {
+  var r = find_('Visits', function (x) { return x.id === p.id; });
+  if (r) deleteRow_('Visits', r._row);
   return true;
 }
 function addVisit_(user, p) {
@@ -556,13 +584,15 @@ function appFolder_() {
 function getShared_(user, p) {
   var date = p.date || today_();
   var todos = rows_('Todos').filter(function (t) { return String(t.active) === '1'; }).map(function (t) {
-    return { id: t.id, text: str_(t.text), who: t.who, due: str_(t.due), done: String(t.done) === '1', by: t.createdBy };
+    return { id: t.id, text: str_(t.text), who: t.who, due: str_(t.due), done: String(t.done) === '1', by: t.createdBy,
+      star: String(t.star) === '1', doneBy: t.doneBy || '', doneAt: str_(t.doneAt) };
   });
   var reqs = rows_('DelReq');
   var pendingTodo = {};
   reqs.forEach(function (r) { if (r.status === 'pending' && r.etype === 'todo') pendingTodo[r.eid] = { id: r.id, by: r.by }; });
   todos.forEach(function (t) { t.del = pendingTodo[t.id] || null; });
-  todos.sort(function (a, b) { return (a.done - b.done) || ((a.due || '9') < (b.due || '9') ? -1 : 1); });
+  todos.sort(function (a, b) { return (a.done - b.done) || (b.star - a.star) || ((a.due || '9') < (b.due || '9') ? -1 : 1); });
+  todos = todos.filter(function (t) { return !t.done || t.doneAt.slice(0, 10) >= addDays_(date, -7) || !t.doneAt; }).slice(0, 60);
   var forMe = reqs.filter(function (r) { return r.status === 'pending' && r.by !== user; })
     .map(function (r) { return { id: r.id, etype: r.etype, label: str_(r.label), by: r.by, at: str_(r.at) }; });
   var recent = reqs.filter(function (r) { return r.status !== 'pending' && str_(r.decidedAt) >= addDays_(date, -3); })
@@ -576,26 +606,41 @@ function getShared_(user, p) {
       bedtime: f ? str_(f.shlokBedtime) : '', phonesM: f ? String(f.phonesMehul) === '1' : false, phonesA: f ? String(f.phonesArpita) === '1' : false });
   }
   var today = fam[date] || {};
-  var visits = rows_('Visits').map(function (v) { return { date: str_(v.date), who: str_(v.who) }; })
-    .sort(function (a, b) { return a.date < b.date ? 1 : -1; }).slice(0, 6);
+  var visits = rows_('Visits').map(function (v) { return { id: v.id, date: str_(v.date), who: str_(v.who), by: v.by }; })
+    .sort(function (a, b) { return a.date < b.date ? 1 : -1; }).slice(0, 12);
+  var cw = rows_('Lists').filter(function (l) { return l.list === 'callWant' && l.owner === user && String(l.active) === '1'; }).map(function (l) { return str_(l.value); });
   var vw = rows_('Lists').filter(function (l) { return l.list === 'visitWant' && String(l.active) === '1'; }).map(function (l) { return str_(l.value); });
   return {
     date: date, todos: todos, forMe: forMe, recent: recent, nights: nights,
     today: { wakings: today.nightWakings === undefined || today.nightWakings === '' ? null : +today.nightWakings, bedtime: str_(today.shlokBedtime || ''),
       phonesM: String(today.phonesMehul) === '1', phonesA: String(today.phonesArpita) === '1', storyBy: str_(today.storyBy || ''), story: str_(today.story || '') },
-    visits: visits, visitWants: vw, options: optionsAll_(),
+    visits: visits, visitWants: vw, callWants: cw, options: optionsAll_(),
     value: { gu: setting_('value_gu', ''), en: setting_('value_en', '') },
     levels: { arpita: level_('arpita'), mehul: level_('mehul') }
   };
 }
 function addTodo_(user, p) {
   var tx = String(p.text || '').trim(); if (!tx) throw new Error('Empty');
-  append_('Todos', { id: uid_(), text: tx, who: p.who || 'both', due: p.due || '', done: '0', createdBy: user, createdAt: nowIso_(), active: '1', reminded: '' });
+  append_('Todos', { id: uid_(), text: tx, who: p.who || 'both', due: p.due || '', done: '0', createdBy: user, createdAt: nowIso_(), active: '1',
+    reminded: '', star: p.star ? '1' : '0', doneBy: '', doneAt: '' });
   return true;
 }
 function toggleTodo_(user, p) {
   var r = find_('Todos', function (t) { return t.id === p.id; });
-  if (r) update_('Todos', r._row, { done: String(r.done) === '1' ? '0' : '1' });
+  if (r) { var d = String(r.done) === '1'; update_('Todos', r._row, { done: d ? '0' : '1', doneBy: d ? '' : user, doneAt: d ? '' : nowIso_() }); }
+  return true;
+}
+function starTodo_(user, p) {
+  var r = find_('Todos', function (t) { return t.id === p.id; });
+  if (r) update_('Todos', r._row, { star: String(r.star) === '1' ? '0' : '1' });
+  return true;
+}
+/** A to-do added by mistake can be removed by the person who added it within 10 minutes, without approval. */
+function delTodo_(user, p) {
+  var r = find_('Todos', function (t) { return t.id === p.id; });
+  if (!r) return true;
+  if (r.createdBy !== user || ageHours_(str_(r.createdAt)) > 1 / 6) throw new Error('Needs both approvals');
+  update_('Todos', r._row, { active: '0' });
   return true;
 }
 function setFamily_(user, p) {
@@ -743,7 +788,6 @@ function generateReport_(user, p) {
 }
 
 function gemini_(stats, key) {
-  var model = setting_('geminiModel', 'gemini-2.5-flash');
   var compact = JSON.stringify(stats);
   var prompt = [
     "You are the family coach inside the private app \"Shlok's Parents\" used by a Gujarati couple: Mehul (government officer preparing for GPSC/UPSC, sleeps with their 15-month-old son Shlok at night) and Dr. Arpita (dentist, at home with Shlok during the day).",
@@ -758,16 +802,7 @@ function gemini_(stats, key) {
     'Give 1-2 causes and exactly 2 experiments for next week. Gujarati text must be natural Gujarati in Gujarati script.',
     'DATA:', compact
   ].join('\n');
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
-  var res = UrlFetchApp.fetch(url, {
-    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-    payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: 'application/json', temperature: 0.4 } })
-  });
-  if (res.getResponseCode() !== 200) throw new Error('Gemini error ' + res.getResponseCode() + ': ' + res.getContentText().slice(0, 200));
-  var body = JSON.parse(res.getContentText());
-  var text = body.candidates[0].content.parts.map(function (x) { return x.text || ''; }).join('');
-  var j = JSON.parse(text.replace(/^```json|```$/g, ''));
+  var j = geminiJson_([{ text: prompt }], undefined, 0.4);
   j.source = 'gemini';
   return j;
 }
@@ -824,7 +859,7 @@ function acceptExp_(user, p) {
 // ---------------------------------------------------------------- settings
 
 function getSettings_(user) {
-  return { hasKey: !!setting_('geminiKey', ''), model: setting_('geminiModel', 'gemini-2.5-flash'), emails: setting_('emails', ''),
+  return { hasKey: !!setting_('geminiKey', ''), hasKey2: !!setting_('geminiKey2', ''), model: setting_('geminiModel', 'gemini-2.5-flash'), emails: setting_('emails', ''),
     value_gu: setting_('value_gu', ''), value_en: setting_('value_en', ''), medFor: setting_('medFor', 'arpita'),
     levels: { arpita: level_('arpita'), mehul: level_('mehul') }, water: { arpita: waterGoal_('arpita'), mehul: waterGoal_('mehul') },
     sheetUrl: ss_().getUrl() };
@@ -832,6 +867,8 @@ function getSettings_(user) {
 function saveSettings_(user, p) {
   if (p.geminiKey !== undefined && p.geminiKey !== '') setSetting_('geminiKey', String(p.geminiKey).trim());
   if (p.clearKey) setSetting_('geminiKey', '');
+  if (p.geminiKey2 !== undefined && p.geminiKey2 !== '') setSetting_('geminiKey2', String(p.geminiKey2).trim());
+  if (p.clearKey2) setSetting_('geminiKey2', '');
   ['geminiModel', 'emails', 'value_gu', 'value_en'].forEach(function (k) { if (p[k] !== undefined) setSetting_(k, String(p[k]).trim()); });
   return getSettings_(user);
 }
@@ -840,16 +877,6 @@ function saveSettings_(user, p) {
 
 function dailyReminders() {
   try { if (typeof financeDaily_ === 'function') financeDaily_(); } catch (e) {}
-  var tomorrow = addDays_(today_(), 1), today = today_();
-  var due = rows_('Todos').filter(function (t) {
-    return String(t.active) === '1' && String(t.done) !== '1' && (str_(t.due) === tomorrow || (str_(t.due) && str_(t.due) < today)) && str_(t.reminded) !== today;
-  });
-  var emails = setting_('emails', '').split(',').map(function (e) { return e.trim(); }).filter(Boolean);
-  if (!due.length || !emails.length) return;
-  var whoName = { both: 'બંને / Both', mehul: 'મેહુલ / Mehul', arpita: 'ડૉ. અર્પિતા / Dr. Arpita' };
-  var body = due.map(function (t) { return '• ' + t.text + '  (' + (whoName[t.who] || t.who) + ', ' + str_(t.due) + ')'; }).join('\n');
-  MailApp.sendEmail(emails.join(','), "Shlok's Parents — કાલ સુધીનાં કામ / Due tomorrow", 'સાથે કરવાનાં કામ:\n\n' + body + '\n\n— Shlok\'s Parents');
-  due.forEach(function (t) { update_('Todos', t._row, { reminded: today }); });
 }
 function weeklyAutoReport() {
   generateReport_('mehul', { weekStart: weekStart_(today_()) });

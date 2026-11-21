@@ -1,11 +1,11 @@
 # Shlok's Parents: setup guide (Google Apps Script)
 
 You need about 15 minutes, a Google account (the one that will own the data), and these 7 files:
-`Code.gs`, `Finance.gs`, `Life.gs`, `Index.html`, `Css.html`, `Js.html`, `Logo.html`, `appsscript.json`.
+`Code.gs`, `Finance.gs`, `Life.gs`, `Detox.gs`, `Index.html`, `Css.html`, `Js.html`, `Logo.html`, `appsscript.json`.
 
 ## 1. Create the project
 1. Open **script.google.com** and click **New project**. Rename it to **Shlok's Parents**.
-2. In the editor, `Code.gs` already exists. Delete everything in it and paste in the contents of **Code.gs**. Then click **+ → Script**, name it **Finance**, and paste in **Finance.gs**. Do the same once more: **+ → Script**, name it **Life**, paste in **Life.gs**.
+2. In the editor, `Code.gs` already exists. Delete everything in it and paste in the contents of **Code.gs**. Then click **+ → Script**, name it **Finance**, and paste in **Finance.gs**. Do the same twice more: **+ → Script** named **Life** (paste **Life.gs**) and **+ → Script** named **Detox** (paste **Detox.gs**).
 3. Click **+ → HTML** four times and create files named exactly **Index**, **Css**, **Js** and **Logo** (the editor adds `.html` itself). Paste the matching file's contents into each one.
 4. Open **Project Settings (gear icon)** and tick **"Show appsscript.json manifest file in editor"**. Go back to the editor, open `appsscript.json`, and replace its contents with the provided **appsscript.json**.
 5. Save (Ctrl + S).
@@ -60,6 +60,21 @@ Without a key, the report still works using simple rules (counts and the most co
 6. On Android, allow notifications when the app asks. On Android 12, if reminders come late, open Settings → Apps → Shlok's Parents → Alarms & reminders → Allow.
 
 Medicine reminders: Android rings at the time even when the app is closed. iPhone shows pending medicines at the top of Today whenever you open the app. Both phones get Shlok's medicine reminders.
+
+## Update: Digital Detox, many screenshots at once, clearer tasks (Nov 2026)
+1. Click **+ → Script**, name it **Detox**, and paste in **Detox.gs**.
+2. Replace **Code.gs**, **Finance.gs**, **Life.gs**, **Js.html** and **Css.html** with the new versions.
+3. Choose `setup` and click **Run** (adds the DetoxShots and DetoxDays sheets and new columns).
+4. **Deploy → Manage deployments → ✏️ → New version → Deploy.**
+5. GitHub: upload the new `docs/index.html`, `docs/sw.js` and the `android/` folder. Install the new APK when Actions finishes (this fixes the screenshot button on Android).
+6. Optional: Settings → second (backup) Gemini key from another Google account.
+
+The AI now tries several free Gemini models in turn. If all are busy, screenshots wait and are tried again every 5 minutes, so results arrive within a day.
+
+## Update: voice entry, yesterday catch-up, partner reminders, offline, last-3 picks (Nov 2026)
+1. Replace **Code.gs**, **Finance.gs**, **Life.gs**, **Detox.gs** and **Js.html**.
+2. Run `setup` once (adds the Nudges sheet), then **Deploy → Manage deployments → New version**.
+3. GitHub: upload the new `docs/index.html`, `docs/sw.js` and the `android/` folder, then install the new APK (needed for partner reminders as notifications and the microphone on Android). Allow the microphone the first time you tap 🎤.
 
 ## If something goes wrong
 - **Screenshots stay on "Waiting for AI"**: add the Gemini key in ⚙ Settings, or tap **Read now**. The automatic reader runs every 5 minutes.

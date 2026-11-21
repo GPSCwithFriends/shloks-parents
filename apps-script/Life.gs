@@ -22,6 +22,7 @@ function registerLife_() {
   ACTIONS.saveMedia = saveMedia_;
   ACTIONS.addLearning = addLearning_;
   ACTIONS.finishMedia = finishMedia_;
+  registerLife2_();
 }
 
 // ---------------------------------------------------------------- medicines
@@ -110,6 +111,14 @@ function myReminders_(user) {
         body: names[x.owner] + (x.dose ? ' · ' + x.dose : '') + (x.note ? ' · ' + x.note : '') });
     });
   }
+  if (typeof detoxUploaded_ === 'function') {
+    registerDetox_();
+    for (var k = 0; k < 7; k++) {
+      var dd = addDays_(t0, k);
+      if (k === 0 && (now >= '22:00' || detoxUploaded_(user, dd))) continue;
+      out.push({ id: 'detox#' + dd, at: dd + 'T22:00', title: 'ડિજિટલ ડિટોક્સ', body: 'આજનો સ્ક્રીન ટાઈમ SS મૂકો · Upload today\'s screen time' });
+    }
+  }
   return out.slice(0, 60);
 }
 
@@ -150,7 +159,7 @@ function getShlok_(user, p) {
     bedtime: str_(fam.shlokBedtime || ''), storyBy: str_(fam.storyBy || ''), story: str_(fam.story || ''),
     yStory: str_(yesterday.story || ''), yStoryBy: str_(yesterday.storyBy || ''),
     words: words, value: { gu: setting_('value_gu', ''), en: setting_('value_en', '') },
-    doses: dosesFor_(date, ['shlok'])
+    doses: dosesFor_(date, ['shlok']), recent: shlokRecent_()
   };
 }
 
@@ -192,4 +201,121 @@ function finishMedia_(user, p) {
   var m = find_('Media', function (x) { return x.id === p.id; });
   if (m) update_('Media', m._row, { status: p.undo ? 'active' : 'done', progress: p.undo ? m.progress : (m.total || m.progress) });
   return true;
+}
+
+// ---------------------------------------------------------------- v4: recent entries, partner nudges, voice entry
+
+function registerLife2_() {
+  if (ACTIONS.nudge) return;
+  SCHEMA.Nudges = ['id', 'from', 'to', 'text', 'ref', 'ts', 'seen', 'notified'];
+  ['nudge', 'seenNudge', 'pollNudges'].forEach(function (a) { WRITES[a] = 1; });
+  ACTIONS.nudge = nudge_;
+  ACTIONS.seenNudge = seenNudge_;
+  ACTIONS.pollNudges = pollNudges_;
+  ACTIONS.voiceParse = voiceParse_;
+}
+
+/** Last 3 different values, newest first. */
+function last3_(rows, keyFn, valFn) {
+  var seen = {}, out = [];
+  rows.slice().sort(function (a, b) { return str_(a.ts || a.date) < str_(b.ts || b.date) ? 1 : -1; }).some(function (r) {
+    var k = keyFn(r); if (!k || seen[k]) return false;
+    seen[k] = 1; out.push(valFn(r)); return out.length >= 3;
+  });
+  return out;
+}
+function shlokRecent_() {
+  var logs = rows_('ShlokLog');
+  var fam = rows_('Family').filter(function (f) { return str_(f.story); });
+  return {
+    milk: last3_(logs.filter(function (l) { return l.type === 'milk'; }), function (l) { return str_(l.value) + '|' + str_(l.extra); }, function (l) { return { value: str_(l.value), extra: str_(l.extra) }; }),
+    food: last3_(logs.filter(function (l) { return l.type === 'food'; }), function (l) { return str_(l.value); }, function (l) { return str_(l.value); }),
+    story: last3_(fam.map(function (f) { return { date: str_(f.date), story: str_(f.story) }; }), function (f) { return f.story; }, function (f) { return f.story; })
+  };
+}
+function waterRecent_(owner) {
+  return last3_(rows_('Water').filter(function (w) { return w.owner === owner; }).map(function (w) { return { ts: str_(w.date) + ' ' + str_(w.time), ml: +w.ml }; }),
+    function (w) { return String(w.ml); }, function (w) { return w.ml; });
+}
+function expenseRecent_(user) {
+  return last3_(rows_('Expenses').filter(function (e) { return e.source === 'manual' && String(e.active) === '1'; }),
+    function (e) { return str_(e.item).toLowerCase() + '|' + money_(e.amount); },
+    function (e) { return { item: str_(e.item), amount: money_(e.amount), category: e.category, need: e.need, mode: e.mode }; });
+}
+
+// ---- nudges: "remind my partner" (Android shows a notification, iPhone shows it on opening)
+function nudge_(user, p) {
+  var text = String(p.text || '').trim().slice(0, 200); if (!text) throw new Error('Empty');
+  var to = user === 'mehul' ? 'arpita' : 'mehul';
+  var recent = rows_('Nudges').some(function (n) { return n.from === user && n.ref === (p.ref || '') && String(n.seen) !== '1' && ageHours_(str_(n.ts)) < 1; });
+  if (recent) return { already: true };
+  append_('Nudges', { id: uid_(), from: user, to: to, text: text, ref: p.ref || '', ts: nowIso_(), seen: '0', notified: '0' });
+  return true;
+}
+function myNudges_(user) {
+  return rows_('Nudges').filter(function (n) { return n.to === user && String(n.seen) !== '1' && ageHours_(str_(n.ts)) < 72; })
+    .map(function (n) { return { id: n.id, from: n.from, text: str_(n.text), ts: str_(n.ts) }; });
+}
+function seenNudge_(user, p) {
+  rows_('Nudges').forEach(function (n) { if (n.to === user && (!p.id || n.id === p.id) && String(n.seen) !== '1') update_('Nudges', n._row, { seen: '1', notified: '1' }); });
+  return true;
+}
+/** Called by the Android app in the background every ~15 minutes. */
+function pollNudges_(user) {
+  var out = [];
+  rows_('Nudges').forEach(function (n) {
+    if (n.to !== user || String(n.seen) === '1' || String(n.notified) === '1' || ageHours_(str_(n.ts)) > 24) return;
+    out.push({ id: n.id, title: (n.from === 'mehul' ? 'મેહુલ' : 'ડૉ. અર્પિતા') + ' યાદ કરાવે છે', body: str_(n.text) });
+    update_('Nudges', n._row, { notified: '1' });
+  });
+  return out;
+}
+
+// ---- voice / text entry: Gemini turns a Gujarati or English sentence into entries to confirm
+function voiceParse_(user, p) {
+  var date = p.date || today_(), lvl = level_(user);
+  var tasks = rows_('Tasks').filter(function (x) { return x.owner === user && String(x.active) === '1'; }).map(function (x) {
+    return { id: x.id, name: str_(x.gu || x.name), en: str_(x.en || ''), time: effectiveTime_(x, lvl) };
+  }).filter(function (x) { return x.time; });
+  var meds = typeof dosesFor_ === 'function' ? dosesFor_(date, [user, 'shlok']).map(function (d) { return { key: d.key, name: d.name, time: d.time, owner: d.owner }; }) : [];
+  var people = rows_('Options').filter(function (o) { return o.type === 'people' || o.type === 'homes'; }).map(function (o) { return str_(o.value); });
+  var prompt = [
+    "You turn what a parent said (Gujarati, Hindi or English) into entries for the family app \"Shlok's Parents\". The speaker is " + (user === 'mehul' ? 'Mehul (father)' : 'Dr. Arpita (mother)') + '. Shlok is their toddler. Now: ' + date + ' ' + nowTime_() + '.',
+    'Possible entries (use only what was clearly said; times as "HH:MM" 24-hour, use now if no time was said):',
+    '{"type":"milk","ml":number,"kind":"formula"|"cow"|"breast","time":"HH:MM"}  — Shlok drank milk',
+    '{"type":"sleep","from":"HH:MM","to":"HH:MM"|""}  — Shlok slept',
+    '{"type":"shlokFood","text":string,"time":"HH:MM"}  — what Shlok ate',
+    '{"type":"word","text":string}  — new word Shlok said',
+    '{"type":"story","text":string,"by":"mehul"|"arpita"}  — bedtime story told',
+    '{"type":"water","ml":number}  — the speaker drank water',
+    '{"type":"expense","amount":number,"item":string,"category":one of ' + JSON.stringify(FIN_CATS) + ',"need":"need"|"want"}',
+    '{"type":"task","taskId":string,"status":"done"|"skip","time":"HH:MM","reason":string}  — one of the speaker\'s tasks: ' + JSON.stringify(tasks),
+    '{"type":"med","key":string}  — a medicine dose was taken: ' + JSON.stringify(meds),
+    '{"type":"call","who":string}  — talked on phone with someone',
+    '{"type":"visit","who":string}  — visited someone',
+    '{"type":"todo","text":string,"who":"both"|"mehul"|"arpita"}  — something to remember to do',
+    'Known people and homes: ' + JSON.stringify(people.slice(0, 80)),
+    'Also give "label": a short Gujarati description of each entry for confirmation.',
+    'Return ONLY JSON: {"heard": "what was said, in its own language", "items": [ ... ]}'
+  ].join('\n');
+  var parts = [{ text: prompt }];
+  if (p.audio) {
+    var m = String(p.audio).match(/^data:([^;]+);base64,(.+)$/);
+    if (!m) throw new Error('Bad audio');
+    parts.push({ inline_data: { mime_type: m[1].split(';')[0], data: m[2] } });
+  } else {
+    var txt = String(p.text || '').trim(); if (!txt) throw new Error('Nothing said');
+    parts.push({ text: 'Said: ' + txt });
+  }
+  var j;
+  try { j = geminiJson_(parts, undefined, 0.1); }
+  catch (e) { if (/^AI_BUSY/.test(String(e.message || e))) throw new Error('AI_BUSY'); throw e; }
+  var okTask = {}; tasks.forEach(function (x) { okTask[x.id] = 1; });
+  var okMed = {}; meds.forEach(function (x) { okMed[x.key] = 1; });
+  var items = (j.items || []).filter(function (it) {
+    if (it.type === 'task') return okTask[it.taskId];
+    if (it.type === 'med') return okMed[it.key];
+    return ['milk', 'sleep', 'shlokFood', 'word', 'story', 'water', 'expense', 'call', 'visit', 'todo'].indexOf(it.type) >= 0;
+  }).slice(0, 8);
+  return { heard: String(j.heard || p.text || ''), items: items };
 }

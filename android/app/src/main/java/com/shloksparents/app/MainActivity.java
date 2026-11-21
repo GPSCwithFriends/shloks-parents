@@ -8,6 +8,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.webkit.JavascriptInterface;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -23,6 +24,8 @@ public class MainActivity extends Activity {
     private static final int FILE_REQUEST = 1;
     private WebView web;
     private ValueCallback<Uri[]> fileCallback;
+    private static final int MIC_REQUEST = 9;
+    private PermissionRequest pendingMic;
     private String appHost;
 
     @Override
@@ -61,14 +64,42 @@ public class MainActivity extends Activity {
 
         web.setWebChromeClient(new WebChromeClient() {
             @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean audio = false;
+                        for (String r : request.getResources()) if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(r)) audio = true;
+                        if (!audio) { request.deny(); return; }
+                        if (Build.VERSION.SDK_INT >= 23 && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                            pendingMic = request;
+                            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, MIC_REQUEST);
+                        } else {
+                            request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+                        }
+                    }
+                });
+            }
+
+            @Override
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, FileChooserParams params) {
                 if (fileCallback != null) fileCallback.onReceiveValue(null);
                 fileCallback = callback;
+                // Own picker intent: allows choosing many photos at once and always answers the page
+                Intent pick = new Intent(Intent.ACTION_GET_CONTENT);
+                pick.addCategory(Intent.CATEGORY_OPENABLE);
+                pick.setType("image/*");
+                if (params.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE) pick.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 try {
-                    startActivityForResult(params.createIntent(), FILE_REQUEST);
+                    startActivityForResult(pick, FILE_REQUEST);
                 } catch (Exception e) {
-                    fileCallback = null;
-                    return false;
+                    try {
+                        startActivityForResult(params.createIntent(), FILE_REQUEST);
+                    } catch (Exception e2) {
+                        fileCallback.onReceiveValue(null);
+                        fileCallback = null;
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -91,6 +122,9 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public boolean isAndroid() { return true; }
+
+        @JavascriptInterface
+        public void setAuth(String apiUrl, String token) { NudgeReceiver.saveAuth(getApplicationContext(), apiUrl, token); }
     }
 
     @Override
@@ -100,9 +134,30 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (requestCode == MIC_REQUEST && pendingMic != null) {
+            if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) pendingMic.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+            else pendingMic.deny();
+            pendingMic = null;
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FILE_REQUEST && fileCallback != null) {
-            fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data));
+        if (requestCode == FILE_REQUEST) {
+            if (fileCallback == null) return;
+            Uri[] result = null;
+            if (resultCode == RESULT_OK && data != null) {
+                if (data.getClipData() != null) {
+                    int n = data.getClipData().getItemCount();
+                    result = new Uri[n];
+                    for (int i = 0; i < n; i++) result[i] = data.getClipData().getItemAt(i).getUri();
+                } else if (data.getData() != null) {
+                    result = new Uri[]{ data.getData() };
+                }
+            }
+            fileCallback.onReceiveValue(result);   // always answer, even when cancelled, so the next tap works
             fileCallback = null;
             return;
         }

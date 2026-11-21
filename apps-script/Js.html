@@ -1795,6 +1795,1001 @@ Object.assign(CH, {
   lfMedia: function (el) { var L = S.ui.lf; if (el.value === '__new__') { L.newOpen = true; L.mediaId = ''; } else { L.newOpen = false; L.mediaId = el.value; } render(); }
 });
 
+// ------------------------------------------------------------------ v3: Detox, clearer tasks, people lists, simpler to-do, multi upload
+Object.assign(I.gu, {
+  tapHint: 'કાર્ય પર ટૅપ કરો → થયું કે ન થયું પસંદ કરો',
+  doneAtL: 'ક્યારે કર્યું?', planned: 'નક્કી સમય {t}', nowBtn: 'હમણાં', notDoneQ: 'કેમ ન થયું?', changeTo: 'ન થયું માં બદલો', saveTime: 'સમય સાચવો',
+  detoxT: 'ડિજિટલ ડિટોક્સ', detoxSub: 'સ્ક્રીન ટાઈમ: કોણ કેટલો ફોન વાપરે છે', dxCompare: 'તુલના', week: 'અઠવાડિયું', month: 'મહિનો',
+  dxUpT: 'રાત 10:00 · આજનો સ્ક્રીન ટાઈમ', dxUpBtn: 'SS મૂકો', dxUpHow: 'Android: Settings → Digital Wellbeing · iPhone: Settings → Screen Time. આખું પાનું (એપ લિસ્ટ સાથે) 1–4 SS માં.',
+  dxReading: 'AI વાંચે છે… થોડી વારમાં', dxDone: '✓ મળી ગયું', dxPending: 'બાકી', dxErr: 'વાંચી ન શકાયું', dxEdit: 'આંકડા સુધારો', dxTotal: 'કુલ સમય (મિનિટ)', dxUnl: 'ફોન ખોલ્યો (વાર)',
+  dxFirst: 'પહેલો ફોન', dxNight: 'રાત 10 પછી (મિનિટ)', dxAvg: 'રોજ સરેરાશ', dxUnlD: 'ફોન ખોલ્યો / દિવસ', dxFirstL: 'ઊઠીને પહેલો ફોન', dxNightL: 'રાત 10 પછી',
+  dxStreak: 'સળંગ લક્ષ્યવાળા દિવસ', dxStreakGo: 'ચાલુ રાખો', dxStreak0: 'આજથી શરૂ કરો', dxUnder: 'લક્ષ્યવાળા દિવસ', dxGoal: 'મારું લક્ષ્ય', dxGoalL: 'રોજ {h} થી ઓછું',
+  dxDaily: 'રોજનો સ્ક્રીન ટાઈમ', dxWeekly: 'અઠવાડિક સરેરાશ', dxInGoal: 'લક્ષ્યમાં', dxOver: 'વધુ', dxBest: 'સૌથી સારો', dxWorst: 'સૌથી વધુ',
+  dxApps: 'એપ અને મારી મર્યાદા', dxAddLimit: '+ મર્યાદા', dxLimitQ: 'રોજ કેટલી મિનિટ?', dxNoLimit: 'મર્યાદા નહીં', dxVsPrev: 'ગયા {p} કરતાં', dxSame: 'ગયા વખત જેટલું',
+  dxWithO: '{n} સાથે સરખામણી', dxLess: 'તમે રોજ {m} મિ ઓછો ફોન વાપરો છો.', dxMore: 'તમે રોજ {m} મિ વધુ ફોન વાપરો છો.', dxSeeCmp: 'તુલના જુઓ ›',
+  dxActs: 'આ અઠવાડિયે આટલું કરો', dxActsWait: 'આ અઠવાડિયાનાં સૂચનો 2 દિવસના આંકડા પછી આવશે.', dxMonthSum: 'મહિનાનું તારણ',
+  dxRace: 'સુધારાની રેસ · પોતાના ગયા {p} સામે', dxRaceL: '◀ ઘટાડો = સારું', dxRaceR: 'વધારો ▶', dxH2H: 'આમને-સામને', dxGreen: 'લીલું = વધુ સારું',
+  dxWhoApp: 'એપમાં કોણ વધુ?', dxPerDay: 'મિ/દિવસ', dxJoint: 'સાથે કરવા જેવું', dxCats: 'સમય ક્યાં જાય છે?', dxNoData: 'હજુ આ સમયના આંકડા નથી. રાત્રે 10 વાગ્યે સ્ક્રીન ટાઈમનો SS મૂકો.',
+  dxc_message: 'મેસેજ', dxc_social: 'સોશિયલ', dxc_video: 'વીડિયો', dxc_news: 'વાંચન/સમાચાર', dxc_games: 'ગેમ', dxc_shopping: 'શોપિંગ', dxc_work: 'કામ', dxc_other: 'બીજું',
+  dxDueBanner: 'ડિજિટલ ડિટોક્સ: આજનો સ્ક્રીન ટાઈમ SS મૂકો', dxPrevW: 'અઠ.', dxPrevM: 'મહિના', dxNoPrev: 'ગયા વખતના આંકડા નથી', hmF: '{h}ક {m}મિ',
+  dxTie: 'બરાબરી', dxMonthUp: 'મહિનામાં રોજ {m} મિ વધ્યું.', dxMonthDown: 'મહિનામાં રોજ {m} મિ ઘટ્યું — સરસ!', dxMonthTop: 'સૌથી વધુ સમય: {a}.',
+  // money
+  shotDate: 'તારીખ', shotDateHint: 'સ્ક્રીનશોટમાં તારીખ દેખાય તો AI એ જ વાપરશે; ન દેખાય તો આ તારીખ.', dxUpFor: '{d} નો સ્ક્રીન ટાઈમ',
+  shotBtn: '📷 સ્ક્રીનશોટ (એકસાથે ઘણા)', shotUploading: 'અપલોડ થાય છે… {d} / {n}', shotUploaded: '{n} સ્ક્રીનશોટ મળ્યા. AI પાછળથી વાંચીને ખર્ચ ઉમેરશે (એક દિવસમાં).',
+  shotFailed: '{n} ફોટો ખૂલ્યા નહીં', aiBg: 'AI વાંચે છે… પરિણામ થોડી વારમાં (વધુમાં વધુ એક દિવસ)', rcSum: '{n} સ્ક્રીનશોટ: {o} ઓર્ડર તૈયાર', rcWait: '{n} બાકી',
+  rcSkip: '{n} બિલ ન હતું', st_merged: 'સાથેના ઓર્ડરમાં', st_skipped: 'બિલ ન હતું', revT: 'AI ને ખાતરી નથી — આ ચકાસો', revSub: 'કેટેગરી બદલો તો AI આગળથી યાદ રાખશે.',
+  // people + to-do
+  pendT: 'વાત / મુલાકાત બાકી', tagCall: '📞 વાત કરવી', tagVisit: '🏠 મળવા જવું', talkedBtn: 'વાત થઈ ✓', visitedBtn: 'મળી આવ્યા ✓',
+  addNames: 'નામ લખો (અલ્પવિરામથી ઘણાં)', addToList: 'લિસ્ટમાં ઉમેરો', pickKnown: 'અથવા પસંદ કરો:', listFor: 'શેના માટે?', removeL: 'લિસ્ટમાંથી કાઢો',
+  noPend: 'કોઈ બાકી નથી.', callsToday: 'આજે વાત થઈ', visitsRecent: 'તાજેતરની મુલાકાતો', logNow: 'સીધું નોંધો', delEntry: 'ભૂલથી નોંધ્યું? કાઢો',
+  tdT: 'સાથે કરવાનાં કામ', tdNew: 'નવું કામ લખો…', tdStar: 'મહત્વનું', tdDoneN: 'પૂરાં થયેલાં ({n})', tdDoneBy: '{n} એ કર્યું', tdPend: '{n} બાકી', tdUndoAdd: 'કાઢો',
+  backupKey: 'બીજી (બેકઅપ) Gemini key — બીજા Google એકાઉન્ટની', backupHint: 'પહેલી key ની મર્યાદા પૂરી થાય ત્યારે આ વપરાશે. ખાલી રાખી શકો.'
+});
+Object.assign(I.en, {
+  tapHint: 'Tap a task → choose Done or Not done',
+  doneAtL: 'Done at', planned: 'Planned {t}', nowBtn: 'Now', notDoneQ: 'Why not done?', changeTo: 'Change to not done', saveTime: 'Save time',
+  detoxT: 'Digital Detox', detoxSub: 'Screen time: who uses the phone how much', dxCompare: 'Compare', week: 'Week', month: 'Month',
+  dxUpT: "22:00 · Today's screen time", dxUpBtn: 'Upload SS', dxUpHow: 'Android: Settings → Digital Wellbeing · iPhone: Settings → Screen Time. The whole page (with the app list) in 1–4 screenshots.',
+  dxReading: 'AI is reading… shortly', dxDone: '✓ Received', dxPending: 'Pending', dxErr: 'Could not read', dxEdit: 'Correct numbers', dxTotal: 'Total time (min)', dxUnl: 'Unlocks',
+  dxFirst: 'First pickup', dxNight: 'After 22:00 (min)', dxAvg: 'Daily average', dxUnlD: 'Unlocks / day', dxFirstL: 'First phone after waking', dxNightL: 'After 22:00',
+  dxStreak: 'Days in a row under goal', dxStreakGo: 'Keep going', dxStreak0: 'Start today', dxUnder: 'Days under goal', dxGoal: 'My goal', dxGoalL: 'Under {h} a day',
+  dxDaily: 'Daily screen time', dxWeekly: 'Weekly average', dxInGoal: 'Under goal', dxOver: 'Over', dxBest: 'Best', dxWorst: 'Most',
+  dxApps: 'Apps and my limits', dxAddLimit: '+ Limit', dxLimitQ: 'Minutes a day?', dxNoLimit: 'No limit', dxVsPrev: 'vs last {p}', dxSame: 'Same as last time',
+  dxWithO: 'Compared with {n}', dxLess: 'You use the phone {m} min less a day.', dxMore: 'You use the phone {m} min more a day.', dxSeeCmp: 'See compare ›',
+  dxActs: 'Do this this week', dxActsWait: "This week's suggestions come after 2 days of data.", dxMonthSum: 'Month summary',
+  dxRace: 'Improvement race · vs own last {p}', dxRaceL: '◀ Less = better', dxRaceR: 'More ▶', dxH2H: 'Head to head', dxGreen: 'Green = better',
+  dxWhoApp: 'Who uses which app more?', dxPerDay: 'min/day', dxJoint: 'Try together', dxCats: 'Where does the time go?', dxNoData: 'No data for this period yet. Upload the screen-time screenshot at 22:00.',
+  dxc_message: 'Messages', dxc_social: 'Social', dxc_video: 'Video', dxc_news: 'Reading/news', dxc_games: 'Games', dxc_shopping: 'Shopping', dxc_work: 'Work', dxc_other: 'Other',
+  dxDueBanner: "Digital Detox: upload today's screen time", dxPrevW: 'week', dxPrevM: 'month', dxNoPrev: 'No data for last time', hmF: '{h}h {m}m',
+  dxTie: 'Tie', dxMonthUp: 'Up {m} min a day over the month.', dxMonthDown: 'Down {m} min a day over the month — well done!', dxMonthTop: 'Most time on: {a}.',
+  shotDate: 'Date', shotDateHint: 'If the screenshot shows a date, the AI uses it; otherwise this date.', dxUpFor: 'Screen time for {d}',
+  shotBtn: '📷 Screenshots (many at once)', shotUploading: 'Uploading… {d} / {n}', shotUploaded: '{n} screenshots received. The AI will read them and add the spending (within a day).',
+  shotFailed: '{n} photos could not be opened', aiBg: 'AI is reading… results soon (at most a day)', rcSum: '{n} screenshots: {o} orders ready', rcWait: '{n} waiting',
+  rcSkip: '{n} not a bill', st_merged: 'Part of another order', st_skipped: 'Not a bill', revT: "AI wasn't sure — check these", revSub: 'If you change a category, the AI remembers it next time.',
+  pendT: 'To call / to visit', tagCall: '📞 Talk to', tagVisit: '🏠 Visit', talkedBtn: 'Talked ✓', visitedBtn: 'Visited ✓',
+  addNames: 'Type names (comma for many)', addToList: 'Add to list', pickKnown: 'Or pick:', listFor: 'For', removeL: 'Remove from list',
+  noPend: 'Nothing pending.', callsToday: 'Talked today', visitsRecent: 'Recent visits', logNow: 'Log directly', delEntry: 'Added by mistake? Delete',
+  tdT: 'Shared to-do', tdNew: 'Write a new task…', tdStar: 'Important', tdDoneN: 'Done ({n})', tdDoneBy: 'Done by {n}', tdPend: '{n} pending', tdUndoAdd: 'Remove',
+  backupKey: 'Second (backup) Gemini key — from another Google account', backupHint: 'Used when the first key reaches its limit. You can leave it empty.'
+});
+function hmT(m) { m = Math.round(m || 0); return t('hmF', { h: Math.floor(m / 60), m: ('0' + (m % 60)).slice(-2) }); }
+
+// ---------- header with language switch on every screen; Detox in navigation
+header = function () {
+  var v = S.view, title, sub = '';
+  var withDate = isDayView() || v === 'shlok' || v === 'ours';
+  if (v === 'today') title = t({ m: 'hiM', a: 'hiA', e: 'hiE', n: 'hiN' }[curPart()]) + ', ' + nameOf(S.user);
+  else if (v === 'partner') title = t('dayOf', { n: nameOf(other(S.user)) });
+  else title = { shlok: t('shlok'), fin: t('fin'), report: t('report'), more: t('nMore'), ours: t('ours'), meds: t('medsT'), reading: t('readT'), settings: t('settingsT'), detox: t('detoxT') }[v] || '';
+  if (withDate) sub = '<div class="datenav"><button data-a="day" data-d="-1" aria-label="-1">‹</button><span>' + esc(fmtDate(S.date)) + '</span>' +
+    (S.date < today() ? '<button data-a="day" data-d="1" aria-label="+1">›</button>' : '') + '</div>';
+  var back = ['ours', 'meds', 'reading', 'settings', 'partner', 'detox'].indexOf(v) >= 0 ? '<button class="round" style="width:38px;height:38px" data-a="go" data-v="more" aria-label="‹">‹</button>' : '<img src="' + window.LOGO + '" alt="" style="width:36px;height:36px;border-radius:10px">';
+  return '<header style="display:flex;align-items:center;gap:8px;padding:16px 16px 8px">' + back +
+    '<div style="flex:1;min-width:0">' + sub + '<h1 style="margin:2px 0 0;font-size:20px;font-weight:800;line-height:1.25">' + esc(title) + '</h1></div>' +
+    '<div class="hlang">' + langToggle() + '</div>' +
+    '<button class="round" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center" data-a="go" data-v="settings" aria-label="' + esc(t('settingsT')) + '">' + GEAR + '</button></header>';
+};
+var bodyV2 = body;
+body = function () { return S.view === 'detox' ? viewDetox() : bodyV2(); };
+var bottomNavV2 = bottomNav;
+bottomNav = function () { return S.view === 'detox' ? bottomNavV2().replace('aria-current="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7378" stroke-width="2.8"', 'aria-current="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9A3412" stroke-width="2.8"') : bottomNavV2(); };
+var viewMoreV2 = viewMore;
+viewMore = function () {
+  return viewMoreV2().replace('<div class="wrap">', '<div class="wrap"><button class="card" style="flex-direction:row;align-items:center;border:none;text-align:left;font-family:inherit;background:#1F2A2E;color:#fff" data-a="go" data-v="detox">' +
+    '<i style="width:10px;height:40px;border-radius:5px;background:#5DCAA5"></i><span style="flex:1;display:flex;flex-direction:column"><b style="font-size:16px">' + esc(t('detoxT')) + '</b><small style="color:#C9D1D4">' + esc(t('detoxSub')) + '</small></span><span style="font-size:20px">›</span></button>');
+};
+var loadViewV2 = loadView;
+loadView = function () { if (S.view === 'detox') { loadDetox(); render(); } else loadViewV2(); };
+
+// ---------- Today: Detox banner at night
+var viewDayV2 = viewDay;
+viewDay = function (owner) {
+  var html = viewDayV2(owner), d = S.days[owner + S.date];
+  if (d && d.detoxDue && owner === S.user) {
+    html = html.replace('<div class="wrap">', '<div class="wrap"><button class="card" style="flex-direction:row;align-items:center;gap:10px;background:#1F2A2E;color:#fff;border:none;text-align:left;font-family:inherit" data-a="go" data-v="detox">' +
+      '<span style="font-size:20px">📱</span><b style="flex:1">' + esc(t('dxDueBanner')) + '</b><span>›</span></button>');
+  }
+  return html;
+};
+
+// ---------- tasks: tap opens Done / Not done, time defaults to the planned time
+taskSheet = function (id) {
+  var x = taskById(id); if (!x) return '';
+  var U = S.ui, owner = S.user;
+  if (U.tsId !== id) { U.tsId = id; U.tsAt = x.s === 'done' && x.a ? x.a : x.t; U.tsNot = x.s === 'skip'; U.tsQty = x.qv || ''; }
+  var h = '<div style="display:flex;flex-direction:column;gap:12px"><div><div class="muted">' + esc(t('planned', { t: x.t })) + '</div><div style="font-size:19px;font-weight:800">' + esc(lbl(x)) + '</div></div>';
+  if (x.s === 'skip') h += '<span class="skipchip" style="align-self:flex-start;font-size:14px">' + esc(t('skipped') + ' · ' + x.r) + '</span>';
+  if (!U.tsNot) {
+    h += '<div class="row" style="flex-wrap:wrap;align-items:center"><label class="small" for="tsAt">' + esc(t('doneAtL')) + '</label>' +
+      '<input id="tsAt" type="time" style="width:130px" value="' + esc(U.tsAt) + '" data-ch="tsAt">' +
+      '<button class="chip" data-a="tsNow">' + esc(t('nowBtn')) + '</button></div>';
+    if (x.q) h += '<div class="row"><label class="small" for="tsQty">' + esc(t('qRun')) + '</label><input id="tsQty" type="number" inputmode="decimal" step="0.1" style="width:100px" value="' + esc(U.tsQty) + '" data-in="tsQty"><span>km</span></div>';
+    h += '<div class="grid2"><button class="btn teal big" data-a="tsDone" data-id="' + x.id + '">' + esc(x.s === 'done' ? t('saveTime') : t('markDone')) + '</button>' +
+      '<button class="btn ghost big" style="color:#9F1239;border-color:#F3A6B4" data-a="tsNot">' + esc(t('markNot')) + '</button></div>';
+  } else {
+    h += '<div class="small" style="font-weight:700;color:#9F1239">' + esc(t('notDoneQ')) + '</div>' + reasonSheet(x, owner, 'm') +
+      '<button class="btn teal" data-a="tsYes">' + esc(t('markDone')) + '</button>';
+  }
+  if (x.s !== 'todo') h += '<button class="btn ghost" data-a="undo" data-id="' + x.id + '">' + esc(t('undoIt')) + '</button>';
+  if (!x.del) {
+    if (U.delAsk === x.id) h += '<div class="delbox">' + esc(t('delInfo', { n: nameOf(other(owner)) })) + '<div class="row"><input id="pin-' + x.id + '" class="pin" type="password" inputmode="numeric" maxlength="4" data-in="pin" value="' + esc(U.pin) + '" placeholder="' + esc(t('myPin')) + '">' +
+      '<button class="btn terra" style="height:38px;font-size:12px" data-a="sendDel" data-id="' + x.id + '">' + esc(t('sendReq')) + '</button></div>' + (U.pinErr ? '<div style="color:#BE123C">' + esc(U.pinErr) + '</div>' : '') + '</div>';
+    else h += '<button class="link" style="align-self:flex-start;color:#9F1239" data-a="askDel" data-id="' + x.id + '">' + esc(t('reqRemove')) + '</button>';
+  } else h += '<div class="pending"><span>' + esc(t('delPending', { n: nameOf(other(x.del.by)) })) + '</span>' + (x.del.by === S.user ? '<button class="link" data-a="withdraw" data-id="' + x.del.id + '">' + esc(t('withdraw')) + '</button>' : '') + '</div>';
+  return h + '</div>';
+};
+
+// ---------- calls sheet (Today) with pending list, delete, many at once
+function peoplePicker(kind, known, already) {
+  var U = S.ui, sel = U.pp[kind] || [];
+  var opts = (known || []).filter(function (n) { return already.indexOf(n) < 0; });
+  return '<div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #F1EDE6;padding-top:10px">' +
+    '<textarea id="pp-' + kind + '" rows="2" data-in="ppText" data-k="' + kind + '" placeholder="' + esc(t('addNames')) + '">' + esc(U.ppText[kind] || '') + '</textarea>' +
+    (opts.length ? '<div class="muted">' + esc(t('pickKnown')) + '</div><div class="chips">' + opts.map(function (n) {
+      var on = sel.indexOf(n) >= 0; return '<button class="chip' + (on ? ' on' : '') + '" data-a="ppPick" data-k="' + kind + '" data-n="' + esc(n) + '" aria-pressed="' + on + '">' + esc(n) + '</button>'; }).join('') + '</div>' : '') +
+    '<button class="btn ' + (kind === 'visit' ? 'terra' : 'teal') + '" data-a="ppAdd" data-k="' + kind + '">' + esc(t('addToList')) + '</button></div>';
+}
+callsCard = function (d, ro) {
+  var h = '<div class="card"><h3>' + esc(t('cT')) + '</h3>';
+  h += '<div class="small" style="font-weight:700;color:#0F766E">' + esc(t('tagCall')) + '</div>' + (d.wants.length ? d.wants.map(function (w) {
+    return '<div class="prow"><b style="flex:1">' + esc(w) + '</b>' + (ro ? '' : '<button class="btn teal" style="height:34px;font-size:12px" data-a="wantDone" data-w="' + esc(w) + '">' + esc(t('talkedBtn')) + '</button>' +
+      '<button class="iconbtn" data-a="unwant" data-l="callWant" data-w="' + esc(w) + '" aria-label="' + esc(t('removeL')) + '">×</button>') + '</div>'; }).join('') : '<div class="muted">' + esc(t('noPend')) + '</div>');
+  if (!ro) h += peoplePicker('call', d.options.people, d.wants);
+  if (d.calls.length) h += '<div class="small" style="font-weight:700;border-top:1px solid #F1EDE6;padding-top:10px">' + esc(t('callsToday')) + '</div>' + d.calls.map(function (c) {
+    return '<div class="prow"><span class="muted">' + esc(c.t) + '</span><b style="flex:1;margin-left:8px">' + esc(c.who) + '</b>' + (ro || !c.id ? '' : '<button class="iconbtn" data-a="delCall" data-id="' + c.id + '" aria-label="' + esc(t('delEntry')) + '">' + TRASH + '</button>') + '</div>'; }).join('');
+  if (!ro) {
+    var list = optList(t('people'), d.options.people), U = S.ui;
+    h += '<details style="border-top:1px solid #F1EDE6;padding-top:8px"><summary class="small" style="font-weight:600;cursor:pointer">' + esc(t('logNow')) + '</summary><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">' +
+      selectHtml('cwho', list, U.cSel === '__new__' ? '' : U.cSel, 'data-ch="cSel"', t('cNewOpt')) +
+      (U.cSel === '__new__' ? '<input id="cnew" data-in="cNew" value="' + esc(U.cNew) + '" placeholder="' + esc(t('otherPh')) + '">' : '') +
+      '<button class="btn teal" data-a="talked">' + esc(t('cTalked')) + '</button></div></details>';
+  }
+  return h + '</div>';
+};
+
+// ---------- Ours: approvals, simple to-do, pending people, visits
+viewOurs = function () {
+  var s = S.shared, U = S.ui;
+  if (!s) return '<div class="loading">' + esc(t('loading')) + '</div>';
+  var tmp = document.createElement('div'); tmp.innerHTML = viewOursOld();
+  var keep = '';
+  Array.prototype.forEach.call(tmp.querySelectorAll('.card'), function (c) {
+    if (c.classList.contains('approvals') || (c.textContent.indexOf(t('recent')) === 0 || (c.querySelector('.muted') && c.querySelector('.muted').textContent === t('recent')))) keep += c.outerHTML;
+  });
+  var out = '<div class="wrap">' + keep;
+  // to-do
+  var pend = s.todos.filter(function (x) { return !x.done; }), done = s.todos.filter(function (x) { return x.done; });
+  var row = function (x) {
+    var h = '<div class="todo" style="' + (x.star && !x.done ? 'background:#FFF6D6;border-radius:12px;padding:6px 8px;' : '') + '"><button class="iconbtn" style="width:44px;height:44px" data-a="todoToggle" data-id="' + x.id + '" aria-pressed="' + x.done + '" aria-label="' + esc(x.text) + '"><div class="box' + (x.done ? ' on' : '') + '">' + (x.done ? '✓' : '') + '</div></button>' +
+      '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><div style="font-size:14px;' + (x.done ? 'color:#8A9296;text-decoration:line-through' : x.star ? 'font-weight:700' : '') + '">' + esc(x.text) + '</div>' +
+      '<div class="row" style="font-size:11px;gap:8px"><b style="color:' + (UC[x.who] || '#5B6468') + '">' + esc(t(x.who)) + '</b>' + (x.done && x.doneBy ? '<span class="muted">' + esc(t('tdDoneBy', { n: nameOf(x.doneBy) })) + '</span>' : '') + '</div>';
+    if (x.del) h += '<div class="small" style="color:#9A3412;font-weight:600">' + esc(t('delPending', { n: nameOf(other(x.del.by)) })) + (x.del.by === S.user ? ' <button class="link" data-a="withdraw" data-id="' + x.del.id + '">' + esc(t('withdraw')) + '</button>' : '') + '</div>';
+    if (U.tdAsk === x.id) h += '<div class="row"><input id="td-' + x.id + '" class="pin" type="password" inputmode="numeric" maxlength="4" data-in="tdPin" value="' + esc(U.tdPin) + '" placeholder="' + esc(t('myPin')) + '"><button class="btn terra" style="height:38px;font-size:12px" data-a="todoDelSend" data-id="' + x.id + '">' + esc(t('sendReq')) + '</button></div>';
+    h += '</div>';
+    if (!x.done) h += '<button class="iconbtn" data-a="todoStar" data-id="' + x.id + '" aria-pressed="' + x.star + '" aria-label="' + esc(t('tdStar')) + '" style="font-size:20px;color:' + (x.star ? '#D97706' : '#B4B2A9') + '">' + (x.star ? '★' : '☆') + '</button>';
+    if (!x.del) h += '<button class="iconbtn" data-a="todoDel" data-id="' + x.id + '" aria-label="' + esc(t('delAria')) + '">' + TRASH + '</button>';
+    return h + '</div>';
+  };
+  var td = U.todo;
+  out += '<div class="card"><div class="between"><h3>' + esc(t('tdT')) + '</h3><b class="small" style="color:' + (pend.length ? '#9A3412' : '#0F766E') + '">' + esc(t('tdPend', { n: pend.length })) + '</b></div>' +
+    '<div class="row"><input id="tdText" data-in="tdText" value="' + esc(td.text) + '" placeholder="' + esc(t('tdNew')) + '">' +
+    '<button class="iconbtn" data-a="tdNewStar" aria-pressed="' + !!td.star + '" aria-label="' + esc(t('tdStar')) + '" style="font-size:22px;color:' + (td.star ? '#D97706' : '#B4B2A9') + '">' + (td.star ? '★' : '☆') + '</button></div>' +
+    '<div class="row"><div class="chips" style="flex:1">' + ['both', 'mehul', 'arpita'].map(function (w) { return '<button class="chip' + (td.who === w ? ' on' : '') + '" data-a="tdWho2" data-w="' + w + '">' + esc(t(w)) + '</button>'; }).join('') + '</div>' +
+    '<button class="btn" data-a="todoAdd">' + esc(t('add')) + '</button></div>' +
+    pend.map(row).join('') +
+    (done.length ? '<details><summary class="small" style="font-weight:600;cursor:pointer;padding:6px 0">' + esc(t('tdDoneN', { n: done.length })) + '</summary>' + done.map(row).join('') + '</details>' : '') + '</div>';
+  // pending people
+  var kind = U.ppKind || 'call';
+  var items = (s.callWants || []).map(function (n) { return { n: n, k: 'call' }; }).concat(s.visitWants.map(function (n) { return { n: n, k: 'visit' }; }));
+  out += '<div class="card"><h3>' + esc(t('pendT')) + '</h3>' + (items.length ? items.map(function (it) {
+    var call2 = it.k === 'call';
+    return '<div class="prow"><span class="small" style="font-weight:700;border-radius:10px;padding:2px 8px;background:' + (call2 ? '#D9F0EC' : '#FBE6DC') + ';color:' + (call2 ? '#0F766E' : '#9A3412') + '">' + esc(t(call2 ? 'tagCall' : 'tagVisit')) + '</span>' +
+      '<b style="flex:1">' + esc(it.n) + '</b><button class="btn ' + (call2 ? 'teal' : 'terra') + '" style="height:34px;font-size:12px;padding:0 10px" data-a="' + (call2 ? 'pendTalk' : 'visitDone') + '" data-w="' + esc(it.n) + '">' + esc(t(call2 ? 'talkedBtn' : 'visitedBtn')) + '</button>' +
+      '<button class="iconbtn" data-a="unwant" data-l="' + (call2 ? 'callWant' : 'visitWant') + '" data-w="' + esc(it.n) + '" aria-label="' + esc(t('removeL')) + '">×</button></div>';
+  }).join('') : '<div class="muted">' + esc(t('noPend')) + '</div>') +
+    '<div class="row" style="border-top:1px solid #F1EDE6;padding-top:10px"><span class="small">' + esc(t('listFor')) + '</span><div class="chips">' +
+    ['call', 'visit'].map(function (k) { return '<button class="chip' + (kind === k ? ' on' : '') + '" data-a="ppKind" data-k="' + k + '">' + esc(t(k === 'call' ? 'tagCall' : 'tagVisit')) + '</button>'; }).join('') + '</div></div>' +
+    peoplePicker(kind, kind === 'call' ? (s.options.people || []) : (s.options.homes || []), kind === 'call' ? (s.callWants || []) : s.visitWants) + '</div>';
+  // visits
+  var vl = optList(t('homes'), s.options.homes);
+  out += '<div class="card"><h3>' + esc(t('vT')) + '</h3>' +
+    (s.visits.length ? '<div class="small" style="font-weight:700">' + esc(t('visitsRecent')) + '</div>' + s.visits.map(function (v) {
+      return '<div class="prow"><span class="muted">' + esc(shortDate(v.date)) + '</span><b style="flex:1;margin-left:8px">' + esc(v.who) + '</b>' + (v.id ? '<button class="iconbtn" data-a="delVisit" data-id="' + v.id + '" aria-label="' + esc(t('delEntry')) + '">' + TRASH + '</button>' : '') + '</div>'; }).join('') : '') +
+    '<details style="border-top:1px solid #F1EDE6;padding-top:8px"><summary class="small" style="font-weight:600;cursor:pointer">' + esc(t('logNow')) + '</summary><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">' +
+    selectHtml('vwho', vl, U.vSel === '__new__' ? '' : U.vSel, 'data-ch="vSel"', t('cNewOpt')) +
+    (U.vSel === '__new__' ? '<input id="vnew" data-in="vNew" value="' + esc(U.vNew) + '" placeholder="' + esc(t('otherPh')) + '">' : '') +
+    '<button class="btn terra" data-a="visited">' + esc(t('vWent')) + '</button></div></details></div>';
+  return out + '</div>';
+};
+
+// ---------- one hidden file input that is never re-drawn (fixes the picker that sometimes did nothing)
+function pickImages(kind, multiple) {
+  var inp = document.getElementById('spPick');
+  if (!inp) {
+    inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'spPick';
+    inp.setAttribute('aria-hidden', 'true'); inp.tabIndex = -1;
+    inp.style.cssText = 'position:fixed;left:-1000px;top:0;width:1px;height:1px;opacity:0';
+    document.body.appendChild(inp);
+    inp.addEventListener('change', function () {
+      var files = Array.prototype.slice.call(inp.files || []), k = inp.dataset.kind;
+      inp.value = '';
+      if (!files.length) return;
+      if (k === 'fin') finQueue(files);
+      else if (k === 'detox') detoxQueue(files);
+    });
+  }
+  inp.multiple = !!multiple;
+  inp.dataset.kind = kind;
+  inp.value = '';
+  inp.click();
+}
+shrinkImage = function (file, max, cb) {
+  var done = false, fin = function (v) { if (!done) { done = true; cb(v); } };
+  try {
+    var url = (window.URL || window.webkitURL).createObjectURL(file), img = new Image();
+    img.onload = function () {
+      try {
+        var s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        fin(c.toDataURL('image/jpeg', 0.78));
+      } catch (e) { fin(null); }
+      try { URL.revokeObjectURL(url); } catch (e) {}
+    };
+    img.onerror = function () { fin(null); };
+    img.src = url;
+    setTimeout(function () { fin(null); }, 20000);
+  } catch (e) { fin(null); }
+};
+function uploadQueue(files, max, send, onStep, onEnd) {
+  var i = 0, ok = 0, bad = 0;
+  var next = function () {
+    if (i >= files.length) { onEnd(ok, bad); return; }
+    var f = files[i++];
+    shrinkImage(f, max, function (u) {
+      if (!u) { bad++; onStep(ok, bad); next(); return; }
+      send(u).then(function () { ok++; onStep(ok, bad); next(); }).catch(function () {
+        send(u).then(function () { ok++; onStep(ok, bad); next(); }).catch(function () { bad++; onStep(ok, bad); next(); });   // one retry
+      });
+    });
+  };
+  next();
+}
+function finQueue(files) {
+  var F = S.fin, batch = 'B' + Date.now().toString(36);
+  files = files.slice(0, 40);
+  F.q = { n: files.length, ok: 0, bad: 0, busy: true };
+  render();
+  var sd = F.shotDate && F.shotDate <= today() ? F.shotDate : today();
+  uploadQueue(files, 1400, function (u) { return call('uploadReceipt', { images: [u], batch: batch, date: sd }); },
+    function (ok, bad) { F.q.ok = ok; F.q.bad = bad; if (S.view === 'fin') render(); },
+    function (ok, bad) {
+      F.q = { n: ok, ok: ok, bad: bad, busy: false, done: true };
+      if (ok) toast(t('shotUploaded', { n: ok }));
+      loadFin();
+      if (ok) call('processNow').then(loadFin).catch(function () {});
+    });
+}
+finAddCard = function () {
+  var F = S.fin, f = F.form, q = F.q;
+  var h = '<div class="card"><h3>' + esc(t('addT')) + '</h3><div class="grid2">' +
+    '<button class="btn terra" data-a="finPick"' + (q && q.busy ? ' disabled' : '') + '>' + esc(t('shotBtn')) + '</button>' +
+    '<button class="btn ghost" data-a="finManual">' + esc(t('manualBtn')) + '</button></div>' +
+    '<div class="row" style="align-items:center"><label class="small" for="fShotDate">' + esc(t('shotDate')) + '</label>' +
+    '<input id="fShotDate" type="date" style="width:170px;padding:6px" max="' + today() + '" value="' + esc(F.shotDate || today()) + '" data-ch="fShotDate"></div>' +
+    '<div class="muted">' + esc(t('shotDateHint')) + '</div>';
+  if (q && q.busy) h += '<div class="small" style="font-weight:700;color:#9A3412"><span class="spin"></span> ' + esc(t('shotUploading', { d: q.ok + q.bad, n: q.n })) + '</div><div class="pbar"><div style="width:' + Math.round((q.ok + q.bad) * 100 / q.n) + '%;background:#9A3412"></div></div>';
+  else if (q && q.done) h += '<div class="small" style="color:#0F766E;line-height:1.6">' + esc(t('shotUploaded', { n: q.ok })) + (q.bad ? ' <span style="color:#BE123C">' + esc(t('shotFailed', { n: q.bad })) + '</span>' : '') + '</div>';
+  if (F.manual) {
+    h += '<div style="border-top:1px solid #F1EDE6;padding-top:10px;display:flex;flex-direction:column;gap:8px">' +
+      '<div class="row"><input id="fAmt" type="number" inputmode="decimal" placeholder="' + esc(t('amount')) + '" value="' + esc(f.amount) + '" data-in="fAmt">' +
+      '<input id="fDate" type="date" style="width:160px;flex-shrink:0" aria-label="' + esc(t('date')) + '" value="' + esc(f.date) + '" data-ch="fDate"></div>' +
+      catSelect('fCat', f.category, 'data-ch="fCat" aria-label="' + esc(t('category')) + '"') +
+      '<input id="fItem" placeholder="' + esc(t('detailsPh')) + '" aria-label="' + esc(t('details')) + '" value="' + esc(f.item) + '" data-in="fItem">' +
+      needChips('fNeed', '', f.need) +
+      (f.need === 'avoid' ? '<input id="fReason" placeholder="' + esc(t('whyAvoidPh')) + '" aria-label="' + esc(t('whyAvoid')) + '" value="' + esc(f.reason) + '" data-in="fReason">' : '') +
+      '<div class="row"><select id="fPaid" data-ch="fPaid" aria-label="' + esc(t('paidBy')) + '">' + ['mehul', 'arpita'].map(function (u) { return '<option value="' + u + '"' + ((f.paidBy || S.user) === u ? ' selected' : '') + '>' + esc(t(u)) + '</option>'; }).join('') + '</select>' +
+      '<select id="fMode" data-ch="fMode" aria-label="' + esc(t('mode')) + '">' + ['upi', 'card', 'cash', 'online'].map(function (m) { return '<option value="' + m + '"' + (f.mode === m ? ' selected' : '') + '>' + esc(t('m_' + m)) + '</option>'; }).join('') + '</select></div>' +
+      '<button class="btn teal wide" data-a="finSave">' + esc(t('saveExp')) + '</button></div>';
+  }
+  return h + '</div><!--rc-->';
+};
+// receipts card: short summary instead of every detail
+var viewFinV2 = viewFin;
+viewFin = function () {
+  var d = S.fin.data;
+  if (!d) return viewFinV2();
+  var keepReceipts = d.receipts;
+  d.receipts = [];
+  var html = viewFinV2();
+  d.receipts = keepReceipts;
+  var recent = keepReceipts.filter(function (r) { return r.ts && r.ts.slice(0, 10) >= addDays(today(), -2) || r.status === 'pending' || r.status === 'processing' || r.status === 'retry' || r.status === 'error'; });
+  if (!recent.length) return html;
+  var c = { done: 0, wait: 0, skip: 0, n: recent.length };
+  recent.forEach(function (r) { if (r.status === 'done') c.done++; else if (r.status === 'pending' || r.status === 'processing' || r.status === 'retry') c.wait++; else if (r.status === 'skipped') c.skip++; });
+  var card = '<div class="card"><div class="between"><h3>' + esc(t('rcT')) + '</h3><span class="small">' + esc(t('rcSum', { n: c.n, o: c.done })) + '</span></div>' +
+    (c.wait ? '<div class="small" style="color:#B45309;font-weight:600"><span class="spin"></span> ' + esc(t('aiBg')) + ' · ' + esc(t('rcWait', { n: c.wait })) + '</div>' : '') +
+    (c.skip ? '<div class="muted">' + esc(t('rcSkip', { n: c.skip })) + '</div>' : '') +
+    recent.filter(function (r) { return r.status === 'done' || r.status === 'duplicate'; }).map(function (r) {
+      return '<div class="li small"><span>' + esc((r.app || '—') + ' · ' + shortDate(r.date)) + '</span><b style="color:' + (r.status === 'done' ? '#0F766E' : '#BE123C') + '">' + (r.status === 'done' ? rs(r.total) : esc(t('st_duplicate'))) + '</b></div>' +
+        (r.note === 'MISMATCH' ? '<div class="small" style="color:#B45309">' + esc(t('mismatch', { a: Math.round(r.itemsTotal), b: Math.round(r.total) })) + '</div>' : ''); }).join('') +
+    recent.filter(function (r) { return r.status === 'error'; }).map(function (r) {
+      return '<div class="li small" style="align-items:center"><span style="color:#9F1239">' + esc(shortDate(r.date) + ' · ' + t('st_error')) + '</span><button class="btn ghost" style="height:32px;font-size:12px" data-a="finRetry" data-id="' + r.id + '">' + esc(t('retry')) + '</button></div>'; }).join('') +
+    (d.hasKey ? '' : '<div class="small" style="color:#BE123C">' + esc(t('noKey')) + '</div>') + '</div>';
+  return html.replace('<!--rc-->', card);
+};
+
+// ---------- Digital Detox
+S.dx = { mode: 'week', anchor: today(), who: 'c', data: null, q: null, edit: false, ef: {}, limitApp: '', limitVal: '', goalEdit: false, goalVal: '' };
+function loadDetox() {
+  var X = S.dx;
+  return call('getDetox', { mode: X.mode, anchor: X.anchor, statusDate: X.upDate || '' }).then(function (d) { X.data = d; if (S.view === 'detox') render(); }).catch(fail);
+}
+function detoxQueue(files) {
+  var X = S.dx; files = files.slice(0, 4);
+  X.q = { n: files.length, ok: 0, bad: 0, busy: true }; render();
+  var imgs = [];
+  var i = 0;
+  var next = function () {
+    if (i >= files.length) {
+      if (!imgs.length) { X.q = null; toast(t('shotFailed', { n: files.length })); render(); return; }
+      call('uploadDetox', { images: imgs, date: X.data ? X.data.today : today() }).then(function () {
+        X.q = null; toast(t('dxReading')); loadDetox(); call('processNow').then(loadDetox).catch(function () {});
+      }).catch(function (e) { X.q = null; render(); fail(e); });
+      return;
+    }
+    shrinkImage(files[i++], 1600, function (u) { if (u) imgs.push(u); X.q.ok = imgs.length; render(); next(); });
+  };
+  next();
+}
+var DXC = { a: '#9A3412', m: '#0F766E' }, DXCAT = { message: '#1D9E75', social: '#D85A30', video: '#7F77DD', news: '#378ADD', games: '#D4537E', shopping: '#BA7517', work: '#5F5E5A', other: '#B4B2A9' };
+function dxKey(u) { return u === 'arpita' ? 'a' : 'm'; }
+function dxChange(n, p, unit) {
+  if (n === null || p === null || n === undefined || p === undefined) return '<small class="muted">' + esc(t('dxNoPrev')) + '</small>';
+  var dd = n - p, pl = t(S.dx.mode === 'week' ? 'dxPrevW' : 'dxPrevM');
+  if (!dd) return '<small class="muted">' + esc(t('dxSame')) + '</small>';
+  return '<small style="color:' + (dd < 0 ? '#0F766E' : '#B45309') + '">' + (dd < 0 ? '▼ ' : '▲ ') + Math.abs(dd) + (unit || '') + ' ' + esc(t('dxVsPrev', { p: pl })) + '</small>';
+}
+function dxSeries(p) {
+  var X = S.dx, d = X.data;
+  if (X.mode === 'month') return { lab: p.weeks.map(function (w) { return shortDate(w.start); }), val: p.weeks.map(function (w) { return w.avg; }) };
+  var lab = [], val = [], map = {};
+  p.days.forEach(function (x) { map[x.date] = x.total; });
+  for (var i = 0; i < 7; i++) { var dt = addDays(d.period.start, i); lab.push(t('wds')[(i + 1) % 7]); val.push(map[dt] === undefined ? null : map[dt]); }
+  return { lab: lab, val: val };
+}
+function svgLines(lab, sets, goal) {
+  var W = 320, H = 150, L = 30, B = 22, T = 8, max = 60;
+  sets.forEach(function (s) { s.val.forEach(function (v) { if (v !== null && v > max) max = v; }); });
+  if (goal > max) max = goal;
+  max = Math.ceil(max / 60) * 60;
+  var x = function (i) { return L + (lab.length === 1 ? (W - L) / 2 : i * (W - L - 10) / (lab.length - 1)); }, y = function (v) { return T + (H - T - B) * (1 - v / max); };
+  var g = '';
+  for (var h = 0; h <= max; h += 60) g += '<line x1="' + L + '" x2="' + W + '" y1="' + y(h) + '" y2="' + y(h) + '" stroke="#F1EDE6"/><text x="' + (L - 4) + '" y="' + (y(h) + 4) + '" font-size="10" text-anchor="end" fill="#8A9296">' + (h / 60) + (S.lang === 'en' ? 'h' : 'ક') + '</text>';
+  lab.forEach(function (l, i) { g += '<text x="' + x(i) + '" y="' + (H - 6) + '" font-size="10" text-anchor="middle" fill="#8A9296">' + esc(l) + '</text>'; });
+  if (goal) g += '<line x1="' + L + '" x2="' + W + '" y1="' + y(goal) + '" y2="' + y(goal) + '" stroke="#B4B2A9" stroke-dasharray="5 4"/>';
+  sets.forEach(function (s) {
+    var pts = [], seg = '';
+    s.val.forEach(function (v, i) { if (v === null) { if (pts.length > 1) seg += '<polyline fill="none" stroke="' + s.c + '" stroke-width="2.5" stroke-linejoin="round" points="' + pts.join(' ') + '"/>'; pts = []; return; } pts.push(x(i) + ',' + y(v)); g += '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="3.5" fill="' + s.c + '"><title>' + hmT(v) + '</title></circle>'; });
+    if (pts.length > 1) seg += '<polyline fill="none" stroke="' + s.c + '" stroke-width="2.5" stroke-linejoin="round" points="' + pts.join(' ') + '"/>';
+    g = seg + g;
+  });
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto" role="img" aria-label="' + esc(t('dxDaily')) + '">' + g + '</svg>';
+}
+function svgBars(lab, val, goal, col) {
+  var W = 320, H = 140, L = 30, B = 22, T = 8, max = 60;
+  val.forEach(function (v) { if (v !== null && v > max) max = v; }); if (goal > max) max = goal; max = Math.ceil(max / 60) * 60;
+  var y = function (v) { return T + (H - T - B) * (1 - v / max); }, bw = Math.min(30, (W - L) / lab.length - 10);
+  var g = '';
+  for (var h = 0; h <= max; h += 60) g += '<line x1="' + L + '" x2="' + W + '" y1="' + y(h) + '" y2="' + y(h) + '" stroke="#F1EDE6"/><text x="' + (L - 4) + '" y="' + (y(h) + 4) + '" font-size="10" text-anchor="end" fill="#8A9296">' + (h / 60) + (S.lang === 'en' ? 'h' : 'ક') + '</text>';
+  lab.forEach(function (l, i) {
+    var cx = L + (i + 0.5) * (W - L) / lab.length, v = val[i];
+    if (v !== null) g += '<rect x="' + (cx - bw / 2) + '" y="' + y(v) + '" width="' + bw + '" height="' + (y(0) - y(v)) + '" rx="4" fill="' + (v <= goal ? col : '#F0997B') + '"><title>' + hmT(v) + '</title></rect>';
+    g += '<text x="' + cx + '" y="' + (H - 6) + '" font-size="10" text-anchor="middle" fill="#8A9296">' + esc(l) + '</text>';
+  });
+  g += '<line x1="' + L + '" x2="' + W + '" y1="' + y(goal) + '" y2="' + y(goal) + '" stroke="#5B6468" stroke-dasharray="5 4"/>';
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto" role="img" aria-label="' + esc(t('dxDaily')) + '">' + g + '</svg>';
+}
+function dxDonut(cats, label, col) {
+  var tot = 0, acc = 0, parts = [];
+  Object.keys(cats).forEach(function (k) { tot += cats[k]; });
+  if (!tot) return '';
+  Object.keys(cats).forEach(function (k) { if (!cats[k]) return; var a = acc * 360 / tot; acc += cats[k]; parts.push(DXCAT[k] + ' ' + a + 'deg ' + (acc * 360 / tot) + 'deg'); });
+  return '<div style="text-align:center"><div style="width:110px;height:110px;border-radius:55px;margin:0 auto;background:conic-gradient(' + parts.join(',') + ');display:flex;align-items:center;justify-content:center">' +
+    '<div style="width:74px;height:74px;border-radius:37px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:' + col + '">' + esc(label) + '</div></div></div>';
+}
+function viewDetox() {
+  var X = S.dx, d = X.data;
+  var out = '<div class="wrap"><div class="sg3">' + [['c', t('dxCompare')], ['arpita', nameOf('arpita')], ['mehul', nameOf('mehul')]].map(function (x) {
+    return '<button class="' + (X.who === x[0] ? 'on' : '') + '" data-a="dxWho" data-w="' + x[0] + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>' +
+    '<div class="row" style="justify-content:space-between"><div class="sg3" style="width:56%">' + ['week', 'month'].map(function (m) { return '<button class="' + (X.mode === m ? 'on' : '') + '" data-a="dxMode" data-m="' + m + '">' + esc(t(m)) + '</button>'; }).join('') + '</div>';
+  if (!d) return out + '</div><div class="loading">' + esc(t('loading')) + '</div></div>';
+  var per = d.period;
+  out += '<div class="row"><button class="round" data-a="dxNav" data-d="-1" aria-label="-">‹</button><b class="small" style="min-width:80px;text-align:center">' +
+    esc(per.mode === 'month' ? t('mo')[+per.start.slice(5, 7) - 1] : shortDate(per.start) + '–' + shortDate(per.end)) + '</b>' +
+    '<button class="round" data-a="dxNav" data-d="1" aria-label="+"' + (per.end >= today() ? ' disabled' : '') + '>›</button></div></div>';
+  out += dxUploadCard(d);
+  var A = d.people.arpita, M = d.people.mehul;
+  if (!A.n && !M.n) return out + '<div class="card"><div class="small" style="line-height:1.6">' + esc(t('dxNoData')) + '</div></div></div>';
+  out += X.who === 'c' ? dxCompare(d) : dxSingle(d, X.who);
+  return out + '</div>';
+}
+function dxUploadCard(d) {
+  var X = S.dx, me = d.status[S.user], ot = d.status[other(S.user)];
+  var st = function (s) { return s.state === 'done' ? t('dxDone') : s.state === 'pending' || s.state === 'processing' ? t('dxReading') : s.state === 'error' ? t('dxErr') : t('dxPending'); };
+  var h = '<div class="card" style="background:#FFF4E5;gap:8px"><div class="row" style="align-items:center"><span style="font-size:20px">📱</span><div style="flex:1;color:#92400E"><b>' + esc(X.upPicked ? t('dxUpFor', { d: shortDate(d.today) }) : t('dxUpT')) + '</b>' +
+    '<div class="small">' + esc(nameOf(S.user) + ': ' + st(me) + ' · ' + nameOf(other(S.user)) + ': ' + st(ot)) + '</div></div>';
+  if (X.q) h += '<span class="small"><span class="spin"></span> ' + X.q.ok + '/' + X.q.n + '</span></div>';
+  else h += '<button class="btn teal" style="height:38px;font-size:12px" data-a="dxPick">' + esc(me.state === 'done' ? '↻' : t('dxUpBtn')) + '</button></div>';
+  h += '<div class="row" style="align-items:center"><label class="small" for="dxDate" style="color:#92400E">' + esc(t('shotDate')) + '</label>' +
+    '<input id="dxDate" type="date" style="width:170px;padding:6px" max="' + today() + '" min="' + addDays(today(), -60) + '" value="' + esc(d.today) + '" data-ch="dxDate"></div>';
+  if (me.state !== 'done') h += '<div class="small" style="color:#92400E;line-height:1.5">' + esc(t('dxUpHow')) + '</div>';
+  if (me.state === 'error') h += '<div class="small" style="color:#9F1239">' + esc(me.note) + '</div><button class="btn ghost" style="height:34px;font-size:12px;align-self:flex-start" data-a="dxRetry" data-id="' + me.id + '">' + esc(t('retry')) + '</button>';
+  h += '<button class="link" style="align-self:flex-start;color:#92400E" data-a="dxEditT">' + esc(t('dxEdit')) + '</button>';
+  if (X.edit) {
+    var mine = d.people[S.user].days.filter(function (x) { return x.date === d.today; })[0] || {};
+    var ef = X.ef;
+    if (ef.date !== d.today) { X.ef = ef = { date: d.today, total: mine.total || '', unlocks: mine.unlocks === null || mine.unlocks === undefined ? '' : mine.unlocks, first: mine.first || '', night: mine.night === null || mine.night === undefined ? '' : mine.night }; }
+    h += '<div class="grid2">' + [['total', 'dxTotal', 'number'], ['unlocks', 'dxUnl', 'number'], ['first', 'dxFirst', 'time'], ['night', 'dxNight', 'number']].map(function (f) {
+      return '<label class="small" style="display:flex;flex-direction:column;gap:4px">' + esc(t(f[1])) + '<input id="dxe-' + f[0] + '" type="' + f[2] + '" inputmode="numeric" value="' + esc(ef[f[0]]) + '" data-in="dxEf" data-k="' + f[0] + '"></label>'; }).join('') + '</div>' +
+      '<button class="btn teal" data-a="dxEditSave">' + esc(t('save')) + '</button>';
+  }
+  return h + '</div>';
+}
+function dxCompare(d) {
+  var X = S.dx, A = d.people.arpita, M = d.people.mehul, pl = t(X.mode === 'week' ? 'dxPrevW' : 'dxPrevM');
+  var imp = function (p) { return p.avg !== null && p.prev ? Math.round((p.avg - p.prev) * 100 / p.prev) : null; };
+  var ia = imp(A), im = imp(M), lead = ia === null && im === null ? '' : ia === null ? 'mehul' : im === null ? 'arpita' : ia < im ? 'arpita' : im < ia ? 'mehul' : 'tie';
+  var crown = ' <span style="color:#FBBF24" aria-label="crown">👑</span>';
+  var out = '<div class="card" style="background:#1F2A2E;color:#fff"><div class="small" style="color:#C9D1D4">' + esc(t('dxRace', { p: pl })) + '</div>' +
+    ['arpita', 'mehul'].map(function (u) {
+      var v = u === 'arpita' ? ia : im, w = v === null ? 0 : Math.min(50, Math.abs(v) * 3);
+      return '<div style="display:flex;align-items:center;gap:8px"><span style="width:76px;font-size:12px">' + esc(nameOf(u)) + (lead === u ? crown : '') + '</span>' +
+        '<div style="flex:1;height:10px;background:#2C3A3F;border-radius:5px;position:relative"><div style="position:absolute;left:50%;top:-2px;width:1px;height:14px;background:#8A9296"></div>' +
+        (v === null ? '' : '<div style="position:absolute;height:100%;border-radius:5px;background:' + (v <= 0 ? '#5DCAA5' : '#F0997B') + ';' + (v <= 0 ? 'right:50%' : 'left:50%') + ';width:' + w + '%"></div>') + '</div>' +
+        '<b style="width:44px;text-align:right">' + (v === null ? '–' : (v > 0 ? '+' : '') + v + '%') + '</b></div>'; }).join('') +
+    '<div class="between" style="font-size:11px;color:#8A9296"><span>' + esc(t('dxRaceL')) + '</span>' + (lead === 'tie' ? '<span>' + esc(t('dxTie')) + '</span>' : '') + '<span>' + esc(t('dxRaceR')) + '</span></div></div>';
+  // head to head
+  var under = function (p) { return p.under; };
+  var row = function (label, va, vm, aBetter) {
+    var cell = function (v, win, col) { return '<span style="text-align:right;color:' + col + '">' + (win ? '<b class="bt">' + esc(v) + '</b>' : esc(v)) + '</span>'; };
+    return '<div class="mt"><span>' + esc(label) + '</span>' + cell(va, aBetter === true, DXC.a) + cell(vm, aBetter === false, DXC.m) + '</div>';
+  };
+  var cmp = function (a, m, lowGood) { if (a === null || m === null || a === '' || m === '' || a === m) return null; return lowGood ? a < m : a > m; };
+  var fm = function (x) { return x ? mins(x) : null; };
+  out += '<div class="card"><div class="between"><h3>' + esc(t('dxH2H')) + '</h3><span class="muted">' + esc(t('dxGreen')) + '</span></div>' +
+    '<div class="mt" style="border:none;padding-top:0"><span></span><span class="muted" style="text-align:right">' + esc(nameOf('arpita')) + '</span><span class="muted" style="text-align:right">' + esc(nameOf('mehul')) + '</span></div>' +
+    row(t('dxAvg'), A.avg === null ? '–' : hmT(A.avg), M.avg === null ? '–' : hmT(M.avg), cmp(A.avg, M.avg, true)) +
+    row(t('dxUnlD'), A.unl === null ? '–' : A.unl, M.unl === null ? '–' : M.unl, cmp(A.unl, M.unl, true)) +
+    row(t('dxFirstL'), A.first || '–', M.first || '–', cmp(fm(A.first), fm(M.first), false)) +
+    row(t('dxNightL'), A.night === null ? '–' : A.night + 'm', M.night === null ? '–' : M.night + 'm', cmp(A.night, M.night, true)) +
+    row(t('dxUnder'), under(A) + '/' + A.n, under(M) + '/' + M.n, cmp(A.n ? under(A) / A.n : null, M.n ? under(M) / M.n : null, false)) + '</div>';
+  // trend
+  var sa = dxSeries(A), sm = dxSeries(M);
+  out += '<div class="card"><div class="between"><h3>' + esc(X.mode === 'week' ? t('dxDaily') : t('dxWeekly')) + '</h3><div class="lg4"><span><i style="background:' + DXC.a + '"></i>' + esc(nameOf('arpita')) + '</span><span><i style="background:' + DXC.m + '"></i>' + esc(nameOf('mehul')) + '</span></div></div>' +
+    svgLines(sa.lab, [{ val: sa.val, c: DXC.a }, { val: sm.val, c: DXC.m }], Math.round((A.goal + M.goal) / 2)) + '</div>';
+  // apps
+  var apps = {};
+  A.apps.forEach(function (x) { if (x[1]) apps[x[0]] = { a: x[1], m: 0 }; });
+  M.apps.forEach(function (x) { if (x[1]) { apps[x[0]] = apps[x[0]] || { a: 0 }; apps[x[0]].m = x[1]; } });
+  var names = Object.keys(apps).sort(function (p, q) { return (apps[q].a + apps[q].m) - (apps[p].a + apps[p].m); }).slice(0, 7);
+  var mx = 1; names.forEach(function (n) { mx = Math.max(mx, apps[n].a, apps[n].m); });
+  if (names.length) out += '<div class="card"><div class="between"><h3>' + esc(t('dxWhoApp')) + '</h3><span class="muted">' + esc(t('dxPerDay')) + ' · ' + esc(nameOf('arpita')) + ' ◀ ▶ ' + esc(nameOf('mehul')) + '</span></div>' + names.map(function (n) {
+    var a = apps[n].a, m = apps[n].m;
+    return '<div><div class="small" style="text-align:center">' + esc(n) + '</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;align-items:center;font-size:11px">' +
+      '<div style="display:flex;justify-content:flex-end;align-items:center;gap:4px"><span>' + (a || '') + '</span><div style="width:' + Math.round(a * 85 / mx) + '%;height:10px;background:' + DXC.a + ';border-radius:5px 0 0 5px"></div></div>' +
+      '<div style="display:flex;align-items:center;gap:4px"><div style="width:' + Math.round(m * 85 / mx) + '%;height:10px;background:' + DXC.m + ';border-radius:0 5px 5px 0"></div><span>' + (m || '') + '</span></div></div></div>'; }).join('') + '</div>';
+  // categories
+  var da = dxDonut(A.cats, nameOf('arpita'), DXC.a), dm = dxDonut(M.cats, nameOf('mehul'), DXC.m);
+  if (da || dm) out += '<div class="card"><h3>' + esc(t('dxCats')) + '</h3><div class="grid2">' + (da || '<div></div>') + (dm || '<div></div>') + '</div>' + dxCatLegend(A.cats, M.cats) + '</div>';
+  var ai = d.ai, L = S.lang === 'en' ? 'en' : 'gu';
+  if (ai && ai.joint) out += '<div class="card" style="background:#FFF8E7;color:#78350F"><b>✨ ' + esc(t('dxJoint')) + '</b><div class="small" style="line-height:1.6">' + esc(ai.joint[L]) + '</div></div>';
+  return out;
+}
+function dxCatLegend(a, m) {
+  return '<div class="lg4" style="flex-wrap:wrap;justify-content:center">' + Object.keys(DXCAT).filter(function (k) { return (a[k] || 0) + ((m || {})[k] || 0) > 0; }).map(function (k) {
+    return '<span><i style="background:' + DXCAT[k] + '"></i>' + esc(t('dxc_' + k)) + '</span>'; }).join('') + '</div>';
+}
+function dxSingle(d, u) {
+  var X = S.dx, p = d.people[u], o = d.people[other(u)], col = DXC[dxKey(u)], mine = u === S.user;
+  if (!p.n) return '<div class="card"><div class="small">' + esc(t('dxNoData')) + '</div></div>';
+  var deg = p.n ? Math.round(p.under * 360 / p.n) : 0;
+  var out = '<div class="grid2">' +
+    '<div class="k4" style="grid-column:1/3;display:flex;align-items:center;gap:12px"><div style="flex:1"><small>' + esc(t('dxAvg')) + '</small><b style="font-size:24px;color:' + col + '">' + hmT(p.avg) + '</b>' + dxChange(p.avg, p.prev, ' min') + '</div>' +
+    '<div style="text-align:center"><div style="width:60px;height:60px;border-radius:30px;margin:0 auto;background:conic-gradient(' + col + ' ' + deg + 'deg,#F1EDE6 0);display:flex;align-items:center;justify-content:center"><div style="width:46px;height:46px;border-radius:23px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">' + p.under + '/' + p.n + '</div></div><small>' + esc(t('dxUnder')) + '</small></div></div>' +
+    '<div class="k4"><small>' + esc(t('dxUnlD')) + '</small><b>' + (p.unl === null ? '–' : p.unl) + '</b>' + dxChange(p.unl, p.unlP) + '</div>' +
+    '<div class="k4"><small>' + esc(t('dxStreak')) + '</small><b>' + p.streak + (p.streak ? ' 🔥' : '') + '</b><small class="muted">' + esc(p.streak ? t('dxStreakGo') : t('dxStreak0')) + '</small></div>' +
+    '<div class="k4"><small>' + esc(t('dxFirstL')) + '</small><b>' + esc(p.first || '–') + '</b>' + (p.firstP ? '<small class="muted">' + esc(p.firstP) + '</small>' : '') + '</div>' +
+    '<div class="k4"><small>' + esc(t('dxNightL')) + '</small><b>' + (p.night === null ? '–' : p.night + ' min') + '</b>' + dxChange(p.night, p.nightP, ' min') + '</div></div>';
+  // goal
+  out += '<div class="card"><div class="between" style="align-items:center"><h3>' + esc(t('dxGoal')) + '</h3>' + (mine && !X.goalEdit ? '<button class="link" data-a="dxGoalEdit">' + esc(t('editMed')) + '</button>' : '') + '</div>';
+  if (mine && X.goalEdit) out += '<div class="row"><input id="dxGoal" type="number" inputmode="numeric" style="width:110px" value="' + esc(X.goalVal) + '" data-in="dxGoalVal"><span class="small">' + esc(t('dxPerDay')) + '</span><button class="btn teal" data-a="dxGoalSave">' + esc(t('save')) + '</button></div>';
+  else out += '<div class="small">' + esc(t('dxGoalL', { h: hmT(p.goal) })) + '</div>';
+  var s = dxSeries(p);
+  out += '<div class="between" style="margin-top:4px"><b class="small">' + esc(X.mode === 'week' ? t('dxDaily') : t('dxWeekly')) + '</b><div class="lg4"><span><i style="background:' + col + '"></i>' + esc(t('dxInGoal')) + '</span><span><i style="background:#F0997B"></i>' + esc(t('dxOver')) + '</span></div></div>' +
+    svgBars(s.lab, s.val, p.goal, col) +
+    (p.best ? '<div class="muted">' + esc(t('dxBest')) + ': ' + esc(shortDate(p.best.date) + ' · ' + hmT(p.best.total)) + ' &nbsp;·&nbsp; ' + esc(t('dxWorst')) + ': ' + esc(shortDate(p.worst.date) + ' · ' + hmT(p.worst.total)) + '</div>' : '') + '</div>';
+  // apps + limits
+  out += '<div class="card"><div class="between"><h3>' + esc(t('dxApps')) + '</h3><span class="muted">' + esc(t('dxPerDay')) + '</span></div>' + p.apps.map(function (a) {
+    var lim = a[3], over = lim && a[1] > lim, w = lim ? Math.min(100, a[1] * 100 / lim) : Math.min(100, a[1] * 100 / Math.max(60, p.apps[0][1]));
+    var ch = a[2] === null ? '' : '<span style="color:' + (a[1] <= a[2] ? '#0F766E' : '#B45309') + '">' + (a[1] <= a[2] ? '▼' : '▲') + Math.abs(a[1] - a[2]) + '</span>';
+    var editing = mine && X.limitApp === a[0];
+    return '<div style="padding:8px 0;border-top:1px solid #F1EDE6"><div class="between small" style="align-items:center"><span><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:' + DXCAT[a[4]] + ';margin-right:6px"></i>' + esc(a[0]) + '</span>' +
+      '<span><b>' + a[1] + ' min</b>' + (lim ? ' <span class="muted">/ ' + lim + '</span>' : '') + ' ' + ch + (mine ? ' <button class="link" style="font-size:12px" data-a="dxLimit" data-app="' + esc(a[0]) + '">' + esc(lim ? '✎' : t('dxAddLimit')) + '</button>' : '') + '</span></div>' +
+      '<div class="pbar" style="margin-top:4px"><div style="width:' + w + '%;background:' + (over ? '#D85A30' : lim ? col : '#B4B2A9') + '"></div></div>' +
+      (editing ? '<div class="row" style="margin-top:6px"><input id="dxLim" type="number" inputmode="numeric" style="width:100px" placeholder="' + esc(t('dxLimitQ')) + '" value="' + esc(X.limitVal) + '" data-in="dxLimVal"><button class="btn teal" style="height:36px" data-a="dxLimitSave">' + esc(t('save')) + '</button>' +
+        (lim ? '<button class="link" data-a="dxLimitDel">' + esc(t('dxNoLimit')) + '</button>' : '') + '</div>' : '') + '</div>';
+  }).join('') + '</div>';
+  var dn = dxDonut(p.cats, nameOf(u), col);
+  if (dn) out += '<div class="card"><h3>' + esc(t('dxCats')) + '</h3>' + dn + dxCatLegend(p.cats, {}) + '</div>';
+  if (o.avg !== null && p.avg !== null) out += '<button class="card" style="background:#F1EDE6;border:none;text-align:left;font-family:inherit" data-a="dxWho" data-w="c"><b class="small">' + esc(t('dxWithO', { n: nameOf(other(u)) })) + '</b>' +
+    '<div class="small">' + esc(p.avg <= o.avg ? t('dxLess', { m: o.avg - p.avg }) : t('dxMore', { m: p.avg - o.avg })) + ' <span style="color:#9A3412">' + esc(t('dxSeeCmp')) + '</span></div></button>';
+  // AI actions / month summary
+  var L = S.lang === 'en' ? 'en' : 'gu', ai = d.ai;
+  if (X.mode === 'week') {
+    var acts = ai && ai[u] ? ai[u] : null;
+    out += '<div class="card" style="background:#FFF8E7;color:#78350F"><b>✨ ' + esc(t('dxActs')) + '</b>' + (acts && acts.length ? acts.map(function (a, i) {
+      return '<label class="row small" style="align-items:flex-start;gap:8px;padding:6px 0;border-top:1px solid #F3E3BF;line-height:1.5"><input type="checkbox" style="width:20px;height:20px;flex-shrink:0" data-ch="dxAct" data-i="' + i + '" data-week="' + esc(d.period.start) + '"' + (a.done ? ' checked' : '') + (mine ? '' : ' disabled') + '><span>' + esc(a[L]) + '</span></label>'; }).join('')
+      : '<div class="small">' + esc(t('dxActsWait')) + '</div>') + '</div>';
+  } else {
+    var w = (p.weeks || []).filter(function (x) { return x.avg !== null; });
+    var txt = '';
+    if (w.length >= 2) { var dd = w[w.length - 1].avg - w[0].avg; txt = dd > 0 ? t('dxMonthUp', { m: dd }) : t('dxMonthDown', { m: -dd }); }
+    if (p.apps[0] && p.apps[0][1]) txt += ' ' + t('dxMonthTop', { a: p.apps[0][0] });
+    if (txt) out += '<div class="card" style="background:#FFF8E7;color:#78350F"><b>✨ ' + esc(t('dxMonthSum')) + '</b><div class="small" style="line-height:1.6">' + esc(txt.trim()) + '</div></div>';
+  }
+  return out;
+}
+
+// ---------- settings: backup key, no e-mail box
+var viewSettingsV2 = viewSettings;
+viewSettings = function () {
+  var html = viewSettingsV2(), s = S.settings || {};
+  var tmp = document.createElement('div'); tmp.innerHTML = html;
+  var em = tmp.querySelector('#sEmails');
+  if (em) { em.style.display = 'none'; var lab = tmp.querySelector('label[for="sEmails"]'); if (lab) lab.style.display = 'none'; }
+  var keyBtn = tmp.querySelector('[data-a="testKey"]');
+  if (keyBtn) keyBtn.closest('.card').insertAdjacentHTML('beforeend', '<div style="border-top:1px solid #F1EDE6;padding-top:10px;display:flex;flex-direction:column;gap:6px"><label class="small" for="setKey2">' + esc(t('backupKey')) + '</label>' +
+    '<input id="setKey2" type="password" autocomplete="off" data-in="setKey2" value="' + esc(S.ui.key2 || '') + '" placeholder="' + esc(s.hasKey2 ? '••••••••' : 'AIza…') + '"><div class="muted">' + esc(t('backupHint')) + '</div>' +
+    '<button class="btn ghost" data-a="saveKey2">' + esc(t('save')) + '</button></div>');
+  return tmp.innerHTML;
+};
+
+Object.assign(H, {
+  tapTask: function (el) { if (lp.fired) { lp.fired = false; return; } var x = taskById(el.dataset.id); if (!x) return; S.ui.tsId = null; openModal({ type: 'task', id: x.id }); },
+  tsNow: function () { S.ui.tsAt = nowHM(); render(); },
+  tsNot: function () { S.ui.tsNot = true; render(); },
+  tsYes: function () { S.ui.tsNot = false; render(); },
+  tsDone: function (el) {
+    var x = taskById(el.dataset.id), U = S.ui; if (!x) return;
+    x.s = 'done'; x.a = U.tsAt || x.t; x.r = '';
+    var extra = x.q ? { qty: U.tsQty } : undefined; if (x.q) x.qv = U.tsQty;
+    U.modal = null; U.tsId = null; render(); logTask(x, extra);
+  },
+  // people
+  ppPick: function (el) { var k = el.dataset.k, l = S.ui.pp[k] = S.ui.pp[k] || []; toggleIn(l, el.dataset.n); render(); },
+  ppKind: function (el) { S.ui.ppKind = el.dataset.k; render(); },
+  ppAdd: function (el) {
+    var k = el.dataset.k, U = S.ui;
+    var names = String(U.ppText[k] || '').split(/[,\n]/).map(function (x) { return x.trim(); }).filter(Boolean).concat(U.pp[k] || []);
+    names = names.filter(function (n, i) { return names.indexOf(n) === i; });
+    if (!names.length) { var ta = document.getElementById('pp-' + k); if (ta) ta.focus(); return; }
+    U.ppText[k] = ''; U.pp[k] = [];
+    var list = k === 'visit' ? 'visitWant' : 'callWant';
+    var d = curDay();
+    if (k === 'call') { if (d) names.forEach(function (n) { if (d.wants.indexOf(n) < 0) d.wants.push(n); }); if (S.shared) { S.shared.callWants = S.shared.callWants || []; names.forEach(function (n) { if (S.shared.callWants.indexOf(n) < 0) S.shared.callWants.push(n); }); } }
+    else if (S.shared) names.forEach(function (n) { if (S.shared.visitWants.indexOf(n) < 0) S.shared.visitWants.push(n); });
+    render();
+    call('setWant', { list: list, values: names, on: true }).then(function () { if (S.view === 'ours') loadShared(); }).catch(fail);
+  },
+  unwant: function (el) {
+    var w = el.dataset.w, l = el.dataset.l, d = curDay();
+    if (l === 'callWant') { if (d) d.wants = d.wants.filter(function (x) { return x !== w; }); if (S.shared && S.shared.callWants) S.shared.callWants = S.shared.callWants.filter(function (x) { return x !== w; }); }
+    else if (S.shared) S.shared.visitWants = S.shared.visitWants.filter(function (x) { return x !== w; });
+    render(); call('setWant', { list: l, value: w, on: false }).catch(fail);
+  },
+  pendTalk: function (el) {
+    var who = el.dataset.w;
+    S.shared.callWants = S.shared.callWants.filter(function (x) { return x !== who; }); render();
+    call('addCall', { date: today(), who: who }).then(function () { toast(t('saved')); S.days = {}; }).catch(fail);
+  },
+  delCall: function (el) { var d = curDay(); d.calls = d.calls.filter(function (c) { return c.id !== el.dataset.id; }); render(); call('delCall', { id: el.dataset.id }).catch(fail); },
+  delVisit: function (el) { S.shared.visits = S.shared.visits.filter(function (v) { return v.id !== el.dataset.id; }); render(); call('delVisit', { id: el.dataset.id }).catch(fail); },
+  // to-do
+  todoToggle: function (el) { var x = S.shared.todos.filter(function (y) { return y.id === el.dataset.id; })[0]; x.done = !x.done; x.doneBy = x.done ? S.user : ''; render(); call('toggleTodo', { id: x.id }).catch(fail); },
+  todoStar: function (el) { var x = S.shared.todos.filter(function (y) { return y.id === el.dataset.id; })[0]; x.star = !x.star; render(); call('starTodo', { id: x.id }).catch(fail); },
+  tdNewStar: function () { S.ui.todo.star = !S.ui.todo.star; render(); },
+  tdWho2: function (el) { S.ui.todo.who = el.dataset.w; render(); },
+  todoAdd: function () {
+    var td = S.ui.todo; if (!td.text.trim()) { document.getElementById('tdText').focus(); return; }
+    call('addTodo', { text: td.text, who: td.who, star: !!td.star }).then(function () { S.ui.todo = { text: '', who: 'both', due: '', star: false }; loadShared(); }).catch(fail);
+  },
+  todoDel: function (el) {
+    var id = el.dataset.id;
+    call('delTodo', { id: id }).then(function () { loadShared(); }).catch(function () { S.ui.tdAsk = S.ui.tdAsk === id ? null : id; S.ui.tdPin = ''; render(); });
+  },
+  // money
+  finPick: function () { pickImages('fin', true); },
+  // detox
+  dxPick: function () { pickImages('detox', true); },
+  dxWho: function (el) { S.dx.who = el.dataset.w; render(); try { window.scrollTo(0, 0); } catch (e) {} },
+  dxMode: function (el) { S.dx.mode = el.dataset.m; S.dx.data = null; render(); loadDetox(); },
+  dxNav: function (el) {
+    var X = S.dx, dd = +el.dataset.d, st = X.data ? X.data.period.start : X.anchor;
+    if (X.mode === 'week') X.anchor = addDays(st, 7 * dd);
+    else { var p = st.split('-'), m = new Date(+p[0], +p[1] - 1 + dd, 1, 12); X.anchor = m.getFullYear() + '-' + pad(m.getMonth() + 1) + '-01'; }
+    X.data = null; render(); loadDetox();
+  },
+  dxRetry: function (el) { call('retryDetox', { id: el.dataset.id }).then(loadDetox).catch(fail); },
+  dxEditT: function () { S.dx.edit = !S.dx.edit; S.dx.ef = {}; render(); },
+  dxEditSave: function () { var ef = S.dx.ef; call('setDetoxDay', ef).then(function () { S.dx.edit = false; toast(t('saved')); loadDetox(); }).catch(fail); },
+  dxGoalEdit: function () { S.dx.goalEdit = true; S.dx.goalVal = S.dx.data.people[S.user].goal; render(); },
+  dxGoalSave: function () { call('saveDetoxPlan', { goal: S.dx.goalVal }).then(function () { S.dx.goalEdit = false; loadDetox(); }).catch(fail); },
+  dxLimit: function (el) { var X = S.dx; X.limitApp = X.limitApp === el.dataset.app ? '' : el.dataset.app; X.limitVal = (X.data.people[S.user].limits || {})[X.limitApp] || ''; render(); },
+  dxLimitSave: function () { var X = S.dx, l = Object.assign({}, X.data.people[S.user].limits || {}); l[X.limitApp] = +X.limitVal || 0; if (!l[X.limitApp]) delete l[X.limitApp]; call('saveDetoxPlan', { limits: l }).then(function () { X.limitApp = ''; loadDetox(); }).catch(fail); },
+  dxLimitDel: function () { var X = S.dx, l = Object.assign({}, X.data.people[S.user].limits || {}); delete l[X.limitApp]; call('saveDetoxPlan', { limits: l }).then(function () { X.limitApp = ''; loadDetox(); }).catch(fail); },
+  saveKey2: function () { var k = (S.ui.key2 || '').trim(); if (!k) return; call('saveSettings', { geminiKey2: k }).then(function (s) { S.settings = s; S.ui.key2 = ''; toast(t('saved')); render(); }).catch(fail); }
+});
+Object.assign(IN, {
+  tsQty: function (el) { S.ui.tsQty = el.value; },
+  ppText: function (el) { S.ui.ppText[el.dataset.k] = el.value; },
+  dxEf: function (el) { S.dx.ef[el.dataset.k] = el.value; },
+  dxGoalVal: function (el) { S.dx.goalVal = el.value; },
+  dxLimVal: function (el) { S.dx.limitVal = el.value; },
+  setKey2: function (el) { S.ui.key2 = el.value; }
+});
+Object.assign(CH, {
+  tsAt: function (el) { S.ui.tsAt = el.value; },
+  fShotDate: function (el) { S.fin.shotDate = el.value && el.value <= today() ? el.value : today(); },
+  dxDate: function (el) { var X = S.dx; if (!el.value || el.value > today()) return; X.upDate = el.value; X.upPicked = true; X.edit = false; X.ef = {}; loadDetox(); },
+  dxAct: function (el) {
+    var ai = S.dx.data.ai, a = ai && ai[S.user] && ai[S.user][+el.dataset.i]; if (a) a.done = el.checked;
+    call('toggleDetoxAct', { week: el.dataset.week, i: +el.dataset.i }).catch(fail);
+  }
+});
+logTask = function (x, extra) {
+  return call('logTask', Object.assign({ date: S.date, taskId: x.id, status: x.s, actual: x.a || '', reason: x.r || '' }, extra || {})).catch(function (e) { fail(e); loadDay(dayOwner(), true); });
+};
+H.visitDone = function (el) {
+  var who = el.dataset.w; S.shared.visitWants = S.shared.visitWants.filter(function (w) { return w !== who; }); render();
+  call('addVisit', { date: S.date, who: who }).then(function () { toast(t('saved')); loadShared(); }).catch(fail);
+};
+H.visited = function () { visitThen(function (who) { render(); call('addVisit', { date: S.date, who: who }).then(loadShared).catch(fail); }); };
+window.SPX = { finQueue: finQueue, detoxQueue: detoxQueue, setShrink: function (f) { shrinkImage = f; } };
+var freshUiV2 = freshUi;
+freshUi = function () { var u = freshUiV2(); u.pp = {}; u.ppText = {}; u.ppKind = 'call'; u.tsId = null; u.todo = { text: '', who: 'both', due: '', star: false }; return u; };
+S.ui = freshUi();
+
+// ------------------------------------------------------------------ v4: recent picks, yesterday catch-up, partner reminders, voice, offline
+Object.assign(I.gu, {
+  recentL: 'છેલ્લી 3:', cuT: 'ગઈ કાલનાં {n} કામ નોંધવાનાં બાકી', cuSub: 'એક ટૅપમાં: થયું કે ન થયું', cuOpen: 'હમણાં નોંધો', cuLater: 'પછી',
+  cuDone: 'થયું', cuNot: 'ન થયું', cuAllNot: 'બાકીનાં બધાં "ન થયાં"', cuForgot: 'નોંધવાનું ભૂલી ગયા', cuFinished: 'ગઈ કાલનું બધું નોંધાઈ ગયું ✓',
+  nudgeBtn: 'યાદ કરાવો', nudgeSent: '{n} ને યાદ કરાવ્યું', nudgeFrom: '{n} યાદ કરાવે છે', nudgeOk: 'ઠીક છે',
+  vT: 'બોલીને નોંધો', vHint: 'ઉદા.: "શ્લોકે 9 વાગ્યે 180 ml દૂધ પીધું", "Blinkit પર 450 રૂપિયા શાકભાજી", "દોડવાનું થઈ ગયું"', vTap: 'બોલવા માટે ટૅપ કરો',
+  vStop: 'બસ, પૂરું', vListening: 'સાંભળું છું…', vTypePh: 'અથવા અહીં લખો…', vGo: 'સમજો', vThinking: 'AI સમજે છે…', vHeard: 'સાંભળ્યું: ', vSave: 'પસંદ કરેલું સાચવો',
+  vNone: 'કંઈ સમજાયું નહીં. ફરી પ્રયત્ન કરો.', vSaved: '{n} નોંધ સાચવાઈ', vBusy: 'AI હમણાં વ્યસ્ત છે. થોડી વાર પછી પ્રયત્ન કરો.', vNoMic: 'માઇક ચાલુ ન થયો. લખીને નોંધો.',
+  offline: 'ઇન્ટરનેટ નથી — નોંધો ફોનમાં સચવાય છે, નેટ આવતાં મોકલાશે', queued: '{n} નોંધ મોકલવાની બાકી', synced: 'બધી નોંધ મોકલાઈ ✓', offUpload: 'ઇન્ટરનેટ વગર ફોટો મોકલી શકાય નહીં.'
+});
+Object.assign(I.en, {
+  recentL: 'Last 3:', cuT: "{n} of yesterday's tasks not marked", cuSub: 'One tap each: done or not', cuOpen: 'Mark now', cuLater: 'Later',
+  cuDone: 'Done', cuNot: 'Not done', cuAllNot: 'Mark the rest "not done"', cuForgot: 'Forgot to log', cuFinished: 'Yesterday is all marked ✓',
+  nudgeBtn: 'Remind', nudgeSent: 'Reminded {n}', nudgeFrom: '{n} reminds you', nudgeOk: 'OK',
+  vT: 'Speak to log', vHint: 'E.g. "Shlok drank 180 ml milk at 9", "450 rupees vegetables on Blinkit", "running done"', vTap: 'Tap to speak',
+  vStop: 'Done speaking', vListening: 'Listening…', vTypePh: 'Or type here…', vGo: 'Understand', vThinking: 'AI is understanding…', vHeard: 'Heard: ', vSave: 'Save selected',
+  vNone: 'Nothing understood. Please try again.', vSaved: '{n} entries saved', vBusy: 'The AI is busy right now. Try again in a little while.', vNoMic: 'Microphone did not start. Please type instead.',
+  offline: 'No internet — entries are kept on the phone and sent when online', queued: '{n} entries waiting to send', synced: 'All entries sent ✓', offUpload: 'Photos cannot be sent without internet.'
+});
+
+// ---------- offline: queue writes, serve last-known data for reads
+var OFF_WRITES = ['logTask', 'addWater', 'delWater', 'setMeal', 'setMed', 'takeMed', 'addCall', 'delCall', 'setWant', 'addVisit', 'delVisit', 'saveNight', 'addTodo',
+  'toggleTodo', 'starTodo', 'shlokAdd', 'shlokDel', 'setFamily', 'addExpense', 'addLearning', 'addOption', 'saveManifest', 'nudge', 'seenNudge', 'setDetoxDay'];
+var OFF_READS = ['getDay', 'getShlok', 'getShared', 'getFinance', 'getMeds', 'getReading', 'getDetox', 'getReport', 'getSettings'];
+function offQ() { try { return JSON.parse(ls('sp-q-' + S.user) || '[]'); } catch (e) { return []; } }
+function offQSet(q) { ls('sp-q-' + S.user, q.length ? JSON.stringify(q) : null); }
+var callOnline = call;
+S.offline = false; S.offServed = {};
+call = function (action, p) {
+  var key = action + JSON.stringify(p || {});
+  if (OFF_WRITES.indexOf(action) >= 0 && offQ().length) {            // keep order: if something is waiting, queue behind it
+    var q0 = offQ(); q0.push({ a: action, p: p || {} }); offQSet(q0); setTimeout(flushQ, 50); return Promise.resolve({ queued: true });
+  }
+  return callOnline(action, p).then(function (r) {
+    if (S.offline) { S.offline = false; render(); }
+    if (OFF_READS.indexOf(action) >= 0) { try { ls('sp-c-' + S.user + key, JSON.stringify(r)); } catch (e) {} }
+    return r;
+  }, function (e) {
+    var net = String(e && e.message) === t('netErr') || (GAS && /network|NetworkError|failed|disconnected/i.test(String(e && e.message)));
+    if (!net) throw e;
+    if (!S.offline) { S.offline = true; setTimeout(render, 0); }
+    if (OFF_WRITES.indexOf(action) >= 0) { var q = offQ(); q.push({ a: action, p: p || {} }); offQSet(q); return { queued: true }; }
+    if (OFF_READS.indexOf(action) >= 0) {
+      var c = ls('sp-c-' + S.user + key);
+      if (c && !S.offServed[key]) { S.offServed[key] = 1; return JSON.parse(c); }
+      throw new Error('OFFLINE');
+    }
+    throw e;
+  });
+};
+var flushing = false;
+function flushQ() {
+  if (flushing || !S.token) return;
+  var q = offQ(); if (!q.length) return;
+  flushing = true;
+  var step = function () {
+    var q2 = offQ();
+    if (!q2.length) { flushing = false; S.offline = false; S.offServed = {}; toast(t('synced')); S.days = {}; loadView(); return; }
+    var it = q2[0];
+    callOnline(it.a, it.p).then(function () { q2 = offQ(); q2.shift(); offQSet(q2); step(); }, function (e) {
+      var net = String(e && e.message) === t('netErr');
+      if (net) { flushing = false; S.offline = true; render(); return; }
+      q2 = offQ(); q2.shift(); offQSet(q2); step();                // server said no (e.g. already deleted): drop it
+    });
+  };
+  step();
+}
+window.addEventListener('online', function () { setTimeout(flushQ, 500); });
+setInterval(function () { if (offQ().length && navigator.onLine !== false) flushQ(); }, 60000);
+var failV3 = fail;
+fail = function (e) { if (e && (e.message === 'OFFLINE')) return; if (e && String(e.message) === t('netErr') && S.offline) return; failV3(e); };
+var renderV3 = render;
+render = function () {
+  renderV3();
+  if (!S.token) return;
+  var n = offQ().length, bar = document.getElementById('offbar');
+  if (S.offline || n) {
+    var html = '<div id="offbar" role="status" style="position:sticky;top:0;z-index:30;background:#44403C;color:#fff;font-size:12px;padding:6px 12px;text-align:center">' +
+      esc(S.offline ? t('offline') : t('queued', { n: n })) + (S.offline && n ? ' · ' + esc(t('queued', { n: n })) : '') + '</div>';
+    document.getElementById('app').insertAdjacentHTML('afterbegin', html);
+  }
+};
+
+// ---------- "last 3" quick picks
+function recentChips(items, act, labelFn) {
+  if (!items || !items.length) return '';
+  return '<div class="row" style="flex-wrap:wrap;gap:6px;align-items:center"><span class="muted">' + esc(t('recentL')) + '</span>' + items.slice(0, 3).map(function (x, i) {
+    return '<button class="chip" data-a="' + act + '" data-i="' + i + '">' + esc(labelFn(x)) + '</button>'; }).join('') + '</div>';
+}
+var shlokFormV3 = shlokForm;
+shlokForm = function (kind) {
+  var html = shlokFormV3(kind), r = S.shlok && S.shlok.recent;
+  if (!r) return html;
+  var chips = kind === 'milk' ? recentChips(r.milk, 'rcMilk', function (x) { return x.value + ' ml · ' + t(x.extra || 'formula'); })
+    : kind === 'food' ? recentChips(r.food, 'rcFood', function (x) { return x; })
+    : kind === 'story' ? recentChips(r.story, 'rcStory', function (x) { return x; }) : '';
+  return chips ? html.replace('</h3>', '</h3>' + chips) : html;
+};
+var waterCardV3 = waterCard;
+waterCard = function (d, ro) {
+  var html = waterCardV3(d, ro);
+  if (ro || !d.recentWater || !d.recentWater.length) return html;
+  return html.replace('<div class="list">', recentChips(d.recentWater, 'rcWater', function (x) { return x + ' ml'; }) + '<div class="list">');
+};
+var finAddCardV3 = finAddCard;
+finAddCard = function () {
+  var html = finAddCardV3(), d = S.fin.data;
+  if (!S.fin.manual || !d || !d.recentManual || !d.recentManual.length) return html;
+  return html.replace('<div class="row"><input id="fAmt"', recentChips(d.recentManual, 'rcExp', function (x) { return (x.item || t('fc_' + x.category)) + ' · ₹' + Math.round(x.amount); }) + '<div class="row"><input id="fAmt"');
+};
+
+// ---------- yesterday catch-up + partner reminders on Today
+var viewDayV3 = viewDay;
+viewDay = function (owner) {
+  var html = viewDayV3(owner), d = S.days[owner + S.date];
+  if (!d || owner !== S.user || S.date !== today()) return html;
+  var top = '';
+  (d.nudges || []).forEach(function (n) {
+    top += '<div class="card" style="background:#EDE9FE;flex-direction:row;align-items:center;gap:10px"><span style="font-size:20px">🔔</span><div style="flex:1"><div class="small" style="color:#5B21B6;font-weight:700">' +
+      esc(t('nudgeFrom', { n: nameOf(n.from) })) + '</div><div style="font-size:15px;font-weight:700">' + esc(n.text) + '</div></div><button class="btn ghost" style="height:36px" data-a="nudgeOk" data-id="' + n.id + '">' + esc(t('nudgeOk')) + '</button></div>';
+  });
+  var y = addDays(today(), -1), cu = S.cu;
+  if (!cu || cu.date !== y) { if (!S.cuLoading) loadCatchup(); }
+  else if (!ls('sp-cu-' + S.user + y)) {
+    var open = cu.day.tasks.filter(function (x) { return x.s === 'todo'; });
+    if (open.length) top += '<div class="card" style="background:#FFF4E5;flex-direction:row;align-items:center;gap:10px"><span style="font-size:20px">🕘</span><div style="flex:1;color:#92400E"><b>' + esc(t('cuT', { n: open.length })) + '</b><div class="small">' + esc(t('cuSub')) + '</div></div>' +
+      '<div style="display:flex;flex-direction:column;gap:4px"><button class="btn terra" style="height:36px;font-size:12px" data-a="openM" data-m="catchup">' + esc(t('cuOpen')) + '</button><button class="link" style="font-size:12px" data-a="cuLater">' + esc(t('cuLater')) + '</button></div></div>';
+  }
+  html = html.replace('<div class="wrap">', '<div class="wrap">' + top);
+  return html + '<button class="fab" style="right:84px;background:#0F766E;font-size:22px" data-a="openM" data-m="voice" aria-label="' + esc(t('vT')) + '">🎤</button>';
+};
+function loadCatchup() {
+  var y = addDays(today(), -1); S.cuLoading = true;
+  call('getDay', { owner: S.user, date: y }).then(function (d) { S.cu = { date: y, day: d }; S.cuLoading = false; if (S.view === 'today') render(); }).catch(function () { S.cuLoading = false; });
+}
+function catchupSheet() {
+  var cu = S.cu; if (!cu) return '';
+  var list = cu.day.tasks, open = list.filter(function (x) { return x.s === 'todo'; });
+  var reasons = reasonsFor(S.user).slice(0, 5);
+  var h = '<div style="display:flex;flex-direction:column;gap:6px"><h3 style="margin:0">' + esc(fmtDate(cu.date)) + '</h3>';
+  if (!open.length) h += '<div class="small" style="color:#0F766E;font-weight:700">' + esc(t('cuFinished')) + '</div>';
+  list.forEach(function (x) {
+    var st = x.s === 'done' ? '<b class="small" style="color:#0F766E">✓ ' + esc(x.a || x.t) + '</b>' : x.s === 'skip' ? '<b class="small" style="color:#9F1239">– ' + esc(x.r) + '</b>' : '';
+    h += '<div style="border-top:1px solid #F1EDE6;padding:8px 0;display:flex;flex-direction:column;gap:6px"><div class="row" style="align-items:center"><span class="tt">' + esc(x.t) + '</span><span style="flex:1;font-size:14px">' + esc(lbl(x)) + '</span>' + st + '</div>';
+    if (x.s === 'todo') {
+      h += '<div class="row" style="gap:6px"><button class="btn teal" style="height:36px;font-size:12px;flex:1" data-a="cuSet" data-id="' + x.id + '" data-s="done">' + esc(t('cuDone')) + ' · ' + esc(x.t) + '</button>' +
+        '<button class="btn ghost" style="height:36px;font-size:12px;flex:1;color:#9F1239" data-a="cuNotOpen" data-id="' + x.id + '">' + esc(t('cuNot')) + '</button></div>';
+      if (S.ui.cuNot === x.id) h += '<div class="chips">' + reasons.concat([t('cuForgot')]).map(function (r) { return '<button class="chip" data-a="cuSet" data-id="' + x.id + '" data-s="skip" data-r="' + esc(r) + '">' + esc(r) + '</button>'; }).join('') + '</div>';
+    }
+    h += '</div>';
+  });
+  if (open.length > 1) h += '<button class="btn ghost" data-a="cuAllNot">' + esc(t('cuAllNot')) + '</button>';
+  return h + '</div>';
+}
+
+// ---------- voice entry
+S.vo = { text: '', busy: false, rec: false, res: null, sel: {}, err: '' };
+function voiceSheet() {
+  var V = S.vo;
+  var h = '<div style="display:flex;flex-direction:column;gap:10px"><h3 style="margin:0">🎤 ' + esc(t('vT')) + '</h3><div class="muted" style="line-height:1.6">' + esc(t('vHint')) + '</div>' +
+    '<button class="btn ' + (V.rec ? 'terra' : 'teal') + ' big" data-a="' + (V.rec ? 'vStop' : 'vStart') + '" style="height:64px;font-size:17px">' + (V.rec ? '⏺ ' + esc(t('vListening')) + ' · ' + esc(t('vStop')) : '🎤 ' + esc(t('vTap'))) + '</button>' +
+    '<textarea id="vText" rows="2" data-in="vText" placeholder="' + esc(t('vTypePh')) + '">' + esc(V.text) + '</textarea>' +
+    (V.err ? '<div class="small" style="color:#BE123C">' + esc(V.err) + '</div>' : '') +
+    '<button class="btn" data-a="vGo"' + (V.busy || V.rec ? ' disabled' : '') + '>' + (V.busy ? '<span class="spin"></span> ' + esc(t('vThinking')) : esc(t('vGo'))) + '</button>';
+  if (V.res) {
+    h += '<div class="small" style="color:#5B6468">' + esc(t('vHeard')) + '“' + esc(V.res.heard) + '”</div>';
+    if (!V.res.items.length) h += '<div class="small" style="color:#B45309">' + esc(t('vNone')) + '</div>';
+    else h += V.res.items.map(function (it, i) {
+      return '<label class="row" style="align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px"><input type="checkbox" style="width:22px;height:22px" data-ch="vSel" data-i="' + i + '"' + (V.sel[i] !== false ? ' checked' : '') + '><span style="font-size:14px">' + esc(it.label || it.type) + '</span></label>'; }).join('') +
+      '<button class="btn teal wide big" data-a="vSave">' + esc(t('vSave')) + '</button>';
+  }
+  return h + '</div>';
+}
+var vRec = null;
+function blobToWav(blob) {
+  return blob.arrayBuffer().then(function (buf) {
+    var AC = window.AudioContext || window.webkitAudioContext, ctx = new AC();
+    return new Promise(function (res, rej) { ctx.decodeAudioData(buf, res, rej); }).then(function (ab) {
+      var rate = 16000, src = ab.getChannelData(0), ratio = ab.sampleRate / rate, n = Math.floor(src.length / ratio), pcm = new Int16Array(n);
+      for (var i = 0; i < n; i++) { var s = src[Math.floor(i * ratio)]; pcm[i] = Math.max(-1, Math.min(1, s)) * 0x7FFF; }
+      var b = new ArrayBuffer(44 + n * 2), v = new DataView(b), w = function (o, s) { for (var k = 0; k < s.length; k++) v.setUint8(o + k, s.charCodeAt(k)); };
+      w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+      new Int16Array(b, 44).set(pcm);
+      try { ctx.close(); } catch (e) {}
+      var bytes = new Uint8Array(b), bin = '';
+      for (var j = 0; j < bytes.length; j += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(j, j + 0x8000));
+      return 'data:audio/wav;base64,' + btoa(bin);
+    });
+  });
+}
+function voiceSend(payload) {
+  var V = S.vo; V.busy = true; V.err = ''; render();
+  call('voiceParse', Object.assign({ date: S.date }, payload)).then(function (r) { V.busy = false; V.res = r; V.sel = {}; if (r.heard && !V.text) V.text = r.heard; render(); })
+    .catch(function (e) { V.busy = false; V.err = /AI_BUSY/.test(String(e.message)) ? t('vBusy') : String(e.message); render(); });
+}
+function runVoiceItem(it) {
+  var d = S.date, nowT = nowHM();
+  switch (it.type) {
+    case 'milk': return call('shlokAdd', { date: d, type: 'milk', time: it.time || nowT, value: it.ml, extra: it.kind || 'formula' });
+    case 'sleep': return call('shlokAdd', { date: d, type: 'sleep', time: it.from || nowT, extra: it.to || '' });
+    case 'shlokFood': return call('shlokAdd', { date: d, type: 'food', time: it.time || nowT, value: it.text });
+    case 'word': return call('shlokAdd', { date: d, type: 'word', value: it.text });
+    case 'story': return Promise.all([call('setFamily', { date: d, field: 'storyBy', value: it.by || S.user }), call('setFamily', { date: d, field: 'story', value: it.text })]);
+    case 'water': return call('addWater', { date: d, ml: it.ml });
+    case 'expense': return call('addExpense', { date: d, amount: it.amount, item: it.item, category: it.category, need: it.need || 'need', paidBy: S.user, mode: 'upi' });
+    case 'task': return call('logTask', { date: d, taskId: it.taskId, status: it.status === 'skip' ? 'skip' : 'done', actual: it.status === 'skip' ? '' : (it.time || nowT), reason: it.reason || '' });
+    case 'med': var k = String(it.key).split('@'); return call('takeMed', { date: d, medId: k[0], time: k[1], taken: true, at: nowT });
+    case 'call': return call('addCall', { date: d, who: it.who });
+    case 'visit': return call('addVisit', { date: d, who: it.who });
+    case 'todo': return call('addTodo', { text: it.text, who: it.who || 'both' });
+  }
+  return Promise.resolve();
+}
+
+var modalV3 = modal;
+modal = function () {
+  var m = S.ui.modal;
+  if (m && (m.type === 'catchup' || m.type === 'voice')) {
+    var inner = m.type === 'catchup' ? catchupSheet() : voiceSheet();
+    return '<div class="overlay" data-a="modalBg" style="align-items:flex-end;padding:0"><div class="msheet">' +
+      '<div style="display:flex;justify-content:flex-end"><button class="round" data-a="modalClose" aria-label="' + esc(t('close')) + '">×</button></div>' + inner + '</div></div>';
+  }
+  return modalV3();
+};
+// ---------- to-do: remind partner
+var viewOursV3 = viewOurs;
+viewOurs = function () {
+  var html = viewOursV3(), s = S.shared; if (!s) return html;
+  s.todos.forEach(function (x) {
+    if (x.done) return;
+    html = html.replace('data-a="todoStar" data-id="' + x.id + '"', 'data-a="todoStar" data-id="' + x.id + '"');
+    html = html.replace('<button class="iconbtn" data-a="todoDel" data-id="' + x.id + '"', '<button class="iconbtn" data-a="nudgeTodo" data-id="' + x.id + '" aria-label="' + esc(t('nudgeBtn')) + '" title="' + esc(t('nudgeBtn')) + '" style="font-size:18px">🔔</button><button class="iconbtn" data-a="todoDel" data-id="' + x.id + '"');
+  });
+  return html;
+};
+// photo uploads need internet
+var finQueueV3 = finQueue;
+finQueue = function (files) { if (navigator.onLine === false) { toast(t('offUpload')); return; } finQueueV3(files); };
+var detoxQueueV3 = detoxQueue;
+detoxQueue = function (files) { if (navigator.onLine === false) { toast(t('offUpload')); return; } detoxQueueV3(files); };
+window.SPX.finQueue = finQueue; window.SPX.detoxQueue = detoxQueue;
+
+var syncRemindersV3 = syncReminders;
+syncReminders = function () {
+  syncRemindersV3();
+  try { if (window.AndroidBridge && window.AndroidBridge.setAuth && !GAS) window.AndroidBridge.setAuth(apiUrl(), S.token || ''); } catch (e) {}
+};
+
+Object.assign(H, {
+  rcMilk: function (el) { var x = S.shlok.recent.milk[+el.dataset.i]; S.ui.sf.value = x.value; S.ui.sf.extra = x.extra || 'formula'; render(); },
+  rcFood: function (el) { S.ui.sf.value = S.shlok.recent.food[+el.dataset.i]; render(); },
+  rcStory: function (el) { S.ui.sf.value = S.shlok.recent.story[+el.dataset.i]; render(); },
+  rcWater: function (el) { S.ui.wInput = String(curDay().recentWater[+el.dataset.i]); render(); },
+  rcExp: function (el) {
+    var x = S.fin.data.recentManual[+el.dataset.i], f = S.fin.form;
+    f.item = x.item; f.amount = String(Math.round(x.amount)); f.category = x.category || f.category; f.need = x.need || 'need'; if (x.mode) f.mode = x.mode; render();
+  },
+  cuLater: function () { ls('sp-cu-' + S.user + addDays(today(), -1), '1'); render(); },
+  cuNotOpen: function (el) { S.ui.cuNot = S.ui.cuNot === el.dataset.id ? null : el.dataset.id; render(); },
+  cuSet: function (el) {
+    var cu = S.cu, x = cu.day.tasks.filter(function (y) { return y.id === el.dataset.id; })[0]; if (!x) return;
+    x.s = el.dataset.s; x.a = x.s === 'done' ? x.t : ''; x.r = el.dataset.r || ''; S.ui.cuNot = null;
+    if (!cu.day.tasks.some(function (y) { return y.s === 'todo'; })) setTimeout(function () { if (S.ui.modal && S.ui.modal.type === 'catchup') { S.ui.modal = null; render(); } }, 900);
+    render();
+    call('logTask', { date: cu.date, taskId: x.id, status: x.s, actual: x.a, reason: x.r }).catch(fail);
+  },
+  cuAllNot: function () {
+    var cu = S.cu, r = t('cuForgot');
+    cu.day.tasks.forEach(function (x) { if (x.s !== 'todo') return; x.s = 'skip'; x.r = r; call('logTask', { date: cu.date, taskId: x.id, status: 'skip', actual: '', reason: r }).catch(fail); });
+    S.ui.modal = null; render();
+  },
+  nudgeOk: function (el) { var d = curDay(); d.nudges = (d.nudges || []).filter(function (n) { return n.id !== el.dataset.id; }); render(); call('seenNudge', { id: el.dataset.id }).catch(fail); },
+  nudgeTodo: function (el) {
+    var x = S.shared.todos.filter(function (y) { return y.id === el.dataset.id; })[0]; if (!x) return;
+    call('nudge', { text: x.text, ref: x.id }).then(function () { toast(t('nudgeSent', { n: nameOf(other(S.user)) })); }).catch(fail);
+  },
+  vStart: function () {
+    var V = S.vo; V.err = ''; V.res = null;
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR && !window.AndroidBridge) {
+      try {
+        var r = new SR(); r.lang = S.lang === 'en' ? 'en-IN' : 'gu-IN'; r.interimResults = true; r.continuous = true;
+        var base = V.text ? V.text + ' ' : '';
+        r.onresult = function (e) { var s = ''; for (var i = 0; i < e.results.length; i++) s += e.results[i][0].transcript; V.text = base + s; var ta = document.getElementById('vText'); if (ta) ta.value = V.text; };
+        r.onerror = function () { V.rec = false; vRec = null; render(); };
+        r.onend = function () { V.rec = false; vRec = null; render(); };
+        r.start(); vRec = { kind: 'sr', r: r }; V.rec = true; render(); return;
+      } catch (e) {}
+    }
+    if (!navigator.mediaDevices || !window.MediaRecorder) { V.err = t('vNoMic'); render(); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      var chunks = [], mr = new MediaRecorder(stream);
+      mr.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      mr.onstop = function () {
+        stream.getTracks().forEach(function (tr) { tr.stop(); });
+        V.rec = false; V.busy = true; render();
+        blobToWav(new Blob(chunks, { type: mr.mimeType || 'audio/webm' })).then(function (wav) { voiceSend({ audio: wav }); })
+          .catch(function () { V.busy = false; V.err = t('vNoMic'); render(); });
+      };
+      mr.start(); vRec = { kind: 'mr', r: mr, timer: setTimeout(function () { if (vRec && vRec.r === mr) H.vStop(); }, 30000) };
+      V.rec = true; render();
+    }).catch(function () { V.err = t('vNoMic'); render(); });
+  },
+  vStop: function () {
+    var V = S.vo; if (!vRec) { V.rec = false; render(); return; }
+    var r = vRec; vRec = null;
+    if (r.kind === 'sr') { try { r.r.stop(); } catch (e) {} V.rec = false; render(); if (V.text.trim()) voiceSend({ text: V.text }); }
+    else { clearTimeout(r.timer); try { r.r.stop(); } catch (e) {} }
+  },
+  vGo: function () { var V = S.vo; if (!V.text.trim()) { var ta = document.getElementById('vText'); if (ta) ta.focus(); return; } voiceSend({ text: V.text }); },
+  vSave: function () {
+    var V = S.vo, items = V.res.items.filter(function (it, i) { return V.sel[i] !== false; });
+    var n = items.length;
+    items.reduce(function (p, it) { return p.then(function () { return runVoiceItem(it); }); }, Promise.resolve()).then(function () {
+      toast(t('vSaved', { n: n })); S.vo = { text: '', busy: false, rec: false, res: null, sel: {}, err: '' }; S.ui.modal = null;
+      S.days = {}; S.shlok = null; loadView();
+    }).catch(fail);
+  }
+});
+var openMV3 = H.openM;
+H.openM = function (el) { if (el.dataset.m === 'voice') S.vo = { text: '', busy: false, rec: false, res: null, sel: {}, err: '' }; openMV3(el); };
+var modalCloseV3 = H.modalClose;
+H.modalClose = function () { if (vRec) { try { vRec.r.stop(); } catch (e) {} vRec = null; } S.vo.rec = false; modalCloseV3(); };
+Object.assign(IN, { vText: function (el) { S.vo.text = el.value; } });
+Object.assign(CH, { vSel: function (el) { S.vo.sel[+el.dataset.i] = el.checked; } });
+var startAppV3 = startApp;
+startApp = function () { startAppV3(); setTimeout(flushQ, 1500); };
+
 // ------------------------------------------------------------------ events
 document.addEventListener('click', function (e) {
   var el = e.target.closest('[data-a]'); if (!el || el.disabled) return;

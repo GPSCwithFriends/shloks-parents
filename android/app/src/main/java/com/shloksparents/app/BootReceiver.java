@@ -9,5 +9,6 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context c, Intent intent) {
         Reminders.restore(c);
+        if (!c.getSharedPreferences("nudges", Context.MODE_PRIVATE).getString("token", "").isEmpty()) NudgeReceiver.schedule(c);
     }
 }

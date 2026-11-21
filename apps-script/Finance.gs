@@ -19,7 +19,7 @@ var FIN_CAT_EN = {
 function registerFinance_() {
   if (ACTIONS.getFinance) return;
   SCHEMA.Expenses = ['id', 'date', 'amount', 'category', 'item', 'qty', 'app', 'need', 'reason', 'paidBy', 'mode', 'source', 'createdBy', 'ts', 'active', 'reviewed'];
-  SCHEMA.Receipts = ['id', 'date', 'by', 'app', 'photoIds', 'status', 'orderId', 'orderDate', 'total', 'itemsTotal', 'note', 'ts', 'reviewed'];
+  SCHEMA.Receipts = ['id', 'date', 'by', 'app', 'photoIds', 'status', 'orderId', 'orderDate', 'total', 'itemsTotal', 'note', 'ts', 'reviewed', 'batch', 'tries'];
   SCHEMA.Rules = ['key', 'category', 'need', 'ts'];
   SCHEMA.Recurring = ['id', 'day', 'amount', 'category', 'item', 'paidBy', 'mode', 'active', 'lastMonth'];
   SCHEMA.FinReports = ['period', 'json', 'ts'];
@@ -122,56 +122,111 @@ function markReviewed_(user, p) {
 function uploadReceipt_(user, p) {
   var imgs = p.images || [];
   if (!imgs.length) throw new Error('No image');
-  if (imgs.length > 6) throw new Error('Max 6 screenshots per order');
-  var folder = receiptFolder_(), ids = [];
+  if (imgs.length > 6) throw new Error('Max 6 screenshots per upload');
+  var folder = receiptFolder_(), ids = [], batch = String(p.batch || uid_()).slice(0, 20);
   imgs.forEach(function (d, i) {
     var m = String(d).match(/^data:(image\/[a-z+]+);base64,(.+)$/);
     if (!m) throw new Error('Bad image');
     var f = folder.createFile(Utilities.newBlob(Utilities.base64Decode(m[2]), m[1], 'receipt_' + today_() + '_' + uid_() + '_' + (i + 1)));
-    ids.push(f.getId());
+    var id = uid_(); ids.push(id);
+    // one row per screenshot; the AI later groups screenshots of the same order together
+    append_('Receipts', { id: id, date: p.date || today_(), by: user, app: '', photoIds: f.getId(), status: 'pending',
+      orderId: '', orderDate: '', total: '', itemsTotal: '', note: '', ts: nowIso_(), reviewed: '1', batch: batch, tries: '0' });
   });
-  var id = uid_();
-  append_('Receipts', { id: id, date: p.date || today_(), by: user, app: p.app || '', photoIds: ids.join(','), status: 'pending',
-    orderId: '', orderDate: '', total: '', itemsTotal: '', note: p.note || '', ts: nowIso_(), reviewed: '0' });
-  return { id: id };
+  return { ids: ids, batch: batch };
 }
 
 /** Time-driven (every 5 minutes) and "Read now": reads pending screenshots with Gemini. */
 function processReceipts() {
   registerFinance_();
   if (typeof registerLife_ === 'function') registerLife_();
+  if (typeof registerDetox_ === 'function') registerDetox_();
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(2000)) return 0;
-  try { return processReceiptsLocked_(); } finally { lock.releaseLock(); }
+  var n = 0;
+  try {
+    var started = Date.now();
+    n = processReceiptsLocked_(started);
+    if (typeof processDetoxLocked_ === 'function' && Date.now() - started < 3 * 60 * 1000) n += processDetoxLocked_(started);
+  } finally { lock.releaseLock(); }
+  return n;
 }
-function processReceiptsLocked_() {
-  var key = setting_('geminiKey', '');
-  var pending = rows_('Receipts').filter(function (r) { return r.status === 'pending' || r.status === 'retry'; });
+/** Hours since an ISO timestamp written by nowIso_(). */
+function ageHours_(iso) {
+  var m = String(iso || '').match(/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/);
+  if (!m) return 0;
+  var then = new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+  var now = new Date(Utilities.formatDate(new Date(), TZ, "yyyy/MM/dd HH:mm"));
+  return (now - then) / 3600000;
+}
+/** Shared handling when an AI job fails: busy AI waits (up to a day), other errors get 3 tries. */
+function aiFail_(sheet, row, e, ts, tries) {
+  var msg = String(e && e.message || e);
+  if (/^AI_BUSY/.test(msg)) {
+    if (ageHours_(ts) > 24) update_(sheet, row, { status: 'error', note: 'AI was busy all day. Tap Try again.' });
+    else update_(sheet, row, { status: 'pending', note: 'AI_BUSY' });
+  } else {
+    var n = (+tries || 0) + 1;
+    update_(sheet, row, { status: n >= 3 ? 'error' : 'pending', tries: String(n), note: msg.slice(0, 300) });
+  }
+}
+function processReceiptsLocked_(started) {
+  started = started || Date.now();
+  var all = rows_('Receipts');
+  all.forEach(function (r) {                                       // un-stick jobs from a run that was cut off
+    if (r.status === 'processing' && ageHours_(str_(r.note).replace('PROC ', '')) > 0.25) update_('Receipts', r._row, { status: 'pending', note: '' });
+  });
+  var pending = all.filter(function (r) { return r.status === 'pending' || r.status === 'retry'; })
+    .sort(function (a, b) { return str_(a.ts) < str_(b.ts) ? -1 : str_(a.ts) > str_(b.ts) ? 1 : 0; });
   if (!pending.length) return 0;
-  if (!key) { pending.forEach(function (r) { update_('Receipts', r._row, { note: 'NO_KEY' }); }); return 0; }
-  var started = Date.now(), n = 0;
-  for (var i = 0; i < pending.length; i++) {
-    if (Date.now() - started > 4 * 60 * 1000) break;          // stay inside the 6-minute limit
-    var r = pending[i];
-    update_('Receipts', r._row, { status: 'processing' });
-    try { readReceipt_(r, key); n++; }
+  if (!aiKeys_().length) { pending.forEach(function (r) { update_('Receipts', r._row, { note: 'NO_KEY' }); }); return 0; }
+  // groups of up to 5 screenshots from the same upload go to the AI together
+  var groups = [], byBatch = {};
+  pending.forEach(function (r) {
+    var b = str_(r.batch) || r.id, g = byBatch[b];
+    if (!g || g.length >= 5) { g = byBatch[b] = []; groups.push(g); }
+    g.push(r);
+  });
+  var n = 0;
+  for (var i = 0; i < groups.length; i++) {
+    if (Date.now() - started > 4 * 60 * 1000) break;               // stay inside the 6-minute limit
+    var g = groups[i];
+    g.forEach(function (r) { update_('Receipts', r._row, { status: 'processing', note: 'PROC ' + nowIso_() }); });
+    try { readBatch_(g); n += g.length; }
     catch (e) {
-      var tries = (str_(r.note).match(/#retry/g) || []).length;
-      update_('Receipts', r._row, { status: tries >= 2 ? 'error' : 'retry', note: (str_(r.note) + ' #retry ' + String(e.message || e)).slice(0, 400) });
+      if (/^AI_BUSY/.test(String(e.message || e))) { g.forEach(function (r) { aiFail_('Receipts', r._row, e, r.ts, r.tries); }); break; }
+      g.forEach(function (r) { aiFail_('Receipts', r._row, e, r.ts, r.tries); });
     }
   }
   return n;
 }
 
-function readReceipt_(r, key) {
-  var parts = [{ text: receiptPrompt_() }];
-  String(r.photoIds).split(',').filter(Boolean).forEach(function (id) {
-    var b = DriveApp.getFileById(id).getBlob();
-    parts.push({ inline_data: { mime_type: b.getContentType() || 'image/jpeg', data: Utilities.base64Encode(b.getBytes()) } });
+function readBatch_(rows) {
+  var parts = [{ text: receiptPrompt_(rows.length) }];
+  rows.forEach(function (r, i) {
+    String(r.photoIds).split(',').filter(Boolean).forEach(function (id) {
+      var b = DriveApp.getFileById(id).getBlob();
+      parts.push({ text: 'Screenshot ' + (i + 1) + ':' });
+      parts.push({ inline_data: { mime_type: b.getContentType() || 'image/jpeg', data: Utilities.base64Encode(b.getBytes()) } });
+    });
   });
-  var j = geminiJson_(parts, key);
+  var j = geminiJson_(parts);
+  var orders = j.orders || (j.items ? [Object.assign({ shots: rows.map(function (r, i) { return i + 1; }) }, j)] : []);
+  var used = {};
+  orders.forEach(function (o) {
+    var shots = (o.shots || []).map(Number).filter(function (k) { return k >= 1 && k <= rows.length && !used[k]; });
+    if (!shots.length) return;
+    shots.forEach(function (k) { used[k] = 1; });
+    var main = rows[shots[0] - 1];
+    saveOrder_(main, o);
+    shots.slice(1).forEach(function (k) { update_('Receipts', rows[k - 1]._row, { status: 'merged', note: 'Part of ' + main.id, app: String(o.app || '') }); });
+  });
+  rows.forEach(function (r, i) { if (!used[i + 1]) update_('Receipts', r._row, { status: 'skipped', note: 'Not a bill or not readable' }); });
+}
+
+function saveOrder_(r, j) {
   var app = String(j.app || r.app || '').trim();
-  var orderDate = /^\d{4}-\d{2}-\d{2}$/.test(j.orderDate || '') ? j.orderDate : str_(r.date);
+  var orderDate = /^\d{4}-\d{2}-\d{2}$/.test(j.orderDate || '') && j.orderDate <= today_() ? j.orderDate : str_(r.date);
   var total = money_(j.total);
   // duplicate check: same app + order id, or same app + date + total
   var dup = rows_('Receipts').filter(function (x) {
@@ -186,9 +241,10 @@ function readReceipt_(r, key) {
   (j.items || []).forEach(function (it) {
     var amt = money_(it.price); if (!amt) return;
     var learned = rules[itemKey_(it.name)];
-    lines.push({ item: String(it.name || '').trim(), qty: it.qty || '', amount: amt,
-      category: learned && learned.category ? learned.category : (FIN_CATS.indexOf(it.category) >= 0 ? it.category : 'other'),
-      need: learned && learned.need ? learned.need : (it.need === 'want' ? 'want' : 'need') });
+    var cat = learned && learned.category ? learned.category : (FIN_CATS.indexOf(it.category) >= 0 ? it.category : 'other');
+    lines.push({ item: String(it.name || '').trim(), qty: it.qty || '', amount: amt, category: cat,
+      need: learned && learned.need ? learned.need : (it.need === 'want' ? 'want' : 'need'),
+      check: !learned && (it.sure === false || cat === 'other') });
     sum += amt;
   });
   (j.fees || []).forEach(function (f) {
@@ -197,68 +253,97 @@ function readReceipt_(r, key) {
   });
   var disc = money_(j.discount);
   if (disc > 0) { lines.push({ item: 'Discount / savings', qty: '', amount: -disc, category: 'other', need: '' }); sum -= disc; }
+  var mismatch = total && Math.abs(sum - total) > 2;
   lines.forEach(function (l) {
     append_('Expenses', { id: uid_(), date: orderDate, amount: l.amount, category: l.category, item: l.item, qty: l.qty, app: app,
-      need: l.need, reason: '', paidBy: r.by, mode: 'online', source: r.id, createdBy: 'ai', ts: nowIso_(), active: '1', reviewed: '0' });
+      need: l.need, reason: '', paidBy: r.by, mode: 'online', source: r.id, createdBy: 'ai', ts: nowIso_(), active: '1',
+      reviewed: l.check ? '0' : '1' });
   });
-  var note = total && Math.abs(sum - total) > 2 ? 'MISMATCH' : '';
   update_('Receipts', r._row, { status: 'done', app: app, orderId: j.orderId || '', orderDate: orderDate, total: total || money_(sum),
-    itemsTotal: money_(sum), note: note });
+    itemsTotal: money_(sum), note: mismatch ? 'MISMATCH' : '' });
 }
 
-function receiptPrompt_() {
+function receiptPrompt_(n) {
   var cats = FIN_CATS.map(function (c) { return c + ' = ' + FIN_CAT_EN[c]; }).join('\n');
   return [
-    'These are screenshots of ONE order or bill from an Indian shopping, grocery, food-delivery or payment app (for example Blinkit, Zepto, Swiggy Instamart, BigBasket, Amazon, Flipkart, Meesho, Myntra, Nykaa, Swiggy, Zomato, a petrol pump or an electricity bill). Several screenshots may show parts of the same order; do not count an item twice where screenshots overlap.',
-    'Read every purchased line. For each item give the name as written, the quantity text, and the LINE price actually paid in rupees (after per-item discounts).',
+    'Below are ' + (n || 1) + ' numbered screenshots from Indian shopping, grocery, food-delivery or payment apps (for example Blinkit, Zepto, Swiggy Instamart, BigBasket, Amazon, Flipkart, Meesho, Myntra, Nykaa, Swiggy, Zomato, a petrol pump or an electricity bill).',
+    'Group them into ORDERS: several screenshots may show parts of the same order (same app, order id, date or overlapping item lists). Do not count an item twice where screenshots overlap. Different orders must be separate.',
+    'For each order read every purchased line: the name as written, the quantity text, and the LINE price actually paid in rupees (after per-item discounts).',
     'Put delivery, handling, platform, packaging, small-cart and surge fees and tips in "fees" (not in items). Put order-level coupon or discount savings in "discount" as a positive number.',
     'Choose one category key for each item from this list:', cats,
+    'Set "sure" to false when you are not confident about the category.',
     'Set "need" to "want" for things that are clearly optional treats or impulse buys (snacks, sweets, cold drinks, toys, cosmetics extras, food delivery), otherwise "need".',
-    'Return ONLY JSON: {"app": string, "orderId": string, "orderDate": "YYYY-MM-DD" or "", "total": number, "discount": number, "items": [{"name": string, "qty": string, "price": number, "category": string, "need": "need"|"want"}], "fees": [{"name": string, "amount": number}]}',
-    'If something is unreadable, skip it rather than guessing.'
+    'Return ONLY JSON: {"orders": [{"shots": [screenshot numbers], "app": string, "orderId": string, "orderDate": "YYYY-MM-DD" or "", "total": number, "discount": number, "items": [{"name": string, "qty": string, "price": number, "category": string, "need": "need"|"want", "sure": boolean}], "fees": [{"name": string, "amount": number}]}]}',
+    'Leave out screenshots that are not a bill or order (they will be skipped). If something is unreadable, skip it rather than guessing.'
   ].join('\n');
 }
 
-function geminiJson_(parts, key) {
-  var first = setting_('geminiModel', 'gemini-2.5-flash');
-  var models = [first, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest'].filter(function (m, i, a) { return m && a.indexOf(m) === i; });
-  var lastErr = '';
-  for (var i = 0; i < models.length; i++) {
-    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(models[i]) + ':generateContent?key=' + encodeURIComponent(key);
-    var res = UrlFetchApp.fetch(url, {
-      method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-      payload: JSON.stringify({ contents: [{ role: 'user', parts: parts }], generationConfig: { responseMimeType: 'application/json', temperature: 0.1 } })
-    });
-    var code = res.getResponseCode(), txt = res.getContentText();
-    if (code === 404) { lastErr = 'Model ' + models[i] + ' not found'; continue; }       // try the next model name
-    if (code !== 200) {
-      var msg = txt; try { msg = JSON.parse(txt).error.message; } catch (e) {}
-      throw new Error('Gemini ' + code + ': ' + String(msg).slice(0, 180));
+// ---------------------------------------------------------------- AI: several free models, two keys, waits when busy
+
+var AI_MODELS_ = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-2.0-flash', 'gemini-2.0-flash-lite'];
+function aiKeys_() {
+  return [setting_('geminiKey', ''), setting_('geminiKey2', '')].map(function (k) { return String(k).trim(); })
+    .filter(function (k, i, a) { return k && a.indexOf(k) === i; });
+}
+function aiModels_() {
+  var extra = setting_('geminiModels', '').split(',').map(function (m) { return m.trim(); });
+  return [setting_('geminiModel', '')].concat(extra, AI_MODELS_).filter(function (m, i, a) { return m && a.indexOf(m) === i; });
+}
+/**
+ * Sends parts to Gemini and returns the JSON reply. Tries every key and model; a model that is
+ * busy or over its free limit is rested for a while (remembered in the cache). If all are busy,
+ * throws "AI_BUSY" so the job waits and is tried again by the 5-minute trigger.
+ */
+function geminiJson_(parts, key, temperature) {
+  var keys = key ? [key] : aiKeys_();
+  if (!keys.length) throw new Error('No Gemini key saved');
+  var models = aiModels_(), cache = CacheService.getScriptCache(), lastErr = '', busy = false;
+  for (var k = 0; k < keys.length; k++) {
+    var tag = Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, keys[k])).slice(0, 8);
+    for (var i = 0; i < models.length; i++) {
+      var ck = 'ai_' + tag + '_' + models[i];
+      if (!key && cache.get(ck)) { busy = true; continue; }
+      var res;
+      try {
+        res = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(models[i]) + ':generateContent?key=' + encodeURIComponent(keys[k]), {
+          method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+          payload: JSON.stringify({ contents: [{ role: 'user', parts: parts }], generationConfig: { responseMimeType: 'application/json', temperature: temperature === undefined ? 0.1 : temperature } })
+        });
+      } catch (netErr) { lastErr = String(netErr.message || netErr); busy = true; continue; }
+      var code = res.getResponseCode(), txt = res.getContentText(), msg = txt;
+      try { msg = JSON.parse(txt).error.message; } catch (x) {}
+      if (code === 404 || (code === 400 && /not found|not supported|model/i.test(msg))) { cache.put(ck, '1', 21600); lastErr = 'Model ' + models[i] + ' not available'; continue; }
+      if (code === 429 || code >= 500) { cache.put(ck, '1', /per.?day|daily/i.test(msg) ? 21600 : 600); busy = true; lastErr = 'Gemini ' + code + ': ' + String(msg).slice(0, 160); continue; }
+      if (code === 400 && /api key|API_KEY/i.test(msg) || code === 401 || code === 403) { lastErr = 'Gemini key problem: ' + String(msg).slice(0, 160); break; }
+      if (code !== 200) { lastErr = 'Gemini ' + code + ': ' + String(msg).slice(0, 160); continue; }
+      var body = JSON.parse(txt), cand = body.candidates && body.candidates[0];
+      if (!cand || !cand.content) { lastErr = 'Gemini gave no answer (' + (cand && cand.finishReason || 'blocked') + ')'; continue; }
+      var text = cand.content.parts.filter(function (x) { return !x.thought; }).map(function (x) { return x.text || ''; }).join('');
+      var s = text.indexOf('{'), e2 = text.lastIndexOf('}');
+      if (s < 0 || e2 < s) { lastErr = 'Gemini reply was not JSON'; continue; }
+      try { var out = JSON.parse(text.slice(s, e2 + 1)); } catch (pe) { lastErr = 'Gemini reply was not JSON'; continue; }
+      if (models[i] !== setting_('geminiModel', '')) setSetting_('geminiModel', models[i]);   // start with the model that works
+      return out;
     }
-    var body = JSON.parse(txt);
-    var cand = body.candidates && body.candidates[0];
-    if (!cand || !cand.content) throw new Error('Gemini gave no answer (' + (cand && cand.finishReason || 'blocked') + ')');
-    var text = cand.content.parts.filter(function (x) { return !x.thought; }).map(function (x) { return x.text || ''; }).join('');
-    var s = text.indexOf('{'), e2 = text.lastIndexOf('}');
-    if (s < 0 || e2 < s) throw new Error('Gemini reply was not JSON');
-    if (models[i] !== first) setSetting_('geminiModel', models[i]);                         // remember the model that works
-    return JSON.parse(text.slice(s, e2 + 1));
   }
+  if (busy) throw new Error('AI_BUSY ' + lastErr);
   throw new Error(lastErr || 'No Gemini model available');
 }
 
 /** Settings button: checks that the Gemini key works. */
 function testGemini_(user, p) {
-  var key = String(p.key || setting_('geminiKey', '')).trim();
-  if (!key) throw new Error('No key saved');
-  var j = geminiJson_([{ text: 'Reply with this JSON only: {"ok": true}' }], key);
-  return { ok: !!j.ok, model: setting_('geminiModel', '') };
+  var keys = p.key ? [String(p.key).trim()] : aiKeys_();
+  if (!keys.length) throw new Error('No key saved');
+  var ok = 0;
+  keys.forEach(function (k) { try { var j = geminiJson_([{ text: 'Reply with this JSON only: {"ok": true}' }], k); if (j.ok) ok++; } catch (e) { if (keys.length === 1) throw e; } });
+  if (!ok) throw new Error('Key did not work');
+  return { ok: true, keys: ok };
 }
 function retryReceipt_(user, p) {
   var r = find_('Receipts', function (x) { return x.id === p.id; });
   if (!r) throw new Error('Not found');
   if (!str_(r.photoIds)) throw new Error('Photo already deleted');
-  update_('Receipts', r._row, { status: 'pending', note: '' });
+  update_('Receipts', r._row, { status: 'pending', note: '', tries: '0', ts: nowIso_() });
   return processReceipts();
 }
 
@@ -370,8 +455,8 @@ function getFinance_(user, p) {
   var prev = finStats_(all, per.pstart, per.pend, per.mode === 'month' ? +per.pend.slice(8, 10) : 7);
   var list = all.filter(function (e) { return e.date >= per.start && e.date <= per.end; })
     .sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
-  var receipts = rows_('Receipts').sort(function (a, b) { return str_(a.ts) < str_(b.ts) ? 1 : -1; }).slice(0, 12).map(function (r) {
-    return { id: r.id, date: str_(r.date), by: r.by, app: str_(r.app), status: r.status, total: money_(r.total), itemsTotal: money_(r.itemsTotal),
+  var receipts = rows_('Receipts').sort(function (a, b) { return str_(a.ts) < str_(b.ts) ? 1 : -1; }).slice(0, 40).map(function (r) {
+    return { batch: str_(r.batch), ts: str_(r.ts), id: r.id, date: str_(r.date), by: r.by, app: str_(r.app), status: r.status, total: money_(r.total), itemsTotal: money_(r.itemsTotal),
       note: str_(r.note), reviewed: String(r.reviewed) === '1', photos: String(r.photoIds).split(',').filter(Boolean).length };
   });
   var review = all.filter(function (e) { return !e.reviewed && e.source && e.source !== 'manual'; })
@@ -384,7 +469,8 @@ function getFinance_(user, p) {
     budgets: monthBudget, budget: budget, prices: priceWatch_(all, per.start, per.end),
     recurring: rows_('Recurring').filter(function (r) { return String(r.active) === '1'; })
       .map(function (r) { return { id: r.id, day: +r.day, amount: money_(r.amount), category: r.category, item: str_(r.item) }; }),
-    ai: rep ? JSON.parse(rep.json) : null, hasKey: !!setting_('geminiKey', ''), cats: FIN_CATS
+    ai: rep ? JSON.parse(rep.json) : null, hasKey: aiKeys_().length > 0, cats: FIN_CATS,
+    recentManual: typeof expenseRecent_ === 'function' ? expenseRecent_(user) : []
   };
 }
 function daysBetween_(a, b) { return Math.round((dateObj_(b) - dateObj_(a)) / 86400000); }
@@ -393,7 +479,7 @@ function daysBetween_(a, b) { return Math.round((dateObj_(b) - dateObj_(a)) / 86
 
 function finAnalysis_(user, p) {
   var f = getFinance_(user, p);
-  var per = f.period, key = setting_('geminiKey', ''), ai;
+  var per = f.period, key = aiKeys_().length, ai;
   var data = { period: per, thisPeriod: f.stats, previousPeriod: f.prev, monthlyBudgets: f.budgets, budgetsForThisPeriod: f.budget, priceChanges: f.prices };
   if (key) {
     try {
@@ -403,7 +489,7 @@ function finAnalysis_(user, p) {
         'Write a short, kind, practical review. Point out the 3 most useful observations with real numbers (changes vs last period, budget overruns, frequent small orders, fees paid, avoidable spending and its reasons, price rises).',
         'Suggest exactly 2 small, specific money experiments for next ' + per.mode + '. Never shame. Category keys: ' + FIN_CATS.join(', ') + '.',
         'Return ONLY JSON: {"summary_gu": string, "summary_en": string, "insights": [{"gu": string, "en": string}], "experiments": [{"gu": string, "en": string}]}',
-        'Gujarati must be natural Gujarati script.', 'DATA:', JSON.stringify(data)].join('\n') }], key);
+        'Gujarati must be natural Gujarati script.', 'DATA:', JSON.stringify(data)].join('\n') }], undefined, 0.3);
       ai.source = 'gemini';
     } catch (e) { ai = finRules_(f); ai.error = String(e.message || e); }
   } else ai = finRules_(f);
@@ -454,5 +540,14 @@ function cleanupReceipts_() {
     });
     update_('Receipts', r._row, { photoIds: '' });
   });
+  if (typeof registerDetox_ === 'function') {
+    registerDetox_();
+    rows_('DetoxShots').forEach(function (r) {
+      if (!str_(r.photoIds) || r.status === 'pending' || r.status === 'processing') return;
+      if (str_(r.ts).slice(0, 10) > cutoff) return;
+      String(r.photoIds).split(',').filter(Boolean).forEach(function (id) { try { DriveApp.getFileById(id).setTrashed(true); n++; } catch (e) {} });
+      update_('DetoxShots', r._row, { photoIds: '' });
+    });
+  }
   return n;
 }
