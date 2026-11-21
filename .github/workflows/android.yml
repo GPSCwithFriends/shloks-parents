@@ -19,6 +19,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # GitHub's Ubuntu runners already include the Android SDK, so no separate setup step is needed.
       - name: Point Gradle to the Android SDK
         run: echo "sdk.dir=$ANDROID_HOME" > android/local.properties
 
